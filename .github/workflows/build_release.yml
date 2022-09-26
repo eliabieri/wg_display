@@ -1,0 +1,27 @@
+name: Build release
+
+on:
+  push:
+#     tags:
+#       # Push events to matching v*, i.e. v1.0, v20.15.10
+#       - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ncipollo/release-action@v1
+      with:
+          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg_display"
+    
+    - name: Install gcc-arm-linux-gnueabihf
+      run: sudo apt install gcc-arm-linux-gnueabihf
+    - name: Build
+      run: cargo build --verbose --target=armv7-unknown-linux-gnueabihf
