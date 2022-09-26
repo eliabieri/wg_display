@@ -13,3 +13,9 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+# VSCode
+.vscode/
+
+# Test scripts
+deploy_raspberry.sh
