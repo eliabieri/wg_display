@@ -31,7 +31,7 @@ jobs:
         mv target/armv7-unknown-linux-gnueabihf/release/wg_display target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
     - uses: ncipollo/release-action@v1
       with:
-          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf, target/arm-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf"
+          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
           artifactErrorsFailBuild: true
           # TODO: remove me once first stable version is reached
           prerelease: true
