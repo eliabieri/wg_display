@@ -27,3 +27,6 @@ jobs:
       with:
           artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg_display"
           allowUpdates: true
+          artifactErrorsFailBuild: true
+          # TODO: remove me once first stable version is reached
+          prerelease: true
