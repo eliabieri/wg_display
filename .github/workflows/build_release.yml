@@ -25,9 +25,13 @@ jobs:
       run: cargo build --release --target=arm-unknown-linux-gnueabihf
     - name: Build armv7-unknown-linux-gnueabihf (Supports Pi 2/3/4)
       run: cargo build --release --target=armv7-unknown-linux-gnueabihf
+    - name: Rename artifacts
+      run: |
+        mv target/arm-unknown-linux-gnueabihf/release/wg_display target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
+        mv target/armv7-unknown-linux-gnueabihf/release/wg_display target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
     - uses: ncipollo/release-action@v1
       with:
-          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg_display, target/arm-unknown-linux-gnueabihf/release/wg_display"
+          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf, target/arm-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf"
           artifactErrorsFailBuild: true
           # TODO: remove me once first stable version is reached
           prerelease: true
