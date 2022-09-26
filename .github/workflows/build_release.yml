@@ -17,14 +17,12 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
-    - name: Install gcc-arm-linux-gnueabihf
-      run: sudo apt install gcc-arm-linux-gnueabihf
-    - name: Add targets
-      run: rustup target add armv7-unknown-linux-gnueabihf arm-unknown-linux-gnueabihf
+    - name: Install cross
+      run: cargo install cross --git https://github.com/cross-rs/cross
     - name: Build arm-unknown-linux-gnueabihf (Supports Pi 0/1)
-      run: cargo build --release --target=arm-unknown-linux-gnueabihf
+      run: cross build --release --target=arm-unknown-linux-gnueabihf
     - name: Build armv7-unknown-linux-gnueabihf (Supports Pi 2/3/4)
-      run: cargo build --release --target=armv7-unknown-linux-gnueabihf
+      run: cross build --release --target=armv7-unknown-linux-gnueabihf
     - name: Rename artifacts
       run: |
         mv target/arm-unknown-linux-gnueabihf/release/wg_display target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
