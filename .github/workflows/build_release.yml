@@ -27,10 +27,7 @@ jobs:
       run: cargo build --release --target=armv7-unknown-linux-gnueabihf
     - uses: ncipollo/release-action@v1
       with:
-          artifacts: [
-            "target/armv7-unknown-linux-gnueabihf/release/wg_display",
-            "target/arm-unknown-linux-gnueabihf/release/wg_display"
-          ]
+          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg_display, target/arm-unknown-linux-gnueabihf/release/wg_display"
           artifactErrorsFailBuild: true
           # TODO: remove me once first stable version is reached
           prerelease: true
