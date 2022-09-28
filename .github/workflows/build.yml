@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Rust nightly
+      run: rustup default nightly
+    - name: Install cross
+      run: cargo install cross --git https://github.com/cross-rs/cross
+    - name: Build native
+      run: make
+    - name: Build for Raspberry Pi 0/1
+      run: make app-arm
+    - name: Build for Raspberry Pi 2/3/4)
+      run: make app-armv7
