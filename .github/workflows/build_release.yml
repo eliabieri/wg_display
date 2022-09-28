@@ -17,12 +17,14 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+    - name: Use Rust nightly
+      run: rustup default nightly
     - name: Install cross
       run: cargo install cross --git https://github.com/cross-rs/cross
-    - name: Build arm-unknown-linux-gnueabihf (Supports Pi 0/1)
-      run: cross build --release --target=arm-unknown-linux-gnueabihf
-    - name: Build armv7-unknown-linux-gnueabihf (Supports Pi 2/3/4)
-      run: cross build --release --target=armv7-unknown-linux-gnueabihf
+    - name: Build for Raspberry Pi 0/1
+      run: make app-arm
+    - name: Build for Raspberry Pi 2/3/4)
+      run: make app-armv7
     - name: Rename artifacts
       run: |
         mv target/arm-unknown-linux-gnueabihf/release/wg_display target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
