@@ -12,17 +12,13 @@ struct Asset;
 
 #[get("/")]
 fn index() -> Option<RawHtml<Cow<'static, [u8]>>> {
-    let asset = Asset::get("yew/index.html")?;
+    let asset = Asset::get("index.html")?;
     Some(RawHtml(asset.data))
 }
 
 #[get("/<file..>")]
 fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
-    let filename = if file.display().to_string().ends_with(".css") {
-        format!("css/{}", file.display())
-    } else {
-        format!("yew/{}", file.display())
-    };
+    let filename = file.display().to_string();
 
     let asset = Asset::get(&filename)?;
     let content_type = file
