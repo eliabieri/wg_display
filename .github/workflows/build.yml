@@ -29,6 +29,6 @@ jobs:
     - name: Build native
       run: make
     - name: Build for Raspberry Pi 0/1
-      run: make app-arm
+      run: make app_arm
     - name: Build for Raspberry Pi 2/3/4)
-      run: make app-armv7
+      run: make app_armv7
