@@ -1,8 +1,6 @@
-name: Cargo test
+name: Test
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -16,7 +14,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
+    - name: Use Rust nightly
+      run: rustup default nightly
+    - name: Add WASM target
+      run: rustup target add wasm32-unknown-unknown
+    - name: Install cargo dependencies
+      run: cargo install --locked trunk
+    - name: Install tailwindcss
+      run: cd src/configuration_frontend && npm install
+    - name: Build native
+      run: make
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test

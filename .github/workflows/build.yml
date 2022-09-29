@@ -1,8 +1,6 @@
 name: Build
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -26,8 +24,6 @@ jobs:
         cargo install --locked trunk
     - name: Install tailwindcss
       run: cd src/configuration_frontend && npm install
-    - name: Build native
-      run: make
     - name: Build for Raspberry Pi 0/1
       run: make app_arm
     - name: Build for Raspberry Pi 2/3/4)
