@@ -2,10 +2,8 @@ use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlInputElement};
 use yew::prelude::*;
-use serde::{Deserialize, Serialize};
 
-mod configuration;
-use configuration::Configuration;
+use common::models::Configuration;
 
 enum Msg {
     InitConfig(Configuration),
@@ -22,7 +20,9 @@ impl Component for Model {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            config: Configuration { example_value: String::from("") },
+            config: Configuration {
+                example_value: String::from(""),
+            },
         }
     }
 
@@ -40,11 +40,11 @@ impl Component for Model {
                         .unwrap();
                 });
                 true
-            },
+            }
             Msg::InitConfig(config) => {
                 self.config = config;
                 true
-            },
+            }
         }
     }
 
@@ -52,15 +52,9 @@ impl Component for Model {
         if first_render {
             let link = ctx.link().clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let response = Request::get("/config")
-                    .send()
-                    .await
-                    .unwrap();
+                let response = Request::get("/config").send().await.unwrap();
 
-                let config = response
-                    .json::<Configuration>()
-                    .await
-                    .unwrap();
+                let config = response.json::<Configuration>().await.unwrap();
                 link.send_message(Msg::InitConfig(config));
             });
         }
@@ -77,7 +71,11 @@ impl Component for Model {
             // elements which are not of type HtmlInputElement
             let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
 
-            input.map(|input| Msg::SaveConfig(Configuration{example_value: input.value()}))
+            input.map(|input| {
+                Msg::SaveConfig(Configuration {
+                    example_value: input.value(),
+                })
+            })
         });
 
         html! {

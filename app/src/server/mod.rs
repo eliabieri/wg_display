@@ -1,38 +1,30 @@
 use rocket::http::ContentType;
 use rocket::response::content::RawHtml;
 use rocket::serde::json;
+use rocket::State;
 use rust_embed::RustEmbed;
 
 use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-mod configuration;
-use configuration::Configuration;
+use common::models::Configuration;
+
+mod persistence;
+use persistence::Persistence;
 
 #[derive(RustEmbed)]
-#[folder = "src/configuration_frontend/dist"]
+#[folder = "../frontend/dist"]
 struct Asset;
 
 #[post("/config", format = "json", data = "<config>")]
-async fn save_config(config: json::Json<Configuration>) -> json::Value {
-    // let db: sled::Db = sled::open("wg_display.db").unwrap();
-    // println!("Saving config text: {}", config.text);
-    // db.insert("config_text", config.text.as_bytes()).unwrap();
-    json::json!({ "status": "ok" })
+async fn save_config(persistence: &State<Persistence>, config: json::Json<Configuration>) {
+    persistence.save_config(config.into_inner());
 }
 
 #[get("/config")]
-fn get_config() -> Option<json::Value> {
-    let db: sled::Db = sled::open("wg_display.db").unwrap();
-    let config_text = db
-        .get("config_text")
-        .unwrap()
-        .map(|v| String::from_utf8(v.to_vec()).unwrap_or_else(|_| String::from("")));
-
-    Some(json::json!(Configuration {
-        example_value: config_text.unwrap()
-    }))
+fn get_config(persistence: &State<Persistence>) -> Option<json::Value> {
+    Some(json::json!(persistence.get_config()))
 }
 
 #[get("/")]
@@ -56,5 +48,7 @@ fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
 }
 
 pub fn serve_dashboard() -> rocket::Rocket<rocket::Build> {
-    rocket::build().mount("/", routes![index, dist, save_config, get_config])
+    rocket::build()
+        .mount("/", routes![index, dist, save_config, get_config])
+        .manage(Persistence::new())
 }
