@@ -21,7 +21,7 @@ jobs:
     - name: Install cargo dependencies
       run: cargo install --locked trunk
     - name: Install tailwindcss
-      run: cd src/configuration_frontend && npm install
+      run: cd frontend && npm install
     - name: Build native
       run: make
     - name: Run tests
