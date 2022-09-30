@@ -27,3 +27,6 @@ run_on_raspberry.sh
 
 # Tailwind
 output.css
+
+# DB
+wg_display.db

@@ -1,11 +1,19 @@
+use gloo_net::http::Request;
+use wasm_bindgen::JsCast;
+use web_sys::{EventTarget, HtmlInputElement};
 use yew::prelude::*;
+use serde::{Deserialize, Serialize};
+
+mod configuration;
+use configuration::Configuration;
 
 enum Msg {
-    AddOne,
+    InitConfig(Configuration),
+    SaveConfig(Configuration),
 }
 
 struct Model {
-    value: i64,
+    config: Configuration,
 }
 
 impl Component for Model {
@@ -13,23 +21,65 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self { value: 0 }
+        Self {
+            config: Configuration { example_value: String::from("") },
+        }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::AddOne => {
-                self.value += 1;
-                // the value has changed so we need to
-                // re-render for it to appear on the page
+            Msg::SaveConfig(config) => {
+                self.config = config;
+                let config_copy = self.config.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    Request::post("/config")
+                        .json(&config_copy)
+                        .expect("Could not serialize config")
+                        .send()
+                        .await
+                        .unwrap();
+                });
                 true
-            }
+            },
+            Msg::InitConfig(config) => {
+                self.config = config;
+                true
+            },
+        }
+    }
+
+    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+        if first_render {
+            let link = ctx.link().clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let response = Request::get("/config")
+                    .send()
+                    .await
+                    .unwrap();
+
+                let config = response
+                    .json::<Configuration>()
+                    .await
+                    .unwrap();
+                link.send_message(Msg::InitConfig(config));
+            });
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        // This gives us a component's "`Scope`" which allows us to send messages, etc to the component.
         let link = ctx.link();
+
+        let on_config_change = link.batch_callback(|e: Event| {
+            // When events are created the target is undefined, it's only
+            // when dispatched does the target get added.
+            let target: Option<EventTarget> = e.target();
+            // Events can bubble so this listener might catch events from child
+            // elements which are not of type HtmlInputElement
+            let input = target.and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
+
+            input.map(|input| Msg::SaveConfig(Configuration{example_value: input.value()}))
+        });
+
         html! {
             <div class="flex items-center justify-center h-screen bg-zinc-700">
                 // Card
@@ -51,7 +101,7 @@ impl Component for Model {
                                 class="text-white leading-5 my-4 text-xs tracking-wide text-center md:text-left"
                             >
                                 {"Soon you'll be able to configure parameters here"}<br/>
-                                {"Sign up for the newsletter."}
+                                {"Enter an example configuration value"}
                             </p>
 
                             <div
@@ -59,18 +109,17 @@ impl Component for Model {
                             >
                                 <input
                                     class="outline-2 border-zinc-600 border focus:border-none placeholder:text-xs content placeholder:text-center text-center text-zinc-500 bg-zinc-800"
-                                    placeholder="Enter your email address"
-                                    type="email"
+                                    placeholder="Enter the example value"
+                                    onchange={on_config_change}
                                 />
 
                                 <button
-                                    onclick={link.callback(|_| Msg::AddOne)}
                                     class="text-xs bg-lime-500 rounded-md p-2 text-zinc-800 hover:bg-lime-700 hover:text-white duration-500"
                                 >
-                                    {"Subscribe"}
+                                    {"Save"}
                                 </button>
 
-                                <p class="text-white mt-3 text-center">{ self.value }</p>
+                                <p class="text-white mt-3 text-center">{"Current example config value: "}{ &self.config.example_value }</p>
                                 </div>
                         </div>
                     </div>
