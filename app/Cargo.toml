@@ -10,11 +10,11 @@ license-file = "LICENSE"
 common = { path = "../common" }
 
 # Rendering
-tui = "0.19.0"
-crossterm = "0.25.0"
+cursive = { version = "0.20", features = ["termion-backend"] }
 # Dashboard
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 rust-embed = "6.4.1"
 # Persistence
 sled = "0.34.7"
+lazy_static = "1.4.0"

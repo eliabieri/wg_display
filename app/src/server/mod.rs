@@ -1,7 +1,6 @@
 use rocket::http::ContentType;
 use rocket::response::content::RawHtml;
 use rocket::serde::json;
-use rocket::State;
 use rust_embed::RustEmbed;
 
 use std::borrow::Cow;
@@ -10,21 +9,20 @@ use std::path::PathBuf;
 
 use common::models::Configuration;
 
-mod persistence;
-use persistence::Persistence;
+use crate::shared::persistence::Persistence;
 
 #[derive(RustEmbed)]
 #[folder = "../frontend/dist"]
 struct Asset;
 
 #[post("/config", format = "json", data = "<config>")]
-async fn save_config(persistence: &State<Persistence>, config: json::Json<Configuration>) {
-    persistence.save_config(config.into_inner());
+async fn save_config(config: json::Json<Configuration>) {
+    Persistence::save_config(config.into_inner());
 }
 
 #[get("/config")]
-fn get_config(persistence: &State<Persistence>) -> Option<json::Value> {
-    Some(json::json!(persistence.get_config()))
+fn get_config() -> Option<json::Value> {
+    Some(json::json!(Persistence::get_config()))
 }
 
 #[get("/")]
@@ -48,7 +46,5 @@ fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
 }
 
 pub fn serve_dashboard() -> rocket::Rocket<rocket::Build> {
-    rocket::build()
-        .mount("/", routes![index, dist, save_config, get_config])
-        .manage(Persistence::new())
+    rocket::build().mount("/", routes![index, dist, save_config, get_config])
 }

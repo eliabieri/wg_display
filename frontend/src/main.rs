@@ -37,7 +37,7 @@ impl Component for Model {
                         .expect("Could not serialize config")
                         .send()
                         .await
-                        .unwrap();
+                        .expect("Could not transmit config");
                 });
                 true
             }
@@ -52,9 +52,15 @@ impl Component for Model {
         if first_render {
             let link = ctx.link().clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let response = Request::get("/config").send().await.unwrap();
+                let response = Request::get("/config")
+                    .send()
+                    .await
+                    .expect("Config request failed");
 
-                let config = response.json::<Configuration>().await.unwrap();
+                let config = response
+                    .json::<Configuration>()
+                    .await
+                    .expect("Recevied config could not be deserialized");
                 link.send_message(Msg::InitConfig(config));
             });
         }
@@ -116,9 +122,9 @@ impl Component for Model {
                                 >
                                     {"Save"}
                                 </button>
+                                </div>
 
                                 <p class="text-white mt-3 text-center">{"Current example config value: "}{ &self.config.example_value }</p>
-                                </div>
                         </div>
                     </div>
                 </div>

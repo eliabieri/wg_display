@@ -1,0 +1,3 @@
+[build]
+# Needed to build cursive
+pre-build = ["apt-get install libncursesw5-dev -y"]

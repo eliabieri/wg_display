@@ -24,5 +24,7 @@ jobs:
       run: cd frontend && npm install
     - name: Build native
       run: make
-    - name: Run tests
-      run: cargo test
+    - name: Run app tests
+      run: cd app && cargo test
+    - name: Run frontend tests
+      run: cd frontend && cargo test

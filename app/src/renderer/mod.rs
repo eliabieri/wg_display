@@ -1,48 +1,36 @@
-use crossterm::terminal::enable_raw_mode;
-use std::io;
-use tui::{
-    backend::Backend,
-    backend::CrosstermBackend,
-    layout::{Constraint, Direction, Layout},
-    widgets::{Block, Borders, Clear},
-    Frame, Terminal,
+use std::{thread, time::Duration};
+
+use cursive::{
+    view::Nameable,
+    views::{Dialog, LinearLayout, TextView},
 };
 
-pub struct Renderer {
-    terminal: Terminal<CrosstermBackend<io::Stdout>>,
-}
+use crate::shared::persistence::Persistence;
+
+pub struct Renderer {}
 
 impl Renderer {
-    pub fn new() -> Result<Self, io::Error> {
-        enable_raw_mode()?;
-        let stdout = io::stdout();
-        let backend = CrosstermBackend::new(stdout);
-        let terminal = Terminal::new(backend)?;
+    pub fn render() {
+        let mut siv = cursive::default().into_runner();
+        siv.add_layer(
+            Dialog::around(
+                LinearLayout::horizontal()
+                    .child(TextView::new("Example value: ").with_name("title"))
+                    .child(
+                        TextView::new(Persistence::get_config().unwrap().example_value)
+                            .with_name("text"),
+                    ),
+            )
+            .title("WG Display"),
+        );
 
-        Ok(Self { terminal })
-    }
-
-    pub fn render(&mut self, text: &str) -> Result<(), io::Error> {
-        self.terminal.draw(|f| {
-            let chunks = Layout::default()
-                .direction(Direction::Vertical)
-                .margin(1)
-                .constraints(
-                    [
-                        Constraint::Percentage(20),
-                        Constraint::Percentage(40),
-                        Constraint::Percentage(40),
-                    ]
-                    .as_ref(),
-                )
-                .split(f.size());
-            let block = Block::default().title("Block").borders(Borders::ALL);
-            f.render_widget(block, chunks[0]);
-            let block = Block::default().title("Block 2").borders(Borders::ALL);
-            f.render_widget(block, chunks[1]);
-            let block = Block::default().title("Block 3").borders(Borders::ALL);
-            f.render_widget(block, chunks[2])
-        })?;
-        Ok(())
+        loop {
+            siv.call_on_name("text", |view: &mut TextView| {
+                view.set_content(Persistence::get_config().unwrap().example_value);
+            });
+            siv.step();
+            siv.refresh();
+            thread::sleep(Duration::from_millis(100));
+        }
     }
 }
