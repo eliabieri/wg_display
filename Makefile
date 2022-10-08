@@ -1,16 +1,16 @@
 frontend_dist = frontend/dist
-tailwind_output_css = $(frontend_dist)/output.css
+tailwind_output_css = $(frontend_dist)/$(wildcard output-*.css)
 yew_index_html = $(frontend_dist)/index.html
 frontend_build = $(yew_index_html)
 
-build_native_release = target/release/wg_display
-build_native_release_debug = target/debug/wg_display
+build_native_release = app/target/release/wg_display
+build_native_release_debug = app/target/debug/wg_display
 
-$(build_native_release_debug):
+app:
 
 .PHONY: clean
 clean:
-	rm -rf target
+	rm -rf app/target
 	rm -rf src/frontend/dist*
 
 ## Build the application
@@ -48,5 +48,5 @@ $(tailwind_output_css): $(dependencies)
 	rm -rf $(tailwind_output_css)
 	cd frontend && npm run tailwind-build
 
-$(yew_build): $(tailwind_output_css) $(dependencies)
+$(frontend_build): $(tailwind_output_css) $(dependencies)
 	cd frontend && trunk build --release
