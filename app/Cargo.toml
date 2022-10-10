@@ -10,7 +10,9 @@ license-file = "LICENSE"
 common = { path = "../common" }
 
 # Rendering
-cursive = { version = "0.20", features = ["termion-backend"] }
+cursive = { version = "0.20", features = [
+    "termion-backend",
+], default-features = false }
 # Dashboard
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }

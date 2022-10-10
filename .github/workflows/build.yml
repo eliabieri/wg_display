@@ -26,3 +26,5 @@ jobs:
       run: cd frontend && npm install
     - name: Build for Raspberry Pi 2/3/4)
       run: make app_armv7
+    - name: Build for Raspberry Pi 0/1
+      run: make app_arm
