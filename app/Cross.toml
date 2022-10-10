@@ -8,18 +8,5 @@ pre-build = [
     "apt-get install libncurses5-dev:armhf -y",
 ]
 
-[target.arm-unknown-linux-gnueabihf]
-# Needed to build cursive
-pre-build = [
-    'apt-get update',
-    'apt-get install -y --no-install-recommends apt-utils gnupg',
-    'echo "deb http://ftp.de.debian.org/debian bullseye main" > /etc/apt/sources.list',
-    'apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 648ACFD622F3D138',
-    'dpkg --add-architecture armel',
-    'apt-get update',
-    'apt-get install libncurses5-dev:armel -y',
-    'apt-get install -f',
-]
-
 [build.env]
 volumes = ["DIST=../frontend/dist"]

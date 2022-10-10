@@ -33,11 +33,6 @@ target/armv7-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_buil
 	cd app && cross build --release --target armv7-unknown-linux-gnueabihf
 app_armv7: target/armv7-unknown-linux-gnueabihf/wg_display
 
-# Build complete app for arm (Raspberry Pi 0/1)
-target/arm-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
-	cd app && cross build --release --target arm-unknown-linux-gnueabihf
-app_arm: target/arm-unknown-linux-gnueabihf/wg_display
-
 ## Build frontend using trunk
 dependencies = \
 	frontend/src/main.rs \
