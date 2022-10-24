@@ -15,6 +15,7 @@ impl Persistence {
             .expect("Could not save configuration");
     }
 
+    // TODO: change to result
     pub fn get_config() -> Option<Configuration> {
         let configuration_text = DB
             .get("configuration")

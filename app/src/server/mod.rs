@@ -45,6 +45,10 @@ fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
     Some((content_type, asset.data))
 }
 
-pub fn serve_dashboard() -> rocket::Rocket<rocket::Build> {
-    rocket::build().mount("/", routes![index, dist, save_config, get_config])
+pub async fn serve_dashboard() -> Result<(), rocket::Error> {
+    let _rocket = rocket::build()
+        .mount("/", routes![index, dist, save_config, get_config])
+        .launch()
+        .await?;
+    Ok(())
 }

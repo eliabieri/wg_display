@@ -8,7 +8,7 @@ use common::models::Configuration;
 #[function_component(MainComponent)]
 fn main_component() -> Html {
     let state = use_state(|| Configuration {
-        example_value: String::from(""),
+        example_value: "".to_owned(),
     });
 
     let state_copy = state.clone();
