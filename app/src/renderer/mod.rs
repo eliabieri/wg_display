@@ -13,6 +13,8 @@ use crate::renderer::widgets::base::Widget;
 use crate::renderer::widgets::cafete::Cafete;
 use crate::renderer::widgets::time::Time;
 
+use self::widgets::aare::Aare;
+
 pub struct Renderer {
     widgets: Vec<Box<dyn Widget>>,
 }
@@ -22,25 +24,29 @@ impl Renderer {
         let _config = Persistence::get_config().expect("Could not load config");
         // TODO: use config to determine which widgets shall be instantiated
         Self {
-            widgets: vec![Box::new(Time::new()), Box::new(Cafete::new())],
+            widgets: vec![
+                Box::new(Time::new()),
+                Box::new(Cafete::new()),
+                Box::new(Aare::new()),
+            ],
         }
     }
 
     pub async fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
-        let mut names = LinearLayout::vertical();
-        let mut content = LinearLayout::vertical();
+        let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
-            names.add_child(TextView::new(format!("{}  ", widget.get_name())));
-            content.add_child(TextView::new(widget.get_content()).with_name(widget.get_name()));
+            linear_layout.add_child(
+                LinearLayout::horizontal()
+                    .child(TextView::new(format!(
+                        "{:width$}",
+                        widget.get_name(),
+                        width = self.name_column_length()
+                    )))
+                    .child(TextView::new(widget.get_content()).with_name(widget.get_name())),
+            );
         });
-        siv.add_layer(PaddedView::lrtb(
-            2,
-            2,
-            0,
-            0,
-            LinearLayout::horizontal().child(names).child(content),
-        ));
+        siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, linear_layout));
 
         loop {
             let config = Persistence::get_config().expect("Could not load config");
@@ -57,5 +63,14 @@ impl Renderer {
             siv.refresh();
             thread::sleep(Duration::from_millis(1000));
         }
+    }
+
+    fn name_column_length(&self) -> usize {
+        self.widgets
+            .iter()
+            .map(|widget| widget.get_name().len())
+            .max()
+            .unwrap()
+            + 2
     }
 }

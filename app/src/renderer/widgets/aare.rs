@@ -5,28 +5,23 @@ use common::models::Configuration;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-struct CafeteData {
-    values: Vec<Vec<String>>,
+struct AareData {
+    aare: AareCityData,
 }
 
-impl CafeteData {
-    fn get_lineup(&self) -> String {
-        let lines = self
-            .values
-            .iter()
-            .map(|line| line.join(" "))
-            .collect::<Vec<String>>();
-        lines[1..4].join("\n")
-    }
+#[derive(Deserialize)]
+struct AareCityData {
+    temperature: i32,
+    temperature_text: String,
 }
 
-pub struct Cafete {
+pub struct Aare {
     content: String,
     last_updated: Instant,
 }
 
 #[async_trait]
-impl Widget for Cafete {
+impl Widget for Aare {
     fn new() -> Self {
         Self {
             content: "Loading...".to_string(),
@@ -37,7 +32,7 @@ impl Widget for Cafete {
     }
 
     fn get_name(&self) -> &str {
-        "Cafete"
+        "Aare"
     }
 
     fn get_content(&self) -> &str {
@@ -49,12 +44,12 @@ impl Widget for Cafete {
             return;
         }
 
-        const URL: &str = "https://sheets.googleapis.com/v4/spreadsheets/1RHBW-MrQHf79m__ULvr2NB7rGHKEhHR0M8hD620aU0o/values/Data?key=AIzaSyCcXzibzeMK37jNVDAWooNDiSs2H4IJs_c";
+        const URL: &str = "http://aareguru.existenz.ch/currentV2.php?app=homeAnwendung?city=Bern";
         let response = reqwest::get(URL).await;
         match response {
-            Ok(response) => match response.json::<CafeteData>().await {
+            Ok(response) => match response.json::<AareData>().await {
                 Ok(data) => {
-                    self.content = data.get_lineup();
+                    self.content = data.aare.temperature_text;
                     self.last_updated = Instant::now();
                 }
                 Err(e) => {
