@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 
 use super::base::Widget;
 use common::models::Configuration;
+use common::widgets::WidgetName;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -11,7 +12,7 @@ struct AareData {
 
 #[derive(Deserialize)]
 struct AareCityData {
-    temperature: i32,
+    temperature: f32,
     temperature_text: String,
 }
 
@@ -31,8 +32,8 @@ impl Widget for Aare {
         }
     }
 
-    fn get_name(&self) -> &str {
-        "Aare"
+    fn get_name(&self) -> WidgetName {
+        WidgetName::Aare
     }
 
     fn get_content(&self) -> &str {
@@ -49,7 +50,10 @@ impl Widget for Aare {
         match response {
             Ok(response) => match response.json::<AareData>().await {
                 Ok(data) => {
-                    self.content = data.aare.temperature_text;
+                    self.content = format!(
+                        "{} ({}°C)",
+                        data.aare.temperature_text, data.aare.temperature
+                    );
                     self.last_updated = Instant::now();
                 }
                 Err(e) => {

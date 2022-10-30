@@ -18,7 +18,14 @@ clean:
 
 ## Build the application
 dependencies = \
-	$(call rwildcard,app/src/,*.rs)
+	$(call rwildcard,app/src/,*.rs) \
+	$(call rwildcard,common/src/,*.rs) \
+	$(call rwildcard,frontend/src,*.rs) \
+	$(call rwildcard,app/src/,*.rs) \
+	$(call rwildcard,common/src/,*.rs) \
+	app/Cargo.toml \
+	common/Cargo.toml \
+	frontend/Cargo.toml
 
 # Build complete app for the native platform
 $(build_native_release): $(dependencies) $(frontend_build)
@@ -42,7 +49,7 @@ app_arm: target/arm-unknown-linux-gnueabihf/wg_display
 
 ## Build frontend using trunk
 dependencies = \
-	frontend/src/main.rs \
+	$(call rwildcard,frontend/src/,*.rs) \
 	frontend/index.html \
 	frontend/package.json
 $(tailwind_output_css): $(dependencies)

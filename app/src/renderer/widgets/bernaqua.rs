@@ -6,28 +6,26 @@ use common::widgets::WidgetName;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-struct CafeteData {
-    values: Vec<Vec<String>>,
+struct BernaquaData {
+    #[serde(rename = "currentVisitors")]
+    current_visitors: u32,
+    #[serde(rename = "maxVisitors")]
+    max_visitors: u32,
 }
 
-impl CafeteData {
-    fn get_lineup(&self) -> String {
-        let lines = self
-            .values
-            .iter()
-            .map(|line| line.join(" "))
-            .collect::<Vec<String>>();
-        lines[1..3].join("\n")
+impl BernaquaData {
+    fn get_capacity(&self) -> f32 {
+        self.current_visitors as f32 / self.max_visitors as f32 * 100.0
     }
 }
 
-pub struct Cafete {
+pub struct Bernaqua {
     content: String,
     last_updated: Instant,
 }
 
 #[async_trait]
-impl Widget for Cafete {
+impl Widget for Bernaqua {
     fn new() -> Self {
         Self {
             content: "Loading...".to_string(),
@@ -38,7 +36,7 @@ impl Widget for Cafete {
     }
 
     fn get_name(&self) -> WidgetName {
-        WidgetName::Cafete
+        WidgetName::Bernaqua
     }
 
     fn get_content(&self) -> &str {
@@ -46,16 +44,16 @@ impl Widget for Cafete {
     }
 
     async fn update(&mut self, _config: &Configuration) {
-        if (self.last_updated.elapsed().as_secs()) < 300 {
+        if (self.last_updated.elapsed().as_secs()) < 60 {
             return;
         }
 
-        const URL: &str = "https://sheets.googleapis.com/v4/spreadsheets/1RHBW-MrQHf79m__ULvr2NB7rGHKEhHR0M8hD620aU0o/values/Data?key=AIzaSyCcXzibzeMK37jNVDAWooNDiSs2H4IJs_c";
+        const URL: &str = "https://blfa-api.migros.ch/fp/api/center/63/currentuser";
         let response = reqwest::get(URL).await;
         match response {
-            Ok(response) => match response.json::<CafeteData>().await {
+            Ok(response) => match response.json::<BernaquaData>().await {
                 Ok(data) => {
-                    self.content = data.get_lineup();
+                    self.content = format!("{:.1}%", data.get_capacity());
                     self.last_updated = Instant::now();
                 }
                 Err(e) => {

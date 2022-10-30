@@ -9,11 +9,11 @@ use rocket::tokio::join;
 use crate::shared::persistence::Persistence;
 
 mod widgets;
+use crate::renderer::widgets::aare::Aare;
 use crate::renderer::widgets::base::Widget;
+use crate::renderer::widgets::bernaqua::Bernaqua;
 use crate::renderer::widgets::cafete::Cafete;
 use crate::renderer::widgets::time::Time;
-
-use self::widgets::aare::Aare;
 
 pub struct Renderer {
     widgets: Vec<Box<dyn Widget>>,
@@ -28,6 +28,7 @@ impl Renderer {
                 Box::new(Time::new()),
                 Box::new(Cafete::new()),
                 Box::new(Aare::new()),
+                Box::new(Bernaqua::new()),
             ],
         }
     }
@@ -40,10 +41,12 @@ impl Renderer {
                 LinearLayout::horizontal()
                     .child(TextView::new(format!(
                         "{:width$}",
-                        widget.get_name(),
-                        width = self.name_column_length()
+                        widget.get_name().as_str(),
+                        width = self.name_column_width()
                     )))
-                    .child(TextView::new(widget.get_content()).with_name(widget.get_name())),
+                    .child(
+                        TextView::new(widget.get_content()).with_name(widget.get_name().as_str()),
+                    ),
             );
         });
         siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, linear_layout));
@@ -55,7 +58,7 @@ impl Renderer {
             ));
 
             self.widgets.iter_mut().for_each(|widget| {
-                siv.call_on_name(widget.get_name(), |view: &mut TextView| {
+                siv.call_on_name(widget.get_name().as_str(), |view: &mut TextView| {
                     view.set_content(widget.get_content());
                 });
             });
@@ -65,10 +68,10 @@ impl Renderer {
         }
     }
 
-    fn name_column_length(&self) -> usize {
+    fn name_column_width(&self) -> usize {
         self.widgets
             .iter()
-            .map(|widget| widget.get_name().len())
+            .map(|widget| widget.get_name().as_str().len())
             .max()
             .unwrap()
             + 2
