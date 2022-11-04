@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.html",
   "scripts": {
+    "serve": "concurrently 'npm run tailwind' 'npm run trunk'",
+    "trunk": "trunk serve",
     "tailwind": "tailwindcss -i ./input.css -o ./output.css --watch",
     "tailwind-build": "tailwindcss -i ./input.css -o ./output.css --minify"
   },
