@@ -23,9 +23,9 @@ dependencies = \
 	$(call rwildcard,frontend/src,*.rs) \
 	$(call rwildcard,app/src/,*.rs) \
 	$(call rwildcard,common/src/,*.rs) \
-	app/Cargo.toml \
-	common/Cargo.toml \
-	frontend/Cargo.toml
+	$(call rwildcard,app/,Cargo.*) \
+	$(call rwildcard,common/,Cargo.*) \
+	$(call rwildcard,frontend/,Cargo.*)
 
 # Build complete app for the native platform
 $(build_native_release): $(dependencies) $(frontend_build)
