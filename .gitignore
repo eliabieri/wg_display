@@ -12,8 +12,9 @@
 # NPM
 node_modules
 
-# VSCode
+# IDEs
 .vscode/
+.idea/
 
 # Various
 .DS_Store
