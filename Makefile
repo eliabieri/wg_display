@@ -14,7 +14,8 @@ app:
 .PHONY: clean
 clean:
 	rm -rf app/target
-	rm -rf src/frontend/dist*
+	rm -rf common/target
+	rm -rf frontend/dist
 
 ## Build the application
 dependencies = \
