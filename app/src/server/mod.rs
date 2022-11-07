@@ -7,7 +7,7 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-use common::models::Configuration;
+use common::models::SystemConfiguration;
 
 use crate::shared::persistence::Persistence;
 
@@ -16,7 +16,7 @@ use crate::shared::persistence::Persistence;
 struct Asset;
 
 #[post("/config", format = "json", data = "<config>")]
-async fn save_config(config: json::Json<Configuration>) {
+async fn save_config(config: json::Json<SystemConfiguration>) {
     Persistence::save_config(config.into_inner());
 }
 

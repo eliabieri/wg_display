@@ -3,17 +3,19 @@ use std::time::Duration;
 
 use cursive::view::Nameable;
 use cursive::views::{LinearLayout, PaddedView, TextView};
+use cursive::{CursiveRunnable, CursiveRunner};
 use futures::future::join_all;
 use rocket::tokio::join;
+
+use common::models::WidgetConfiguration;
 
 use crate::shared::persistence::Persistence;
 
 mod widgets;
-use crate::renderer::widgets::aare::Aare;
 use crate::renderer::widgets::base::Widget;
-use crate::renderer::widgets::bernaqua::Bernaqua;
-use crate::renderer::widgets::cafete::Cafete;
-use crate::renderer::widgets::time::Time;
+
+mod config_to_widgets;
+use config_to_widgets::config_to_widgets;
 
 pub struct Renderer {
     widgets: Vec<Box<dyn Widget>>,
@@ -21,20 +23,42 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new() -> Self {
-        let _config = Persistence::get_config().expect("Could not load config");
-        // TODO: use config to determine which widgets shall be instantiated
+        let config = Persistence::get_config().expect("Could not load config");
         Self {
-            widgets: vec![
-                Box::new(Time::new()),
-                Box::new(Cafete::new()),
-                Box::new(Aare::new()),
-                Box::new(Bernaqua::new()),
-            ],
+            widgets: config_to_widgets(&config.widget_config),
         }
     }
 
+    /// Runs the renderer (blocking)
     pub async fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
+        let config = Persistence::get_config().expect("Could not load config");
+        self.initialize_layout(&config.widget_config, &mut siv);
+
+        loop {
+            if let Some(new_config) = Persistence::get_config_change() {
+                self.initialize_layout(&new_config.widget_config, &mut siv)
+            }
+
+            self.update_widgets(&mut siv, &config.widget_config).await;
+            siv.step();
+            siv.refresh();
+            thread::sleep(Duration::from_millis(1000));
+        }
+    }
+
+    fn initialize_layout(
+        &mut self,
+        config: &WidgetConfiguration,
+        siv: &mut CursiveRunner<CursiveRunnable>,
+    ) {
+        let widgets = config_to_widgets(config);
+        self.widgets = widgets;
+        *siv = cursive::default().into_runner();
+        siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, self.build_layout()));
+    }
+
+    fn build_layout(&self) -> LinearLayout {
         let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
             linear_layout.add_child(
@@ -49,23 +73,23 @@ impl Renderer {
                     ),
             );
         });
-        siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, linear_layout));
+        linear_layout
+    }
 
-        loop {
-            let config = Persistence::get_config().expect("Could not load config");
-            join!(join_all(
-                self.widgets.iter_mut().map(|widget| widget.update(&config))
-            ));
+    async fn update_widgets(
+        &mut self,
+        siv: &mut CursiveRunner<CursiveRunnable>,
+        config: &WidgetConfiguration,
+    ) {
+        join!(join_all(
+            self.widgets.iter_mut().map(|widget| widget.update(config))
+        ));
 
-            self.widgets.iter_mut().for_each(|widget| {
-                siv.call_on_name(widget.get_name().as_str(), |view: &mut TextView| {
-                    view.set_content(widget.get_content());
-                });
+        self.widgets.iter_mut().for_each(|widget| {
+            siv.call_on_name(widget.get_name().as_str(), |view: &mut TextView| {
+                view.set_content(widget.get_content());
             });
-            siv.step();
-            siv.refresh();
-            thread::sleep(Duration::from_millis(1000));
-        }
+        });
     }
 
     fn name_column_width(&self) -> usize {

@@ -1,7 +1,7 @@
 use std::time::{Duration, Instant};
 
 use super::base::Widget;
-use common::models::Configuration;
+use common::models::WidgetConfiguration;
 use common::widgets::WidgetName;
 use serde::Deserialize;
 
@@ -40,7 +40,7 @@ impl Widget for Aare {
         self.content.as_str()
     }
 
-    async fn update(&mut self, _config: &Configuration) {
+    async fn update(&mut self, _config: &WidgetConfiguration) {
         if (self.last_updated.elapsed().as_secs()) < 300 {
             return;
         }

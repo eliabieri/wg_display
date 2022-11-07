@@ -1,6 +1,6 @@
 use super::base::Widget;
 use async_trait::async_trait;
-use common::{models::Configuration, widgets::WidgetName};
+use common::{models::WidgetConfiguration, widgets::WidgetName};
 
 extern crate chrono;
 use chrono::Local;
@@ -25,7 +25,7 @@ impl Widget for Time {
         self.content.as_str()
     }
 
-    async fn update(&mut self, _config: &Configuration) {
+    async fn update(&mut self, _config: &WidgetConfiguration) {
         let date = Local::now();
         self.content = date.format("%H:%M:%S").to_string();
     }
