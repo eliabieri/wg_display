@@ -32,9 +32,9 @@ jobs:
       run: make app_arm
     - name: Rename artifacts
       run: |
-        mv target/armv7-unknown-linux-gnueabihf/release/wg_display target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
-        mv target/arm-unknown-linux-gnueabihf/release/wg_display target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
+        mv app/target/armv7-unknown-linux-gnueabihf/release/wg_display app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
+        mv app/target/arm-unknown-linux-gnueabihf/release/wg_display app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
     - uses: ncipollo/release-action@v1
       with:
-          artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
+          artifacts: "app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
           artifactErrorsFailBuild: true
