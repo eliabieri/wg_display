@@ -38,5 +38,3 @@ jobs:
       with:
           artifacts: "target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
           artifactErrorsFailBuild: true
-          # TODO: remove me once first stable version is reached
-          prerelease: true
