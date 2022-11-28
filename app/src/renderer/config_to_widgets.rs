@@ -1,5 +1,6 @@
 use crate::renderer::widgets::aare::Aare;
 use crate::renderer::widgets::base::Widget;
+use crate::renderer::widgets::bernaqua::Bernaqua;
 use crate::renderer::widgets::cafete::Cafete;
 use crate::renderer::widgets::time::Time;
 
@@ -15,6 +16,9 @@ pub fn config_to_widgets(config: &WidgetConfiguration) -> Vec<Box<dyn Widget>> {
     }
     if config.aare_config.enabled {
         widgets.push(Box::new(Aare::new()));
+    }
+    if config.bernaqua_config.enabled {
+        widgets.push(Box::new(Bernaqua::new()));
     }
     widgets
 }
