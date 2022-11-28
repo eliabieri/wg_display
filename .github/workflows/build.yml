@@ -1,4 +1,4 @@
-name: Test
+name: Build
 
 on:
   pull_request:
@@ -11,7 +11,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v3
     - name: Use Rust nightly
@@ -19,12 +20,11 @@ jobs:
     - name: Add WASM target
       run: rustup target add wasm32-unknown-unknown
     - name: Install cargo dependencies
-      run: cargo install --locked trunk
+      run: cargo install cross --git https://github.com/cross-rs/cross &&
+        cargo install --locked trunk
     - name: Install tailwindcss
       run: cd frontend && npm install
-    - name: Build native
-      run: make
-    - name: Run app tests
-      run: cd app && cargo test
-    - name: Run frontend tests
-      run: cd frontend && cargo test
+    - name: Build for Raspberry Pi 2/3/4)
+      run: make app_armv7
+    - name: Build for Raspberry Pi 0/1
+      run: make app_arm

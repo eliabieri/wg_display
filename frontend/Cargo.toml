@@ -1,0 +1,14 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common = { path = "../common" }
+
+yew = { version = "0.20.0", features = ["csr"] }
+web-sys = "0.3.60"
+wasm-bindgen = "0.2.83"
+gloo-net = "0.2.4"
+gloo-console = "0.2.3"
+wasm-bindgen-futures = "0.4.33"
