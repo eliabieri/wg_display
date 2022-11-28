@@ -56,3 +56,26 @@ impl Persistence {
         Persistence::save_config(SystemConfiguration::default());
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use common::models::{DefaultWidgetConfig, WidgetConfiguration};
+
+    use super::*;
+
+    #[test]
+    fn test_persistence() {
+        let config = SystemConfiguration {
+            ssid: "SSID".to_string(),
+            password: "PASSWORD".to_string(),
+            widget_config: WidgetConfiguration {
+                bernaqua_config: DefaultWidgetConfig { enabled: true },
+                ..Default::default()
+            },
+        };
+        Persistence::save_config(config.clone());
+        let read_config = Persistence::get_config();
+        assert!(read_config.is_some());
+        assert_eq!(config, read_config.unwrap());
+    }
+}
