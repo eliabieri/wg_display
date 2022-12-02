@@ -3,6 +3,7 @@ pub enum WidgetName {
     Aare,
     Time,
     Bernaqua,
+    PublicTransport,
 }
 
 impl WidgetName {
@@ -12,6 +13,7 @@ impl WidgetName {
             WidgetName::Aare => "Aare",
             WidgetName::Time => "Time",
             WidgetName::Bernaqua => "Bernaqua occupancy",
+            WidgetName::PublicTransport => "Next departure",
         }
     }
 }

@@ -2,7 +2,7 @@ use std::thread;
 use std::time::Duration;
 
 use cursive::view::Nameable;
-use cursive::views::{LinearLayout, PaddedView, TextView};
+use cursive::views::{DummyView, LinearLayout, PaddedView, Panel, TextView};
 use cursive::{CursiveRunnable, CursiveRunner};
 use futures::future::join_all;
 use rocket::tokio::join;
@@ -58,22 +58,23 @@ impl Renderer {
         siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, self.build_layout()));
     }
 
-    fn build_layout(&self) -> LinearLayout {
+    fn build_layout(&self) -> Panel<LinearLayout> {
         let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
-            linear_layout.add_child(
-                LinearLayout::horizontal()
-                    .child(TextView::new(format!(
-                        "{:width$}",
-                        widget.get_name().as_str(),
-                        width = self.name_column_width()
-                    )))
-                    .child(
-                        TextView::new(widget.get_content()).with_name(widget.get_name().as_str()),
-                    ),
-            );
+            let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
+                "{:width$}",
+                widget.get_name().as_str(),
+                width = self.name_column_width()
+            )));
+
+            let content_widget =
+                TextView::new(widget.get_content()).with_name(widget.get_name().as_str());
+
+            let padded_view = PaddedView::lrtb(0, 0, 0, 1, name_widget.child(content_widget));
+            linear_layout.add_child(padded_view);
         });
-        linear_layout
+
+        Panel::new(linear_layout).title("WG Display")
     }
 
     async fn update_widgets(

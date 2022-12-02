@@ -6,6 +6,13 @@ use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
+pub struct PublicTransportConfig {
+    pub enabled: bool,
+    pub from: String,
+    pub to: String,
+}
+
+#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct DefaultWidgetConfig {
     pub enabled: bool,
 }
@@ -16,6 +23,7 @@ pub struct WidgetConfiguration {
     pub aare_config: DefaultWidgetConfig,
     pub cafete_config: DefaultWidgetConfig,
     pub bernaqua_config: DefaultWidgetConfig,
+    pub public_transport_config: PublicTransportConfig,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]

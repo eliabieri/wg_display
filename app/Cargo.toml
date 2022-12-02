@@ -23,6 +23,8 @@ cursive = { version = "0.20.0", features = [
     "termion-backend",
 ], default-features = false }
 # Dashboard
+time = { version = "0.3.17", features = ["serde-well-known"] }
+urlencoding = "2.1.2"
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 rust-embed = "6.4.2"
