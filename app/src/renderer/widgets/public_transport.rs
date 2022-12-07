@@ -57,6 +57,10 @@ impl Widget for PublicTransport {
 
     async fn update(&mut self, config: &WidgetConfiguration) {
         let config = &config.public_transport_config;
+        if config.from.is_empty() || config.to.is_empty() {
+            self.content = "From and to need to be specified!".to_string();
+            return;
+        }
 
         if !self.data.connections.is_empty() {
             let departure = self.data.connections[0].from.departure;
@@ -67,7 +71,7 @@ impl Widget for PublicTransport {
             self.content = format!("{} -> {}: {}", config.from, config.to, departure_offset);
         } else {
             self.content = format!(
-                "None upcoming. Next update in {} secs",
+                "None upcoming.\nNext update in {} secs",
                 300 - self.last_updated.elapsed().as_secs()
             );
         }
@@ -76,10 +80,6 @@ impl Widget for PublicTransport {
             return;
         }
 
-        if config.from.is_empty() || config.to.is_empty() {
-            self.content = "From and to need to be specified!".to_string();
-            return;
-        }
         let url = format!(
             "http://transport.opendata.ch/v1/connections?from={}&to={}&limit={}",
             urlencoding::encode(config.from.as_str()),

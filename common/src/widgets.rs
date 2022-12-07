@@ -12,7 +12,7 @@ impl WidgetName {
             WidgetName::Cafete => "Cafete",
             WidgetName::Aare => "Aare",
             WidgetName::Time => "Time",
-            WidgetName::Bernaqua => "Bernaqua occupancy",
+            WidgetName::Bernaqua => "Bernaqua",
             WidgetName::PublicTransport => "Next departure",
         }
     }

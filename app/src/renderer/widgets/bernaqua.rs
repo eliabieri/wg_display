@@ -53,7 +53,7 @@ impl Widget for Bernaqua {
         match response {
             Ok(response) => match response.json::<BernaquaData>().await {
                 Ok(data) => {
-                    self.content = format!("{:.1}%", data.get_capacity());
+                    self.content = format!("{:.1}% occupied", data.get_capacity());
                     self.last_updated = Instant::now();
                 }
                 Err(e) => {
