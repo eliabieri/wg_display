@@ -3,6 +3,7 @@ use std::time::{Duration, Instant};
 use common::{models::WidgetConfiguration, widgets::WidgetName};
 use serde::Deserialize;
 use time::OffsetDateTime;
+use time_humanize::{Accuracy, HumanTime, Tense};
 
 use super::base::Widget;
 
@@ -65,10 +66,12 @@ impl Widget for PublicTransport {
         if !self.data.connections.is_empty() {
             let departure = self.data.connections[0].from.departure;
             let departure_offset = departure - OffsetDateTime::now_utc();
+            let departure = HumanTime::from(departure_offset.unsigned_abs())
+                .to_text_en(Accuracy::Rough, Tense::Future);
             if departure_offset.is_negative() {
                 self.data.connections.remove(0);
             }
-            self.content = format!("{} -> {}: {}", config.from, config.to, departure_offset);
+            self.content = format!("{} -> {}: {}", config.from, config.to, departure);
         } else {
             self.content = format!(
                 "None upcoming.\nNext update in {} secs",

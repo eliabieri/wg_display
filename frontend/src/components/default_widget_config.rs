@@ -4,14 +4,14 @@ use yew::prelude::*;
 use common::models::DefaultWidgetConfig;
 
 #[derive(Properties, PartialEq)]
-pub struct WidgetConfigProps {
+pub struct DefaultWidgetConfigProps {
     pub widget_name: AttrValue,
     pub config: DefaultWidgetConfig,
     pub on_change: Callback<DefaultWidgetConfig>,
 }
 
 #[function_component(DefaultWidgetConfigComponent)]
-pub fn default_widget_config_component(props: &WidgetConfigProps) -> Html {
+pub fn default_widget_config_component(props: &DefaultWidgetConfigProps) -> Html {
     let on_change = props.on_change.clone();
     let name_clone = props.widget_name.clone();
     let enabled = props.config.enabled;
