@@ -82,7 +82,7 @@ impl Renderer {
             linear_layout.add_child(padded_view);
         });
 
-        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("WG Display")
+        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("wgdisplay.local")
     }
 
     async fn update_widgets(
