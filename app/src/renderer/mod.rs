@@ -1,7 +1,7 @@
 use std::thread;
 use std::time::Duration;
 
-use cursive::theme::BaseColor::Green;
+use cursive::theme::BaseColor;
 use cursive::theme::Color::Dark;
 use cursive::theme::PaletteColor::Background;
 use cursive::view::Nameable;
@@ -60,7 +60,7 @@ impl Renderer {
         self.widgets = widgets;
         *siv = cursive::default().into_runner();
         siv.update_theme(|theme| theme.shadow = false);
-        siv.update_theme(|theme| theme.palette[Background] = Dark(Green));
+        siv.update_theme(|theme| theme.palette[Background] = Dark(BaseColor::Magenta));
         siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
     }
 
