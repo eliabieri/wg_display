@@ -99,6 +99,9 @@ impl Widget for PublicTransport {
             Ok(response) => match response.json::<PublicTransportData>().await {
                 Ok(data) => {
                     self.data = data;
+                    self.data
+                        .connections
+                        .dedup_by(|a, b| a.from.departure == b.from.departure);
                     self.last_updated = Some(Instant::now());
                 }
                 Err(e) => {
@@ -114,7 +117,7 @@ impl Widget for PublicTransport {
 }
 
 impl PublicTransport {
-    fn update_departure_string(&mut self, count: usize) {
+    fn update_departure_string(&mut self, num_departures: usize) {
         self.content = format!("{} -> {}", self.data.from.name, self.data.to.name);
 
         let connections = self
@@ -124,7 +127,7 @@ impl PublicTransport {
             .filter(|connection| {
                 (connection.from.departure - OffsetDateTime::now_utc()).is_positive()
             })
-            .take(count);
+            .take(num_departures);
 
         for connection in connections {
             let departure = connection.from.departure;
