@@ -35,12 +35,13 @@ impl Renderer {
     /// Runs the renderer (blocking)
     pub async fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
-        let config = Persistence::get_config().expect("Could not load config");
+        let mut config = Persistence::get_config().expect("Could not load config");
         self.initialize_layout(&config.widget_config, &mut siv);
 
         loop {
             if let Some(new_config) = Persistence::get_config_change() {
-                self.initialize_layout(&new_config.widget_config, &mut siv)
+                config = new_config;
+                self.initialize_layout(&config.widget_config, &mut siv)
             }
 
             self.update_widgets(&mut siv, &config.widget_config).await;
