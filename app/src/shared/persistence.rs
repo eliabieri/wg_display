@@ -59,7 +59,7 @@ impl Persistence {
 
 #[cfg(test)]
 mod tests {
-    use common::models::{DefaultWidgetConfig, WidgetConfiguration};
+    use common::models::{BaseWidgetConfig, WidgetConfiguration};
 
     use super::*;
 
@@ -69,7 +69,7 @@ mod tests {
             ssid: "SSID".to_string(),
             password: "PASSWORD".to_string(),
             widget_config: WidgetConfiguration {
-                bernaqua_config: DefaultWidgetConfig { enabled: true },
+                bernaqua_config: BaseWidgetConfig { enabled: true },
                 ..Default::default()
             },
         };
