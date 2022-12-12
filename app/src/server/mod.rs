@@ -1,3 +1,4 @@
+use rocket::config::Config;
 use rocket::http::ContentType;
 use rocket::response::content::RawHtml;
 use rocket::serde::json;
@@ -46,7 +47,12 @@ fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
 }
 
 pub async fn serve_dashboard() -> Result<(), rocket::Error> {
-    let _rocket = rocket::build()
+    // Make dashboard accessible from outside
+    let config = Config::figment()
+        .merge(("address", "0.0.0.0"))
+        .merge(("port", 80))
+        .merge(("log_level", "off"));
+    let _rocket = rocket::custom(config)
         .mount("/", routes![index, dist, save_config, get_config])
         .launch()
         .await?;

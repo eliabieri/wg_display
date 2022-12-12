@@ -1,8 +1,12 @@
 use std::thread;
 use std::time::Duration;
 
+use cursive::theme::BaseColor;
+use cursive::theme::BorderStyle;
+use cursive::theme::Color::Dark;
+use cursive::theme::PaletteColor::Background;
 use cursive::view::Nameable;
-use cursive::views::{LinearLayout, PaddedView, TextView};
+use cursive::views::{LinearLayout, PaddedView, Panel, TextView};
 use cursive::{CursiveRunnable, CursiveRunner};
 use futures::future::join_all;
 use rocket::tokio::join;
@@ -32,12 +36,13 @@ impl Renderer {
     /// Runs the renderer (blocking)
     pub async fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
-        let config = Persistence::get_config().expect("Could not load config");
+        let mut config = Persistence::get_config().expect("Could not load config");
         self.initialize_layout(&config.widget_config, &mut siv);
 
         loop {
             if let Some(new_config) = Persistence::get_config_change() {
-                self.initialize_layout(&new_config.widget_config, &mut siv)
+                config = new_config;
+                self.initialize_layout(&config.widget_config, &mut siv)
             }
 
             self.update_widgets(&mut siv, &config.widget_config).await;
@@ -55,25 +60,29 @@ impl Renderer {
         let widgets = config_to_widgets(config);
         self.widgets = widgets;
         *siv = cursive::default().into_runner();
-        siv.add_layer(PaddedView::lrtb(2, 2, 0, 0, self.build_layout()));
+        siv.update_theme(|theme| theme.shadow = false);
+        siv.update_theme(|theme| theme.palette[Background] = Dark(BaseColor::Magenta));
+        siv.update_theme(|theme| theme.borders = BorderStyle::None);
+        siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
     }
 
-    fn build_layout(&self) -> LinearLayout {
+    fn build_layout(&self) -> Panel<PaddedView<LinearLayout>> {
         let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
-            linear_layout.add_child(
-                LinearLayout::horizontal()
-                    .child(TextView::new(format!(
-                        "{:width$}",
-                        widget.get_name().as_str(),
-                        width = self.name_column_width()
-                    )))
-                    .child(
-                        TextView::new(widget.get_content()).with_name(widget.get_name().as_str()),
-                    ),
-            );
+            let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
+                "{:width$}",
+                widget.get_name().as_str(),
+                width = self.name_column_width()
+            )));
+
+            let content_widget =
+                TextView::new(widget.get_content()).with_name(widget.get_name().as_str());
+
+            let padded_view = name_widget.child(content_widget);
+            linear_layout.add_child(padded_view);
         });
-        linear_layout
+
+        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("wgdisplay.local")
     }
 
     async fn update_widgets(
