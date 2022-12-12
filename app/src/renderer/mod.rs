@@ -2,6 +2,7 @@ use std::thread;
 use std::time::Duration;
 
 use cursive::theme::BaseColor;
+use cursive::theme::BorderStyle;
 use cursive::theme::Color::Dark;
 use cursive::theme::PaletteColor::Background;
 use cursive::view::Nameable;
@@ -61,10 +62,11 @@ impl Renderer {
         *siv = cursive::default().into_runner();
         siv.update_theme(|theme| theme.shadow = false);
         siv.update_theme(|theme| theme.palette[Background] = Dark(BaseColor::Magenta));
+        siv.update_theme(|theme| theme.borders = BorderStyle::None);
         siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
     }
 
-    fn build_layout(&self) -> Panel<LinearLayout> {
+    fn build_layout(&self) -> Panel<PaddedView<LinearLayout>> {
         let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
             let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
@@ -80,7 +82,7 @@ impl Renderer {
             linear_layout.add_child(padded_view);
         });
 
-        Panel::new(linear_layout).title("WG Display")
+        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("WG Display")
     }
 
     async fn update_widgets(
