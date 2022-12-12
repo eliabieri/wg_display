@@ -14,6 +14,16 @@ struct FromData {
 }
 
 #[derive(Deserialize)]
+struct FromMetaData {
+    name: String,
+}
+
+#[derive(Deserialize)]
+struct ToMetaData {
+    name: String,
+}
+
+#[derive(Deserialize)]
 struct ConnectionData {
     from: FromData,
 }
@@ -21,14 +31,17 @@ struct ConnectionData {
 #[derive(Deserialize)]
 struct PublicTransportData {
     connections: Vec<ConnectionData>,
+    from: FromMetaData,
+    to: ToMetaData,
 }
 
 // -------------------------------------------------------
 
 pub struct PublicTransport {
     content: String,
-    last_updated: Instant,
+    last_updated: Option<Instant>,
     data: PublicTransportData,
+    update_interval: Duration,
 }
 
 #[async_trait]
@@ -39,12 +52,17 @@ impl Widget for PublicTransport {
     {
         Self {
             content: "Loading...".to_string(),
-            last_updated: Instant::now()
-                .checked_sub(Duration::from_secs(300))
-                .unwrap(),
+            last_updated: None,
             data: PublicTransportData {
                 connections: vec![],
+                from: FromMetaData {
+                    name: "Loading...".to_string(),
+                },
+                to: ToMetaData {
+                    name: "Loading...".to_string(),
+                },
             },
+            update_interval: Duration::from_secs(90),
         }
     }
 
@@ -63,47 +81,57 @@ impl Widget for PublicTransport {
             return;
         }
 
-        if !self.data.connections.is_empty() {
-            let departure = self.data.connections[0].from.departure;
-            let departure_offset = departure - OffsetDateTime::now_utc();
-            let departure = HumanTime::from(departure_offset.unsigned_abs())
-                .to_text_en(Accuracy::Rough, Tense::Future);
-            if departure_offset.is_negative() {
-                self.data.connections.remove(0);
-            }
-            self.content = format!("{} -> {}: {}", config.from, config.to, departure);
-        } else {
-            self.content = format!(
-                "None upcoming.\nNext update in {} secs",
-                300 - self.last_updated.elapsed().as_secs()
-            );
-        }
+        self.update_departure_string(3);
 
-        if (self.last_updated.elapsed().as_secs()) < 300 {
-            return;
+        if let Some(last_updated) = self.last_updated {
+            if last_updated.elapsed() < self.update_interval {
+                return;
+            }
         }
 
         let url = format!(
-            "http://transport.opendata.ch/v1/connections?from={}&to={}&limit={}",
+            "http://transport.opendata.ch/v1/connections?from={}&to={}&limit=16",
             urlencoding::encode(config.from.as_str()),
             urlencoding::encode(config.to.as_str()),
-            3,
         );
         let response = reqwest::get(url).await;
         match response {
             Ok(response) => match response.json::<PublicTransportData>().await {
                 Ok(data) => {
                     self.data = data;
-                    self.last_updated = Instant::now();
+                    self.last_updated = Some(Instant::now());
                 }
                 Err(e) => {
                     self.content = format!("Could not deserialize data: {}", e);
-                    self.last_updated = Instant::now();
+                    self.last_updated = Some(Instant::now());
                 }
             },
             Err(error) => {
                 self.content = format!("Could not update data: {}", error);
             }
+        }
+    }
+}
+
+impl PublicTransport {
+    fn update_departure_string(&mut self, count: usize) {
+        self.content = format!("{} -> {}", self.data.from.name, self.data.to.name);
+
+        let connections = self
+            .data
+            .connections
+            .iter()
+            .filter(|connection| {
+                (connection.from.departure - OffsetDateTime::now_utc()).is_positive()
+            })
+            .take(count);
+
+        for connection in connections {
+            let departure = connection.from.departure;
+            let departure_offset = departure - OffsetDateTime::now_utc();
+            let departure = HumanTime::from(departure_offset.unsigned_abs())
+                .to_text_en(Accuracy::Rough, Tense::Future);
+            self.content += &format!("\n{}", departure).to_string();
         }
     }
 }
