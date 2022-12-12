@@ -7,22 +7,22 @@ use yew::functional::Reducible;
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct PublicTransportConfig {
-    pub enabled: bool,
+    pub base_config: BaseWidgetConfig,
     pub from: String,
     pub to: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
-pub struct DefaultWidgetConfig {
+pub struct BaseWidgetConfig {
     pub enabled: bool,
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct WidgetConfiguration {
-    pub time_config: DefaultWidgetConfig,
-    pub aare_config: DefaultWidgetConfig,
-    pub cafete_config: DefaultWidgetConfig,
-    pub bernaqua_config: DefaultWidgetConfig,
+    pub time_config: BaseWidgetConfig,
+    pub aare_config: BaseWidgetConfig,
+    pub cafete_config: BaseWidgetConfig,
+    pub bernaqua_config: BaseWidgetConfig,
     pub public_transport_config: PublicTransportConfig,
 }
 
@@ -48,12 +48,15 @@ fn persist_system_config(config: SystemConfiguration) {
     });
 }
 
+#[derive(PartialEq)]
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),
-    SetTimeConfig(DefaultWidgetConfig),
-    SetAareConfig(DefaultWidgetConfig),
-    SetCafeteConfig(DefaultWidgetConfig),
-    SetBernaquaConfig(DefaultWidgetConfig),
+    SetTimeConfig(BaseWidgetConfig),
+    SetAareConfig(BaseWidgetConfig),
+    SetCafeteConfig(BaseWidgetConfig),
+    SetBernaquaConfig(BaseWidgetConfig),
+    SetPublicTransportBaseConfig(BaseWidgetConfig),
+    SetPublicTransportConfig(PublicTransportConfig),
 }
 
 impl Reducible for SystemConfiguration {
@@ -86,6 +89,23 @@ impl Reducible for SystemConfiguration {
             SystemConfigurationAction::SetBernaquaConfig(widget_config) => Self {
                 widget_config: WidgetConfiguration {
                     bernaqua_config: widget_config,
+                    ..self.widget_config.clone()
+                },
+                ..(*self).clone()
+            },
+            SystemConfigurationAction::SetPublicTransportBaseConfig(widget_config) => Self {
+                widget_config: WidgetConfiguration {
+                    public_transport_config: PublicTransportConfig {
+                        base_config: widget_config,
+                        ..self.widget_config.public_transport_config.clone()
+                    },
+                    ..self.widget_config.clone()
+                },
+                ..(*self).clone()
+            },
+            SystemConfigurationAction::SetPublicTransportConfig(widget_config) => Self {
+                widget_config: WidgetConfiguration {
+                    public_transport_config: widget_config,
                     ..self.widget_config.clone()
                 },
                 ..(*self).clone()

@@ -21,7 +21,7 @@ pub fn config_to_widgets(config: &WidgetConfiguration) -> Vec<Box<dyn Widget>> {
     if config.bernaqua_config.enabled {
         widgets.push(Box::new(Bernaqua::new()));
     }
-    if config.public_transport_config.enabled {
+    if config.public_transport_config.base_config.enabled {
         widgets.push(Box::new(PublicTransport::new()));
     }
     widgets
