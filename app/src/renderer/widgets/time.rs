@@ -1,6 +1,7 @@
 use super::base::Widget;
 use async_trait::async_trait;
-use common::{models::WidgetConfiguration, widgets::WidgetName};
+use common::models::WidgetConfiguration;
+use common::widget_meta_data::WidgetMetaData;
 
 extern crate chrono;
 use chrono::Local;
@@ -17,8 +18,8 @@ impl Widget for Time {
         }
     }
 
-    fn get_name(&self) -> WidgetName {
-        WidgetName::Time
+    fn get_meta_data(&self) -> common::widget_meta_data::WidgetMetaData {
+        WidgetMetaData::Time
     }
 
     fn get_content(&self) -> &str {

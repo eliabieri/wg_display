@@ -3,7 +3,7 @@ use gloo_net::http::Request;
 use yew::prelude::*;
 
 use common::models::{SystemConfiguration, SystemConfigurationAction};
-use common::widgets::WidgetName;
+use common::widget_meta_data::WidgetMetaData;
 
 pub mod components;
 use components::default_widget_config::DefaultWidgetConfigComponent;
@@ -88,23 +88,23 @@ fn main_component() -> Html {
     html! {
         <div>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <div class="flex items-center justify-center h-screen w-screen bg-zinc-700">
+            <div class="flex items-center justify-center h-screen w-screen bg-zinc-300">
                 // Card
-                <div class="bg-zinc-800 rounded-2xl p-5 shadow-2xl">
+                <div class="bg-zinc-200 rounded-2xl p-5 shadow-2xl">
                     // Flex Container
                     <div class="flex flex-col">
                         // Image
                         <img src="assets/logo.png" alt="" class="h-24 hover:scale-110 duration-500 object-contain"/>
                         // Content
                         <div class="p-3">
-                            <p class="text-white leading-5 my-4 text-2xl font-bold tracking-wide text-center">
+                            <p class="leading-5 text-5xl text-zinc-900 font-bold tracking-wide text-center py-10">
                                 {"Configuration"}
                             </p>
 
                             <div>
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        widget_name={WidgetName::Time.as_str()}
+                                        meta_data={WidgetMetaData::Time}
                                         config={system_config.widget_config.time_config.clone()}
                                     on_change={update_time_config}
                                     />
@@ -112,7 +112,7 @@ fn main_component() -> Html {
 
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        widget_name={WidgetName::Aare.as_str()}
+                                        meta_data={WidgetMetaData::Aare}
                                         config={system_config.widget_config.aare_config.clone()}
                                     on_change={update_aare_config}
                                     />
@@ -120,7 +120,7 @@ fn main_component() -> Html {
 
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        widget_name={WidgetName::Cafete.as_str()}
+                                        meta_data={WidgetMetaData::Cafete}
                                         config={system_config.widget_config.cafete_config.clone()}
                                     on_change={update_cafete_config}
                                     />
@@ -128,7 +128,7 @@ fn main_component() -> Html {
 
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        widget_name={WidgetName::Bernaqua.as_str()}
+                                        meta_data={WidgetMetaData::Bernaqua}
                                         config={system_config.widget_config.bernaqua_config.clone()}
                                     on_change={update_bernaqua_config}
                                     />
@@ -136,7 +136,7 @@ fn main_component() -> Html {
 
                                 <ConfigCardComponent>
                                     <WidgetConfigComponent
-                                        widget_name={WidgetName::PublicTransport.as_str()}
+                                        meta_data={WidgetMetaData::PublicTransport}
                                         config={system_config.widget_config.public_transport_config.base_config.clone()}
                                         on_change={update_public_transport_base_config}
                                     >

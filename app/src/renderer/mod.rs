@@ -71,12 +71,12 @@ impl Renderer {
         self.widgets.iter().for_each(|widget| {
             let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
                 "{:width$}",
-                widget.get_name().as_str(),
+                widget.get_meta_data().name(),
                 width = self.name_column_width()
             )));
 
             let content_widget =
-                TextView::new(widget.get_content()).with_name(widget.get_name().as_str());
+                TextView::new(widget.get_content()).with_name(widget.get_meta_data().name());
 
             let padded_view = name_widget.child(content_widget);
             linear_layout.add_child(padded_view);
@@ -95,7 +95,7 @@ impl Renderer {
         ));
 
         self.widgets.iter_mut().for_each(|widget| {
-            siv.call_on_name(widget.get_name().as_str(), |view: &mut TextView| {
+            siv.call_on_name(widget.get_meta_data().name(), |view: &mut TextView| {
                 view.set_content(widget.get_content());
             });
         });
@@ -104,7 +104,7 @@ impl Renderer {
     fn name_column_width(&self) -> usize {
         self.widgets
             .iter()
-            .map(|widget| widget.get_name().as_str().len())
+            .map(|widget| widget.get_meta_data().name().len())
             .max()
             .unwrap()
             + 2
