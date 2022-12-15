@@ -1,6 +1,7 @@
 use std::time::{Duration, Instant};
 
-use common::{models::WidgetConfiguration, widgets::WidgetName};
+use common::models::WidgetConfiguration;
+use common::widget_meta_data::WidgetMetaData;
 use serde::Deserialize;
 use time::OffsetDateTime;
 use time_humanize::{Accuracy, HumanTime, Tense};
@@ -66,8 +67,8 @@ impl Widget for PublicTransport {
         }
     }
 
-    fn get_name(&self) -> common::widgets::WidgetName {
-        WidgetName::PublicTransport
+    fn get_meta_data(&self) -> common::widget_meta_data::WidgetMetaData {
+        WidgetMetaData::PublicTransport
     }
 
     fn get_content(&self) -> &str {

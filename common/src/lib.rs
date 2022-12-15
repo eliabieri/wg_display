@@ -1,2 +1,2 @@
 pub mod models;
-pub mod widgets;
+pub mod widget_meta_data;

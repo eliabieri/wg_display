@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use super::base::Widget;
 use common::models::WidgetConfiguration;
-use common::widgets::WidgetName;
+use common::widget_meta_data::WidgetMetaData;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -35,8 +35,8 @@ impl Widget for Bernaqua {
         }
     }
 
-    fn get_name(&self) -> WidgetName {
-        WidgetName::Bernaqua
+    fn get_meta_data(&self) -> common::widget_meta_data::WidgetMetaData {
+        WidgetMetaData::Bernaqua
     }
 
     fn get_content(&self) -> &str {

@@ -46,8 +46,10 @@ pub fn public_transport_config_component(props: &PublicTransportConfigProps) -> 
 
     html! {
         <div class="flex flex-col gap-2">
-            <input type={"text"} onchange={on_changed_from} value={props.config.from.clone()} placeholder={"From"} class="rounded-sm pl-2 border-slate-300  border-2 bg-transparent text-white"/>
-            <input type={"text"} onchange={on_changed_to} value={props.config.to.clone()} placeholder={"To"} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white"/>
+            <label for="from" class="block text-sm font-medium text-slate-300">{"From"}</label>
+            <input name="from" type="text" onchange={on_changed_from} value={props.config.from.clone()} placeholder={"Bern, Loryplatz"} class="rounded-sm pl-2 border-slate-300  border-2 bg-transparent text-white"/>
+            <label for="to" class="block text-sm font-medium text-slate-300">{"From"}</label>
+            <input name="to" type="text" onchange={on_changed_to} value={props.config.to.clone()} placeholder={"Basel"} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white"/>
         </div>
     }
 }
