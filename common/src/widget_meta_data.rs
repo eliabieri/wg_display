@@ -2,7 +2,7 @@
 pub enum WidgetMetaData {
     Cafete,
     Aare,
-    Time,
+    Today,
     Bernaqua,
     PublicTransport,
 }
@@ -12,7 +12,7 @@ impl WidgetMetaData {
         match self {
             WidgetMetaData::Cafete => "Cafete",
             WidgetMetaData::Aare => "Aare",
-            WidgetMetaData::Time => "Time",
+            WidgetMetaData::Today => "Today",
             WidgetMetaData::Bernaqua => "Bernaqua",
             WidgetMetaData::PublicTransport => "Next departure",
         }
@@ -22,7 +22,7 @@ impl WidgetMetaData {
         match self {
             WidgetMetaData::Cafete => "Events happening at the Cafete Club in Bern",
             WidgetMetaData::Aare => "The temperature of the Aare river in Bern",
-            WidgetMetaData::Time => "The current time",
+            WidgetMetaData::Today => "The current date and time",
             WidgetMetaData::Bernaqua => "Occupancy of the Bernaqua facilities",
             WidgetMetaData::PublicTransport => "Next public transport departures",
         }

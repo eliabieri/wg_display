@@ -7,10 +7,12 @@ use common::widget_meta_data::WidgetMetaData;
 
 pub mod components;
 use components::default_widget_config::DefaultWidgetConfigComponent;
-use components::public_transport_config::PublicTransportConfigComponent;
 use components::widget_config::WidgetConfigComponent;
 
+use crate::components::background_color_config::BackgroundColorConfigComponent;
 use crate::components::config_card::ConfigCardComponent;
+use crate::components::divider::DividerComponent;
+use crate::components::public_transport_config::PublicTransportConfigComponent;
 
 #[function_component(MainComponent)]
 fn main_component() -> Html {
@@ -45,10 +47,10 @@ fn main_component() -> Html {
         );
     }
 
-    let update_time_config = {
+    let update_today_config = {
         let system_config = system_config.clone();
         Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetTimeConfig(config));
+            system_config.dispatch(SystemConfigurationAction::SetTodayConfig(config));
         })
     };
     let update_aare_config = {
@@ -87,26 +89,31 @@ fn main_component() -> Html {
     };
     html! {
         <div>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <div class="flex items-center justify-center h-screen w-screen bg-zinc-300">
+            <meta name="viewport" content="width=device-width initial-scale=1.0"/>
+            <div class="flex items-center justify-center bg-zinc-400">
                 // Card
-                <div class="bg-zinc-200 rounded-2xl p-5 shadow-2xl">
+                <div class="bg-zinc-200 rounded-2xl p-5 m-10 shadow-2xl">
                     // Flex Container
                     <div class="flex flex-col">
                         // Image
-                        <img src="assets/logo.png" alt="" class="h-24 hover:scale-110 duration-500 object-contain"/>
+                        <img src="assets/logo.png" alt="" class="h-24 object-contain py-4"/>
                         // Content
-                        <div class="p-3">
-                            <p class="leading-5 text-5xl text-zinc-900 font-bold tracking-wide text-center py-10">
-                                {"Configuration"}
-                            </p>
+                        <div>
+                            <DividerComponent text="Configuration"/>
+
+                            <BackgroundColorConfigComponent
+                                config={system_config.clone()}
+                            />
+
+
+                            <DividerComponent text="Widget configuration"/>
 
                             <div>
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        meta_data={WidgetMetaData::Time}
-                                        config={system_config.widget_config.time_config.clone()}
-                                    on_change={update_time_config}
+                                        meta_data={WidgetMetaData::Today}
+                                        config={system_config.widget_config.today_config.clone()}
+                                    on_change={update_today_config}
                                     />
                                 </ConfigCardComponent>
 

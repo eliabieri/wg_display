@@ -5,11 +5,23 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
+#[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
 pub struct PublicTransportConfig {
     pub base_config: BaseWidgetConfig,
     pub from: String,
     pub to: String,
+    pub num_connections_to_show: u8,
+}
+
+impl Default for PublicTransportConfig {
+    fn default() -> Self {
+        Self {
+            base_config: BaseWidgetConfig::default(),
+            from: "".to_string(),
+            to: "".to_string(),
+            num_connections_to_show: 2,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
@@ -19,7 +31,7 @@ pub struct BaseWidgetConfig {
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct WidgetConfiguration {
-    pub time_config: BaseWidgetConfig,
+    pub today_config: BaseWidgetConfig,
     pub aare_config: BaseWidgetConfig,
     pub cafete_config: BaseWidgetConfig,
     pub bernaqua_config: BaseWidgetConfig,
@@ -29,9 +41,7 @@ pub struct WidgetConfiguration {
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct SystemConfiguration {
     #[serde(default)]
-    pub ssid: String,
-    #[serde(default)]
-    pub password: String,
+    pub background_color: String,
     #[serde(default)]
     pub widget_config: WidgetConfiguration,
 }
@@ -51,7 +61,8 @@ fn persist_system_config(config: SystemConfiguration) {
 #[derive(PartialEq)]
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),
-    SetTimeConfig(BaseWidgetConfig),
+    SetBackgroundColor(String),
+    SetTodayConfig(BaseWidgetConfig),
     SetAareConfig(BaseWidgetConfig),
     SetCafeteConfig(BaseWidgetConfig),
     SetBernaquaConfig(BaseWidgetConfig),
@@ -65,9 +76,13 @@ impl Reducible for SystemConfiguration {
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         let config = match action {
             SystemConfigurationAction::SetInitialConfig(new_config) => new_config,
-            SystemConfigurationAction::SetTimeConfig(widget_config) => Self {
+            SystemConfigurationAction::SetBackgroundColor(background_color) => Self {
+                background_color,
+                ..(*self).clone()
+            },
+            SystemConfigurationAction::SetTodayConfig(widget_config) => Self {
                 widget_config: WidgetConfiguration {
-                    time_config: widget_config,
+                    today_config: widget_config,
                     ..self.widget_config.clone()
                 },
                 ..(*self).clone()

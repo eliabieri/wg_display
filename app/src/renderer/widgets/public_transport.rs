@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use common::models::WidgetConfiguration;
 use common::widget_meta_data::WidgetMetaData;
 use serde::Deserialize;
-use time::OffsetDateTime;
+use time::{format_description, OffsetDateTime};
 use time_humanize::{Accuracy, HumanTime, Tense};
 
 use super::base::Widget;
@@ -82,7 +82,7 @@ impl Widget for PublicTransport {
             return;
         }
 
-        self.update_departure_string(3);
+        self.update_departure_string(config.num_connections_to_show as usize);
 
         if let Some(last_updated) = self.last_updated {
             if last_updated.elapsed() < self.update_interval {
@@ -132,10 +132,27 @@ impl PublicTransport {
 
         for connection in connections {
             let departure = connection.from.departure;
-            let departure_offset = departure - OffsetDateTime::now_utc();
-            let departure = HumanTime::from(departure_offset.unsigned_abs())
-                .to_text_en(Accuracy::Rough, Tense::Future);
-            self.content += &format!("\n{}", departure).to_string();
+            self.content += &format!(
+                "\n{} ({})",
+                PublicTransport::format_departure_offset(departure),
+                PublicTransport::format_departure(departure)
+            )
+            .to_string();
         }
+    }
+
+    fn format_departure(departure: OffsetDateTime) -> String {
+        let format = format_description::parse("[hour]:[minute]").unwrap();
+        match departure.format(&format) {
+            Ok(departure) => departure,
+            Err(e) => {
+                format!("Could not format departure: {}", e)
+            }
+        }
+    }
+
+    fn format_departure_offset(departure: OffsetDateTime) -> String {
+        let departure_offset = departure - OffsetDateTime::now_utc();
+        HumanTime::from(departure_offset.unsigned_abs()).to_text_en(Accuracy::Rough, Tense::Future)
     }
 }
