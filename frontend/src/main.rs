@@ -94,7 +94,7 @@ fn main_component() -> Html {
                     // Flex Container
                     <div class="flex flex-col">
                         // Image
-                        <img src="assets/logo.png" alt="" class="h-24 hover:scale-110 duration-500 object-contain"/>
+                        <img src="assets/logo.png" alt="" class="h-24 object-contain"/>
                         // Content
                         <div class="p-3">
                             <p class="leading-5 text-5xl text-zinc-900 font-bold tracking-wide text-center py-10">

@@ -5,11 +5,23 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
+#[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
 pub struct PublicTransportConfig {
     pub base_config: BaseWidgetConfig,
     pub from: String,
     pub to: String,
+    pub num_connections_to_show: u8,
+}
+
+impl Default for PublicTransportConfig {
+    fn default() -> Self {
+        Self {
+            base_config: BaseWidgetConfig::default(),
+            from: "".to_string(),
+            to: "".to_string(),
+            num_connections_to_show: 2,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
