@@ -66,8 +66,7 @@ mod tests {
     #[test]
     fn test_persistence() {
         let config = SystemConfiguration {
-            ssid: "SSID".to_string(),
-            password: "PASSWORD".to_string(),
+            background_color: "#FF3A3A".to_string(),
             widget_config: WidgetConfiguration {
                 bernaqua_config: BaseWidgetConfig { enabled: true },
                 ..Default::default()

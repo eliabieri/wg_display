@@ -1,8 +1,10 @@
 use std::thread;
 use std::time::Duration;
 
+use common::models::SystemConfiguration;
 use cursive::theme::BaseColor;
 use cursive::theme::BorderStyle;
+use cursive::theme::Color;
 use cursive::theme::Color::Dark;
 use cursive::theme::PaletteColor::Background;
 use cursive::view::Nameable;
@@ -37,12 +39,12 @@ impl Renderer {
     pub async fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
         let mut config = Persistence::get_config().expect("Could not load config");
-        self.initialize_layout(&config.widget_config, &mut siv);
+        self.initialize_layout(&config, &mut siv);
 
         loop {
             if let Some(new_config) = Persistence::get_config_change() {
                 config = new_config;
-                self.initialize_layout(&config.widget_config, &mut siv)
+                self.initialize_layout(&config, &mut siv)
             }
 
             self.update_widgets(&mut siv, &config.widget_config).await;
@@ -54,14 +56,17 @@ impl Renderer {
 
     fn initialize_layout(
         &mut self,
-        config: &WidgetConfiguration,
+        config: &SystemConfiguration,
         siv: &mut CursiveRunner<CursiveRunnable>,
     ) {
-        let widgets = config_to_widgets(config);
+        let widgets = config_to_widgets(&config.widget_config);
         self.widgets = widgets;
         *siv = cursive::default().into_runner();
         siv.update_theme(|theme| theme.shadow = false);
-        siv.update_theme(|theme| theme.palette[Background] = Dark(BaseColor::Magenta));
+        siv.update_theme(|theme| {
+            theme.palette[Background] =
+                Color::parse(config.background_color.as_str()).unwrap_or(Dark(BaseColor::Magenta))
+        });
         siv.update_theme(|theme| theme.borders = BorderStyle::None);
         siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
     }

@@ -41,9 +41,7 @@ pub struct WidgetConfiguration {
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct SystemConfiguration {
     #[serde(default)]
-    pub ssid: String,
-    #[serde(default)]
-    pub password: String,
+    pub background_color: String,
     #[serde(default)]
     pub widget_config: WidgetConfiguration,
 }
@@ -63,6 +61,7 @@ fn persist_system_config(config: SystemConfiguration) {
 #[derive(PartialEq)]
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),
+    SetBackgroundColor(String),
     SetTodayConfig(BaseWidgetConfig),
     SetAareConfig(BaseWidgetConfig),
     SetCafeteConfig(BaseWidgetConfig),
@@ -77,6 +76,10 @@ impl Reducible for SystemConfiguration {
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         let config = match action {
             SystemConfigurationAction::SetInitialConfig(new_config) => new_config,
+            SystemConfigurationAction::SetBackgroundColor(background_color) => Self {
+                background_color,
+                ..(*self).clone()
+            },
             SystemConfigurationAction::SetTodayConfig(widget_config) => Self {
                 widget_config: WidgetConfiguration {
                     today_config: widget_config,
