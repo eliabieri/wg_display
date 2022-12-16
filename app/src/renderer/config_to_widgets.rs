@@ -3,14 +3,14 @@ use crate::renderer::widgets::base::Widget;
 use crate::renderer::widgets::bernaqua::Bernaqua;
 use crate::renderer::widgets::cafete::Cafete;
 use crate::renderer::widgets::public_transport::PublicTransport;
-use crate::renderer::widgets::time::Time;
+use crate::renderer::widgets::today::Today;
 
 use common::models::WidgetConfiguration;
 
 pub fn config_to_widgets(config: &WidgetConfiguration) -> Vec<Box<dyn Widget>> {
     let mut widgets: Vec<Box<dyn Widget>> = vec![];
-    if config.time_config.enabled {
-        widgets.push(Box::new(Time::new()));
+    if config.today_config.enabled {
+        widgets.push(Box::new(Today::new()));
     }
     if config.cafete_config.enabled {
         widgets.push(Box::new(Cafete::new()));

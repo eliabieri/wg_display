@@ -31,7 +31,7 @@ pub struct BaseWidgetConfig {
 
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct WidgetConfiguration {
-    pub time_config: BaseWidgetConfig,
+    pub today_config: BaseWidgetConfig,
     pub aare_config: BaseWidgetConfig,
     pub cafete_config: BaseWidgetConfig,
     pub bernaqua_config: BaseWidgetConfig,
@@ -63,7 +63,7 @@ fn persist_system_config(config: SystemConfiguration) {
 #[derive(PartialEq)]
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),
-    SetTimeConfig(BaseWidgetConfig),
+    SetTodayConfig(BaseWidgetConfig),
     SetAareConfig(BaseWidgetConfig),
     SetCafeteConfig(BaseWidgetConfig),
     SetBernaquaConfig(BaseWidgetConfig),
@@ -77,9 +77,9 @@ impl Reducible for SystemConfiguration {
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         let config = match action {
             SystemConfigurationAction::SetInitialConfig(new_config) => new_config,
-            SystemConfigurationAction::SetTimeConfig(widget_config) => Self {
+            SystemConfigurationAction::SetTodayConfig(widget_config) => Self {
                 widget_config: WidgetConfiguration {
-                    time_config: widget_config,
+                    today_config: widget_config,
                     ..self.widget_config.clone()
                 },
                 ..(*self).clone()

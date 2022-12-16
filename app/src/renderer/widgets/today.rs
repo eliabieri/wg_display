@@ -6,12 +6,12 @@ use common::widget_meta_data::WidgetMetaData;
 extern crate chrono;
 use chrono::Local;
 
-pub struct Time {
+pub struct Today {
     content: String,
 }
 
 #[async_trait]
-impl Widget for Time {
+impl Widget for Today {
     fn new() -> Self {
         Self {
             content: "Loading...".to_string(),
@@ -19,7 +19,7 @@ impl Widget for Time {
     }
 
     fn get_meta_data(&self) -> common::widget_meta_data::WidgetMetaData {
-        WidgetMetaData::Time
+        WidgetMetaData::Today
     }
 
     fn get_content(&self) -> &str {
@@ -28,6 +28,6 @@ impl Widget for Time {
 
     async fn update(&mut self, _config: &WidgetConfiguration) {
         let date = Local::now();
-        self.content = date.format("%H:%M:%S").to_string();
+        self.content = date.format("%a, %e. %b  %H:%M:%S").to_string();
     }
 }

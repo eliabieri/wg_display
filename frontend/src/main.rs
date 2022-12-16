@@ -45,10 +45,10 @@ fn main_component() -> Html {
         );
     }
 
-    let update_time_config = {
+    let update_today_config = {
         let system_config = system_config.clone();
         Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetTimeConfig(config));
+            system_config.dispatch(SystemConfigurationAction::SetTodayConfig(config));
         })
     };
     let update_aare_config = {
@@ -104,9 +104,9 @@ fn main_component() -> Html {
                             <div>
                                 <ConfigCardComponent>
                                     <DefaultWidgetConfigComponent
-                                        meta_data={WidgetMetaData::Time}
-                                        config={system_config.widget_config.time_config.clone()}
-                                    on_change={update_time_config}
+                                        meta_data={WidgetMetaData::Today}
+                                        config={system_config.widget_config.today_config.clone()}
+                                    on_change={update_today_config}
                                     />
                                 </ConfigCardComponent>
 
