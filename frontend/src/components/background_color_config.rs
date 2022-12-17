@@ -32,7 +32,7 @@ pub fn public_transport_config_component(props: &BackgroundColorConfigProps) -> 
         <ConfigCardComponent>
             <div class="text-white text-md font-medium">{"Background color"}</div>
             <div class="text-slate-300 text-sm">{"Changes the background color of the display"}</div>
-            <input name="background_color" type="color" class="mt-2 bg-transparent" onchange={on_changed}/>
+            <input name="background_color" type="color" class="mt-2 bg-transparent" onchange={on_changed} value={props.config.background_color.clone()}/>
         </ConfigCardComponent>
     }
 }
