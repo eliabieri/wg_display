@@ -28,6 +28,12 @@ dependencies = \
 	$(call rwildcard,common/,Cargo.*) \
 	$(call rwildcard,frontend/,Cargo.*)
 
+# Generate docs
+docs: $(dependencies)
+	cd app && cargo doc
+	cd common && cargo doc
+	cd frontend && cargo doc
+
 # Build complete app for the native platform
 $(build_native_release): $(dependencies) $(frontend_build)
 	cd app && cargo build --release

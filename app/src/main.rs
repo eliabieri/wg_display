@@ -10,6 +10,7 @@ mod renderer;
 mod server;
 pub mod shared;
 
+///! The WG Display main crate holding everything together.
 #[tokio::main]
 async fn main() {
     let mut renderer = renderer::Renderer::new();
