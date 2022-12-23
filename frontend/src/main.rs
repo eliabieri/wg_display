@@ -47,46 +47,6 @@ fn main_component() -> Html {
         );
     }
 
-    let update_today_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetTodayConfig(config));
-        })
-    };
-    let update_aare_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetAareConfig(config));
-        })
-    };
-    let update_cafete_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetCafeteConfig(config));
-        })
-    };
-    let update_bernaqua_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetBernaquaConfig(config));
-        })
-    };
-    let update_public_transport_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |public_transport_config| {
-            system_config.dispatch(SystemConfigurationAction::SetPublicTransportConfig(
-                public_transport_config,
-            ));
-        })
-    };
-    let update_public_transport_base_config = {
-        let system_config = system_config.clone();
-        Callback::from(move |config| {
-            system_config.dispatch(SystemConfigurationAction::SetPublicTransportBaseConfig(
-                config,
-            ));
-        })
-    };
     html! {
         <div>
             <meta name="viewport" content="width=device-width initial-scale=1.0"/>
@@ -113,7 +73,9 @@ fn main_component() -> Html {
                                     <DefaultWidgetConfigComponent
                                         meta_data={WidgetMetaData::Today}
                                         config={system_config.widget_config.today_config.clone()}
-                                    on_change={update_today_config}
+                                    on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                        system_config.dispatch(SystemConfigurationAction::SetTodayConfig(config));
+                                    }))}
                                     />
                                 </ConfigCardComponent>
 
@@ -121,7 +83,9 @@ fn main_component() -> Html {
                                     <DefaultWidgetConfigComponent
                                         meta_data={WidgetMetaData::Aare}
                                         config={system_config.widget_config.aare_config.clone()}
-                                    on_change={update_aare_config}
+                                    on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                        system_config.dispatch(SystemConfigurationAction::SetAareConfig(config));
+                                    }))}
                                     />
                                 </ConfigCardComponent>
 
@@ -129,7 +93,9 @@ fn main_component() -> Html {
                                     <DefaultWidgetConfigComponent
                                         meta_data={WidgetMetaData::Cafete}
                                         config={system_config.widget_config.cafete_config.clone()}
-                                    on_change={update_cafete_config}
+                                    on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                        system_config.dispatch(SystemConfigurationAction::SetCafeteConfig(config));
+                                    }))}
                                     />
                                 </ConfigCardComponent>
 
@@ -137,7 +103,9 @@ fn main_component() -> Html {
                                     <DefaultWidgetConfigComponent
                                         meta_data={WidgetMetaData::Bernaqua}
                                         config={system_config.widget_config.bernaqua_config.clone()}
-                                    on_change={update_bernaqua_config}
+                                    on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                        system_config.dispatch(SystemConfigurationAction::SetBernaquaConfig(config));
+                                    }))}
                                     />
                                 </ConfigCardComponent>
 
@@ -145,11 +113,15 @@ fn main_component() -> Html {
                                     <WidgetConfigComponent
                                         meta_data={WidgetMetaData::PublicTransport}
                                         config={system_config.widget_config.public_transport_config.base_config.clone()}
-                                        on_change={update_public_transport_base_config}
+                                        on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                            system_config.dispatch(SystemConfigurationAction::SetPublicTransportBaseConfig(config));
+                                        }))}
                                     >
                                         <PublicTransportConfigComponent
                                             config={system_config.widget_config.public_transport_config.clone()}
-                                            on_change={update_public_transport_config}
+                                            on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                                system_config.dispatch(SystemConfigurationAction::SetPublicTransportConfig(config));
+                                            }))}
                                         />
                                     </WidgetConfigComponent>
                                 </ConfigCardComponent>
