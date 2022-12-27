@@ -1,3 +1,6 @@
+//! The WG Display main crate holding everything together.
+//! This crate is the entry point for the application.
+//! It starts the server to serve the frontend and an API to fetch and modify the configuration.
 use futures::join;
 use rocket::tokio;
 
@@ -11,8 +14,6 @@ mod server;
 pub mod shared;
 
 #[forbid(unsafe_code)]
-
-///! The WG Display main crate holding everything together.
 #[tokio::main]
 async fn main() {
     let mut renderer = renderer::Renderer::new();

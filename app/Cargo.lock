@@ -65,6 +65,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d301b3b94cb4b2f23d7917810addbbaff90738e0ca2be692bd027e70d7e0330c"
 
 [[package]]
+name = "app"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "common",
+ "cursive",
+ "futures",
+ "lazy_static",
+ "openssl",
+ "reqwest",
+ "rocket",
+ "rust-embed",
+ "serde",
+ "sled",
+ "time 0.3.17",
+ "time-humanize",
+ "urlencoding",
+]
+
+[[package]]
 name = "async-stream"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2720,27 +2741,6 @@ checksum = "bcda906d8be16e728fd5adc5b729afad4e444e106ab28cd1c7256e54fa61510f"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "wg_display"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "chrono",
- "common",
- "cursive",
- "futures",
- "lazy_static",
- "openssl",
- "reqwest",
- "rocket",
- "rust-embed",
- "serde",
- "sled",
- "time 0.3.17",
- "time-humanize",
- "urlencoding",
 ]
 
 [[package]]

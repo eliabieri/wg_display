@@ -16,7 +16,7 @@ make docs
 
 This generates three seperate documentations, one for each crate
 
-[app](app/target/doc/wg_display/index.html): ```app/target/doc/wg_display/index.html```
+[app](app/target/doc/wg_display/index.html): ```app/target/doc/app/index.html```
 
 [common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```
 

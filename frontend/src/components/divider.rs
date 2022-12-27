@@ -1,7 +1,11 @@
+//! Simple divider component
+
 use yew::prelude::*;
 
+/// Props for the DividerComponent
 #[derive(Properties, PartialEq)]
 pub struct DividerProps {
+    /// The text to display in the divider
     pub text: AttrValue,
 }
 

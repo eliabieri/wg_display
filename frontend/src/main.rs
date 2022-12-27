@@ -1,3 +1,12 @@
+//! Frontend for configuring the WG Display.
+//
+//! It is written in Rust using the Yew framework.
+//! It is compiled to WebAssembly and then served by the backend.
+//! Amongst others the responsibilities of the frontend are:
+//! - Letting users configure which widgets are displayed
+//! - Letting users configure certain aspects of the widgets
+//! - Letting users configure system aspects like background color
+
 use gloo_console::log;
 use gloo_net::http::Request;
 use yew::prelude::*;
@@ -15,6 +24,8 @@ use crate::components::divider::DividerComponent;
 use crate::components::public_transport_config::PublicTransportConfigComponent;
 
 #[forbid(unsafe_code)]
+
+/// The main component of the frontend.
 #[function_component(MainComponent)]
 fn main_component() -> Html {
     let system_config = use_reducer(SystemConfiguration::default);
@@ -135,6 +146,9 @@ fn main_component() -> Html {
     }
 }
 
+/// Main entry point for running the frontend in dev mode
+/// Use `trunk serve -w` to run it with auto-reload
+/// NOTE: Only use this for frontend development, not interaction with the backend is possible with this setup.
 fn main() {
     yew::Renderer::<MainComponent>::new().render();
 }
