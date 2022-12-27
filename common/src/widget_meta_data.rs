@@ -1,3 +1,4 @@
+/// Enumeration of the meta data of all widgets.
 #[derive(PartialEq, Clone)]
 pub enum WidgetMetaData {
     Cafete,
@@ -8,6 +9,7 @@ pub enum WidgetMetaData {
 }
 
 impl WidgetMetaData {
+    /// Returns the name of the widget.
     pub fn name(&self) -> &'static str {
         match self {
             WidgetMetaData::Cafete => "Cafete",
@@ -18,6 +20,7 @@ impl WidgetMetaData {
         }
     }
 
+    /// Returns a description of the widget.
     pub fn description(&self) -> &'static str {
         match self {
             WidgetMetaData::Cafete => "Events happening at the Cafete Club in Bern",

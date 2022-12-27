@@ -1,12 +1,17 @@
+//! A component for configuring the public transport widget.
+
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 
 use common::models::PublicTransportConfig;
 
+/// Props for the PublicTransportConfigComponent
 #[derive(Properties, PartialEq)]
 pub struct PublicTransportConfigProps {
+    /// The configuration of the public transport widget
     pub config: PublicTransportConfig,
+    /// Callback to be called when the configuration changes
     pub on_change: Callback<PublicTransportConfig>,
 }
 

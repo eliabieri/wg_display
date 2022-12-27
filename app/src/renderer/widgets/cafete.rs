@@ -1,3 +1,4 @@
+//! Shows the lineup of the Cafete night-club in Bern, Switzerland
 use std::time::{Duration, Instant};
 
 use super::base::Widget;

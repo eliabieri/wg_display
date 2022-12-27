@@ -1,3 +1,4 @@
+//! Shows the current capacity at the Bernaqua facilities in Bern, Switzerland
 use std::time::{Duration, Instant};
 
 use super::base::Widget;

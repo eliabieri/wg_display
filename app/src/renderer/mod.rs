@@ -1,3 +1,4 @@
+//! Widgets to display rendering implementation using [Cursive](https://crates.io/crates/cursive)
 use std::thread;
 use std::time::Duration;
 
@@ -27,6 +28,7 @@ pub struct Renderer {
     widgets: Vec<Box<dyn Widget>>,
 }
 
+// Renders the widget on the display using the [Cursive](https://crates.io/crates/cursive) crate
 impl Renderer {
     pub fn new() -> Self {
         let config = Persistence::get_config().expect("Could not load config");
@@ -54,6 +56,10 @@ impl Renderer {
         }
     }
 
+    /// Initializes the layout using given system configuration
+    /// # Args
+    /// * `config` - The system configuration
+    /// * `siv` - The cursive instance
     fn initialize_layout(
         &mut self,
         config: &SystemConfiguration,
@@ -71,6 +77,9 @@ impl Renderer {
         siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
     }
 
+    /// Builds the layout
+    /// # Returns
+    /// The layout as Panel
     fn build_layout(&self) -> Panel<PaddedView<LinearLayout>> {
         let mut linear_layout = LinearLayout::vertical();
         self.widgets.iter().for_each(|widget| {
@@ -90,6 +99,10 @@ impl Renderer {
         Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("wgdisplay.local")
     }
 
+    /// Calls the update function on all enabled widgets
+    /// # Args
+    /// * `siv` - The cursive instance
+    /// * `config` - The widget configuration
     async fn update_widgets(
         &mut self,
         siv: &mut CursiveRunner<CursiveRunnable>,
@@ -106,6 +119,9 @@ impl Renderer {
         });
     }
 
+    /// Calculates the width of the name column
+    /// # Returns
+    /// The safe width of the name column
     fn name_column_width(&self) -> usize {
         self.widgets
             .iter()

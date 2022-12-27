@@ -17,12 +17,10 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
-    - name: Use Rust nightly
-      run: rustup default nightly
     - name: Add WASM target
       run: rustup target add wasm32-unknown-unknown
     - name: Install cargo dependencies
-      run: cargo install cross --git https://github.com/cross-rs/cross &&
+      run: cargo install cross --locked &&
         cargo install --locked trunk
     - name: Install tailwindcss
       run: cd frontend && npm install

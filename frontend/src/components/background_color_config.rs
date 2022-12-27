@@ -1,3 +1,5 @@
+//! Component allowing the user to configure the background color of the display.
+
 use common::models::{SystemConfiguration, SystemConfigurationAction};
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
@@ -11,7 +13,7 @@ pub struct BackgroundColorConfigProps {
 }
 
 #[function_component(BackgroundColorConfigComponent)]
-pub fn public_transport_config_component(props: &BackgroundColorConfigProps) -> Html {
+pub fn background_color_config_component(props: &BackgroundColorConfigProps) -> Html {
     let update_config = {
         let system_config = props.config.clone();
         Callback::from(move |color| {

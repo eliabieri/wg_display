@@ -1,12 +1,19 @@
+//! Component representing the default configuration aspects of a widget.
+//! This currently is only the enabled/disabled state.
+
 use yew::prelude::*;
 
 use common::models::BaseWidgetConfig;
 use common::widget_meta_data::WidgetMetaData;
 
+/// Props for the DefaultWidgetConfigComponent
 #[derive(Properties, PartialEq)]
 pub struct DefaultWidgetConfigProps {
+    /// The widget meta data
     pub meta_data: WidgetMetaData,
+    /// The base configuration of the widget
     pub config: BaseWidgetConfig,
+    /// Callback to be called when the configuration changes
     pub on_change: Callback<BaseWidgetConfig>,
 }
 

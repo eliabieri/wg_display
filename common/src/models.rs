@@ -5,6 +5,7 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
+/// The configuration for the public transport widget.
 #[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
 pub struct PublicTransportConfig {
     pub base_config: BaseWidgetConfig,
@@ -24,8 +25,10 @@ impl Default for PublicTransportConfig {
     }
 }
 
+/// The base configuration for all widgets.
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct BaseWidgetConfig {
+    /// Whether the widget is enabled or not.
     pub enabled: bool,
 }
 
@@ -38,6 +41,8 @@ pub struct WidgetConfiguration {
     pub public_transport_config: PublicTransportConfig,
 }
 
+/// The system configuration.
+/// Stores all configuration that is not specific to one widget.
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct SystemConfiguration {
     #[serde(default)]
@@ -58,6 +63,8 @@ fn persist_system_config(config: SystemConfiguration) {
     });
 }
 
+/// Actions that can be dispatched to the system configuration reducer.
+/// The reducer is responsible for updating and persisting the system configuration state.
 #[derive(PartialEq)]
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),

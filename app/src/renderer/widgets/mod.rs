@@ -1,3 +1,4 @@
+//! Widget implementation
 pub mod aare;
 pub mod base;
 pub mod bernaqua;

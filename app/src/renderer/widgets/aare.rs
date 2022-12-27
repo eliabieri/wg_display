@@ -1,3 +1,4 @@
+//! Shows the current temperature of the Aare river in Bern, Switzerland
 use std::time::{Duration, Instant};
 
 use super::base::Widget;
