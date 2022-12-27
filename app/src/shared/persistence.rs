@@ -1,3 +1,4 @@
+//! Implementation of the system configuration persistence
 use common::models::SystemConfiguration;
 use rocket::serde::json::serde_json;
 
@@ -12,10 +13,14 @@ static CONFIG_UPDATED: AtomicBool = AtomicBool::new(false);
 
 pub struct Persistence {}
 
+/// Persists the system configuration.
+/// Uses the SLED embedded database.
 impl Persistence {
     const DB_KEY: &str = "system_configuration";
 
-    // TODO: change to result
+    /// Save the system configuration
+    /// # Arguments
+    /// * `config` - The system configuration to save
     pub fn save_config(config: SystemConfiguration) {
         let serialized = serde_json::to_string(&config).expect("Could not serialize config");
         DB.insert(Persistence::DB_KEY, serialized.as_bytes())
@@ -23,7 +28,9 @@ impl Persistence {
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 
-    // TODO: change to result
+    /// Load the system configuration
+    /// # Returns
+    /// The system configuration
     pub fn get_config() -> Option<SystemConfiguration> {
         let config = DB
             .get(Persistence::DB_KEY)
@@ -43,6 +50,8 @@ impl Persistence {
         }
     }
 
+    /// Returns Some system configuration if a new one is available
+    /// Can be used for polling updates to the system configuration
     pub fn get_config_change() -> Option<SystemConfiguration> {
         if CONFIG_UPDATED.load(Ordering::Relaxed) {
             CONFIG_UPDATED.store(false, Ordering::Relaxed);
@@ -52,6 +61,8 @@ impl Persistence {
         }
     }
 
+    /// Create a default system configuration
+    /// This is used on systems that never stored a configuration before
     fn create_default_config() {
         Persistence::save_config(SystemConfiguration::default());
     }

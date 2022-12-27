@@ -1,3 +1,4 @@
+//! Shows the current date and time
 use super::base::Widget;
 use async_trait::async_trait;
 use common::models::WidgetConfiguration;

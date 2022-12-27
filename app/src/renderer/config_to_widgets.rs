@@ -1,3 +1,4 @@
+//! Converts the widget configuration to a vector of widgets for rendering
 use crate::renderer::widgets::aare::Aare;
 use crate::renderer::widgets::base::Widget;
 use crate::renderer::widgets::bernaqua::Bernaqua;
@@ -7,6 +8,11 @@ use crate::renderer::widgets::today::Today;
 
 use common::models::WidgetConfiguration;
 
+/// Converts the widget configuration to a vector of widgets using the `enabled` flag
+/// # Arguments
+/// * `config` - The widget configuration
+/// # Returns
+/// A vector of widgets
 pub fn config_to_widgets(config: &WidgetConfiguration) -> Vec<Box<dyn Widget>> {
     let mut widgets: Vec<Box<dyn Widget>> = vec![];
     if config.today_config.enabled {

@@ -1,3 +1,4 @@
+//! Shows the next public transport connections
 use std::time::{Duration, Instant};
 
 use common::models::WidgetConfiguration;
