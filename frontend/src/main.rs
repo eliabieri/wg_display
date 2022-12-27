@@ -14,6 +14,7 @@ use crate::components::config_card::ConfigCardComponent;
 use crate::components::divider::DividerComponent;
 use crate::components::public_transport_config::PublicTransportConfigComponent;
 
+#[forbid(unsafe_code)]
 #[function_component(MainComponent)]
 fn main_component() -> Html {
     let system_config = use_reducer(SystemConfiguration::default);

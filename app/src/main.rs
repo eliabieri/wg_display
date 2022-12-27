@@ -10,6 +10,8 @@ mod renderer;
 mod server;
 pub mod shared;
 
+#[forbid(unsafe_code)]
+
 ///! The WG Display main crate holding everything together.
 #[tokio::main]
 async fn main() {

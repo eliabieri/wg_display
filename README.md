@@ -14,16 +14,14 @@
 make docs
 ```
 
-The generated documentation for the three creates can then be found here
+This generates three seperate documentations, one for each crate
 
-[app](app/target/doc/wg_display/index.html)
+[app](app/target/doc/wg_display/index.html): ```app/target/doc/wg_display/index.html```
 
-```app/target/doc/wg_display/index.html```
+[common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```
 
-[common](common/target/doc/common/index.html)
+[frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
 
-```common/target/doc/common/index.html```
+## Safety
 
-[frontend](frontend/target/doc/frontend/index.html)
-
-```frontend/target/doc/frontend/index.html```
+This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project.
