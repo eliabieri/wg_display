@@ -2,11 +2,17 @@
 
 [![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
 
-## 🦀 Hackable Google Home™ replacement fully built in Rust
-
-### Extensible, open-source and connected to the local community
-
-<br>
+<div align="center">
+    <br>
+    <img src="docs/images/logo.png" style="height: 80px">
+    <br>
+    <br>
+    <strong>
+        🦀 Hackable Google Home™ replacement fully built in Rust
+    </strong>
+    <p>Extensible, open-source and connected to the local community</p>
+    <br/>
+</div>
 
 ## ⭐️ What WG Display can show you
 
