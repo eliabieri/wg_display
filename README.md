@@ -52,7 +52,7 @@ This generates three seperate documentations, one for each crate
 This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project.
 TODO: replace me!
 
-## 🔨 Writing your own widget
+## 👏 Writing your own widget
 
 Want your WG Display to show you
 
@@ -64,3 +64,6 @@ You've got two options
 
 - [Write your own widget](docs/write_new_widget.md). It's easy using the provided guide and reference implementations
 - In case you don't feel capable of writing it yourself, open a [feature request](https://github.com/eliabieri/wg_display/issues/new) and tag it using the `widget request` label
+
+## 🛠️ Assembling the hardware
+TODO
