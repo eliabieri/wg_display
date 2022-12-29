@@ -24,6 +24,16 @@
 - 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
+## 📚 Table of contents
+
+- [⭐️ What WG Display can show you](#️-what-wg-display-can-show-you)
+- [✨ Features](#-features)
+- [📚 Table of contents](#-table-of-contents)
+- [👏 Writing your own widget](#-writing-your-own-widget)
+- [🛠️ Assembling the hardware](#️-assembling-the-hardware)
+- [📖 Documentation (rustdocs)](#-documentation-rustdocs)
+- [🔒 Safety](#-safety)
+
 ---
 
 ![Configuration dashboard](docs/images/dashboard.jpeg)
@@ -32,6 +42,7 @@ The web interface allows the users to configure system aspects like the backgrou
 ---
 
 ![WG Display image front](docs/images/wg_display.jpg)
+TODO: replace me
 
 ## 👏 Writing your own widget
 
