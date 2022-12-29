@@ -22,6 +22,6 @@ This generates three seperate documentations, one for each crate
 
 [frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
 
-## Safety
+## 🔒 Safety
 
 This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project.
