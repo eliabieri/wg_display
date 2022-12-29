@@ -6,7 +6,8 @@
 
 ### Extensible, open-source and connected to the local community
 
----
+<br>
+<br>
 
 ## ⭐️ What WG Display can show you
 
