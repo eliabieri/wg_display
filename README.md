@@ -1,5 +1,3 @@
-[![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
-
 <div align="center">
     <br>
     <img src="docs/images/logo.png" style="height: 80px">
@@ -11,6 +9,8 @@
     <p>Extensible, open-source and connected to the local community</p>
     <br/>
 </div>
+
+[![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
 
 ## ⭐️ What WG Display can show you
 
