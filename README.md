@@ -33,7 +33,26 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ![WG Display image front](docs/images/wg_display.jpg)
 
-## Building the documentation (rustdocs)
+## 👏 Writing your own widget
+
+Want your WG Display to show you
+
+- 🥳 the upcoming events in your favorite night club
+- 🚮 the trash calendar in your municipality
+- 🍺 beers on sale in your local supermarket?  
+
+You've got two options
+
+- [Write your own widget](docs/write_new_widget.md). It's easy using the provided guide and reference implementations
+- In case you don't feel capable of writing it yourself, open a [feature request](https://github.com/eliabieri/wg_display/issues/new) and tag it using the `widget request` label
+
+## 🛠️ Assembling the hardware
+
+TODO
+
+## 📖 Documentation (rustdocs)
+
+The rustdocs can be built using
 
 ```bash
 make docs
@@ -49,21 +68,4 @@ This generates three seperate documentations, one for each crate
 
 ## 🔒 Safety
 
-This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project.
-TODO: replace me!
-
-## 👏 Writing your own widget
-
-Want your WG Display to show you
-
-- 🥳 the upcoming events in your favorite night club
-- 🚮 the trash calendar in your municipality
-- 🍺 beers on sale in your local supermarket?  
-
-You've got two options
-
-- [Write your own widget](docs/write_new_widget.md). It's easy using the provided guide and reference implementations
-- In case you don't feel capable of writing it yourself, open a [feature request](https://github.com/eliabieri/wg_display/issues/new) and tag it using the `widget request` label
-
-## 🛠️ Assembling the hardware
-TODO
+This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project
