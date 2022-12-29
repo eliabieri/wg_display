@@ -1,5 +1,3 @@
-# WG Display
-
 [![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
 
 <div align="center">
