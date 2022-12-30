@@ -33,6 +33,7 @@
 - [⭐️ What WG Display can show you](#️-what-wg-display-can-show-you)
 - [✨ Features](#-features)
 - [📚 Table of contents](#-table-of-contents)
+- [🚀 Getting started](#-getting-started)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [🛠️ Assembling the hardware](#️-assembling-the-hardware)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
@@ -47,6 +48,21 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ![WG Display image front](docs/images/wg_display.jpg)
 TODO: replace me
+
+## 🚀 Getting started
+
+Building the project is easy
+
+```bash
+# Native build
+make
+# Raspberry PI Zero 1 / Zero W / Zero WH
+make app_arm
+# Raspberry PI 2 / 3 / 4/ Zero 2 W
+make app_armv7
+```
+
+Then simply copy over the generated binary to the target and run it
 
 ## 👏 Writing your own widget
 
