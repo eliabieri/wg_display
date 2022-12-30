@@ -63,7 +63,31 @@ You've got two options
 
 ## 🛠️ Assembling the hardware
 
-TODO
+WG Display is best deployed on a Raspberry PI and a cheap display hat.
+
+```
+💡 Even a Raspberry PI Zero is sufficient! 
+The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
+```
+
+Some displays that are tested to be good
+
+- [5" MIPI DIS Display](https://t.ly/fWl3)
+  - ✨ Requires no driver
+  - ✨ Includes stand
+  - 📐 Large enough to display ~ 6 widgets
+  - 💲💲💲
+- [3.5" HAT Display](https://t.ly/DfWJ)
+  - ✨ Includes enclosure for wall mounting
+  - ⚠️ Requires a [driver](https://github.com/goodtft/LCD-show/blob/master/MHS35-show)
+  - 📐 Large enough to display ~ 3 widgets
+  - 💲
+- [3.5" HAT HDMI Display](https://t.ly/l2Rd)
+  - ✨ Requires no driver
+  - 📐 Large enough to display ~ 3 widgets
+  - 💲💲
+- Any other display you might find
+  - WG Display uses the terminal for rendering, so there are no special display requirements
 
 ## 📖 Documentation (rustdocs)
 
@@ -75,10 +99,8 @@ make docs
 
 This generates three seperate documentations, one for each crate
 
-[app](app/target/doc/wg_display/index.html): ```app/target/doc/app/index.html```
-
-[common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```
-
+[app](app/target/doc/wg_display/index.html): ```app/target/doc/app/index.html```  
+[common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```  
 [frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
 
 ## 🔒 Safety
