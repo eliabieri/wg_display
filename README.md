@@ -34,8 +34,8 @@
 - [✨ Features](#-features)
 - [📚 Table of contents](#-table-of-contents)
 - [🚀 Getting started](#-getting-started)
-- [👏 Writing your own widget](#-writing-your-own-widget)
 - [🛠️ Assembling the hardware](#️-assembling-the-hardware)
+- [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
 - [🔒 Safety](#-safety)
 
@@ -64,19 +64,6 @@ make app_armv7
 
 Then simply copy over the generated binary to the target and run it
 
-## 👏 Writing your own widget
-
-Want your WG Display to show you
-
-- 🥳 the upcoming events in your favorite night club
-- 🚮 the trash calendar in your municipality
-- 🍺 beers on sale in your local supermarket?  
-
-You've got two options
-
-- [Write your own widget](docs/write_new_widget.md). It's easy using the provided guide and reference implementations
-- In case you don't feel capable of writing it yourself, open a [feature request](https://github.com/eliabieri/wg_display/issues/new) and tag it using the `widget request` label
-
 ## 🛠️ Assembling the hardware
 
 WG Display is best deployed on a Raspberry PI and a cheap display hat.
@@ -104,6 +91,19 @@ Some displays that are tested to be good
   - 💲💲
 - Any other display you might find
   - WG Display uses the terminal for rendering, so there are no special display requirements
+
+## 👏 Writing your own widget
+
+Want your WG Display to show you
+
+- 🥳 the upcoming events in your favorite night club
+- 🚮 the trash calendar in your municipality
+- 🍺 beers on sale in your local supermarket?  
+
+You've got two options
+
+- [Write your own widget](docs/write_new_widget.md). It's easy using the provided guide and reference implementations
+- In case you don't feel capable of writing it yourself, open a [feature request](https://github.com/eliabieri/wg_display/issues/new) and tag it using the `widget request` label
 
 ## 📖 Documentation (rustdocs)
 
