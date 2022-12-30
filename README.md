@@ -58,7 +58,7 @@ Building the project is easy
 make
 # Raspberry PI Zero 1 / Zero W / Zero WH
 make app_arm
-# Raspberry PI 2 / 3 / 4/ Zero 2 W
+# Raspberry PI 2 / 3 / 4 / Zero 2 W
 make app_armv7
 ```
 
