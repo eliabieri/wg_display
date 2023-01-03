@@ -39,15 +39,12 @@
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
 - [🔒 Safety](#-safety)
 
+![WG Display image front](docs/images/wg_display.jpg)
+
 ---
 
 ![Configuration dashboard](docs/images/dashboard.jpeg)
 The web interface allows the users to configure system aspects like the background color used on the display or various configuration options of the different widgets.
-
----
-
-![WG Display image front](docs/images/wg_display.jpg)
-TODO: replace me
 
 ## 🚀 Getting started
 
@@ -68,7 +65,7 @@ Then simply copy over the generated binary to the target and run it
 
 WG Display is best deployed on a Raspberry PI and a cheap display hat.
 
-```
+```text
 💡 Even a Raspberry PI Zero is sufficient! 
 The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
