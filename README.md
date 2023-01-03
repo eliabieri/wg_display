@@ -28,26 +28,31 @@
 - 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
+## 🔮 Upcoming features
+
+- [ ] Allow user to configure WiFi credentials via web interface
+- [ ] Starting the binary through systemd
+
 ## 📚 Table of contents
 
 - [⭐️ What WG Display can show you](#️-what-wg-display-can-show-you)
 - [✨ Features](#-features)
+- [🔮 Upcoming features](#-upcoming-features)
 - [📚 Table of contents](#-table-of-contents)
 - [🚀 Getting started](#-getting-started)
 - [🛠️ Assembling the hardware](#️-assembling-the-hardware)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
 - [🔒 Safety](#-safety)
+- [♻️ Updating the dependencies](#️-updating-the-dependencies)
+- [🦾 Developing on target](#-developing-on-target)
+
+![WG Display image front](docs/images/wg_display.jpg)
 
 ---
 
 ![Configuration dashboard](docs/images/dashboard.jpeg)
 The web interface allows the users to configure system aspects like the background color used on the display or various configuration options of the different widgets.
-
----
-
-![WG Display image front](docs/images/wg_display.jpg)
-TODO: replace me
 
 ## 🚀 Getting started
 
@@ -62,13 +67,17 @@ make app_arm
 make app_armv7
 ```
 
-Then simply copy over the generated binary to the target and run it
+Then simply copy over the generated binary to the target and run it.
+
+```text
+💡 To run it at boot, simply add the path to the binary to the end of the `~/.bashrc` file.
+```
 
 ## 🛠️ Assembling the hardware
 
 WG Display is best deployed on a Raspberry PI and a cheap display hat.
 
-```
+```text
 💡 Even a Raspberry PI Zero is sufficient! 
 The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
@@ -122,3 +131,29 @@ This generates three seperate documentations, one for each crate
 ## 🔒 Safety
 
 This project uses `#[forbid(unsafe_code)]` in all crates to ensure that no `unsafe` Rust is ever added to the project
+
+## ♻️ Updating the dependencies
+
+```bash
+# To update the dependencies in all crates, simply run
+scripts/update_dependencies.sh
+```
+
+## 🦾 Developing on target
+
+When developing, an occasional run on a target may be required.  
+You can the following script as a template to copy over the binary to the target and restart it
+
+```bash
+#!/bin/sh
+set -e
+
+# Note:
+# - Add public key to authorized_keys on target
+# - Enable root ssh login: https://raspberrypi.stackexchange.com/questions/48056/how-to-login-as-root-remotely
+
+make app_arm
+ssh pi@wgdisplay.local "sudo /usr/bin/pkill -9 wg_display || true"
+scp /Users/eliabieri/git/wg_display/app/target/arm-unknown-linux-gnueabihf/release/wg_display pi@wgdisplay.local:/home/pi
+ssh pi@wgdisplay.local "sudo reboot"
+```
