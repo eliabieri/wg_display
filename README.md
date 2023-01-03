@@ -61,6 +61,8 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ### Prerequisites
 
+First, install [rustup](https://rustup.rs) then
+
 ```bash
 # Install WebAssembly target
 rustup target add wasm32-unknown-unknown
