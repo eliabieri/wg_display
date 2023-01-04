@@ -40,6 +40,9 @@
 - [🔮 Upcoming features](#-upcoming-features)
 - [📚 Table of contents](#-table-of-contents)
 - [🚀 Getting started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Prerequisites for cross-compilation](#prerequisites-for-cross-compilation)
+  - [Building the project](#building-the-project)
 - [🛠️ Assembling the hardware](#️-assembling-the-hardware)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
@@ -56,14 +59,35 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-Building the project is easy
+### Prerequisites
+
+First, install [rustup](https://rustup.rs) then
+
+```bash
+# Install WebAssembly target
+rustup target add wasm32-unknown-unknown
+# Install trunk for building the frontend
+cargo install --locked trunk
+# Install NPM dependencies
+cd frontend && npm install
+```
+
+### Prerequisites for cross-compilation
+
+First, install [docker](https://www.docker.com), then
+
+```bash
+cargo install cross --git https://github.com/cross-rs/cross
+```
+
+### Building the project
 
 ```bash
 # Native build
 make
-# Raspberry PI Zero 1 / Zero W / Zero WH
+# Cross compilation (Raspberry PI Zero 1 / Zero W / Zero WH)
 make app_arm
-# Raspberry PI 2 / 3 / 4 / Zero 2 W
+# Cross compilation (Raspberry PI 2 / 3 / 4 / Zero 2 W)
 make app_armv7
 ```
 
