@@ -46,14 +46,19 @@ Date: 03.01.2022
 
 ## Abstract
 
-The WG Display is a display that shows information relevant to the people living in a shared flat.
-The information is displayed on a display that is mounted on the wall.  
+The WG Display is a device that shows information relevant to people living together.
+The information is displayed on a screen that is mounted on the wall or placed on a counter.  
+Earlier prototypes of such a device were devloped over the years, but they never reached a state where they could be used by other people.
+
+This project aims to develop a new version of the WG Display that is more robust, easier to configure and better documented.
+
+The result of this project is a working prototype of the WG Display that is user friendy, extensible, can be configured by the users and is well documented.
 
 ## Introduction
 
 ### Motivation
 
-Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all of us. This information could be anything from the current weather, the next bus departures from the nearest public transport station to the temperature of the Aare river. The idea is to have a central place where all this information is displayed. This place is the WG Display.
+Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all room mates. This information could be anything from the current weather, the next bus departures from the nearest public transport station to the temperature of the Aare river. The idea is to have a central place where all this information is displayed. This place is the WG Display.
 
 Since we had quite a bit of experience with the Raspberry Pi, we decided to use it as the main controller.  
 Together with a 5" display case that we had lying around, we were able to quickly build a prototype.
@@ -64,9 +69,9 @@ Guests coming over to our place started to take notice and wanted to have a WG D
 
 The problem was, that our solution was "too hacked together".  
 There was no way to configure it to the user's needs.  
-We also had occasional problems with the software crashing, which was not very user friendly.  
+We also had occasional problems with the software crashing, which was hard to debug.  
 
-That's how I got the idea of a complete rewrite of the software.  
+That's how the idea of a complete rewrite of the software arose.  
 The need for such a display was clearly validated over the years and we had enough time to determine the shortcomings of the previous solution.  
 The new software should be more robust, easier to configure and better documented.
 
@@ -86,7 +91,7 @@ The deliverables for this project are:
 
 ### Functional
 
-TODO
+
 
 ### Non-functional
 
