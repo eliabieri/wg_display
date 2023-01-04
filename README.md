@@ -42,7 +42,7 @@
   - [Building the project](#building-the-project)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
-- [🔮 Upcoming features](#-upcoming-features)
+- [🔮 What comes next](#-what-comes-next)
 - [🔒 Safety](#-safety)
 - [♻️ Updating the dependencies](#️-updating-the-dependencies)
 - [🦾 Developing on target](#-developing-on-target)
@@ -161,10 +161,13 @@ This generates three separate documentations, one for each crate
 [common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```  
 [frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
 
-## 🔮 Upcoming features
+## 🔮 What comes next
 
 - [ ] Allow user to configure WiFi credentials via web interface
 - [ ] Starting the binary through systemd
+- [ ] Implement an update mechanism
+- [ ] Implement authencation for the web interface
+- [ ] Dynamically loading widgets (currently, the widgets are part of the app crate)
 
 ## 🔒 Safety
 
