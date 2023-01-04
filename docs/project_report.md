@@ -38,7 +38,7 @@ Date: 03.01.2022
 - [Future extensions](#future-extensions)
 - [Glossary](#glossary)
 - [Appendix](#appendix)
-  - [The main README.md of the project](#the-main-readmemd-of-the-project)
+  - [README.md](#readmemd)
   - [Documentation on how to write a new widget](#documentation-on-how-to-write-a-new-widget)
 - [Declaration of Authorship](#declaration-of-authorship)
 
@@ -82,8 +82,8 @@ The new software should be more robust, easier to configure and better documente
 The deliverables for this project are:
 
 - The codebase of a working prototype of the application
-- Documentation of the codebase
-- A GitHub repository that forms the basis for growing a community around the project
+- Documentation of the codebase that is fun to read
+- A GitHub repository configured so that it can form the basis for growing a community around the project
 - A project report that describes the project and the software architecture
 - A presentation that explains the project and the software architecture
 
@@ -91,17 +91,23 @@ The deliverables for this project are:
 
 ### Functional
 
-- Easy deployment (compile to a single binary)
+- The software must be easy to deploy (compiles to single binary)
+- The software must allow the user to configure the displayed widgets
+- The user must be able to configure the device via a web interface
+- The configuration must be persisted across restarts
+- Configuration changes must be applied without restarting the software
+- The software must be deployable on all Raspberry Pi models
+- The sofware must run on various screen sizes (3.5", 5", 7")
+- Prebuilt binaries must be available for download
 
 ### Non-functional
 
-- The sofware should be robust and crash as little as possible.
-- Users should be able to configure the software to their needs.
-- Configuration changes should be applied without restarting the software.
-- The software should be well documented.
-- The documentation should be fun to read.
-- The project should be open source and available on GitHub.
-- The project should be easy to contribute to.
+- The sofware shall be robust and crash as little as possible
+- The software shall be well documented
+- The documentation shall be fun to read
+- The project shall be open source and available on GitHub
+- The project shall be easy to contribute to
+- Contribution guides shall be available
 
 <div class="page"/>
 
@@ -133,7 +139,6 @@ The GitHub project was configured to enforce several rules:
   This was achieved by setting a branch protection rule that required a pull request before merging.
 - All pull requests required all status checks to pass before they could be merged.
   This was achieved by setting a branch protection rule that required all status checks to pass before merging.
-- Prevent force pushes on non feature branches.
 - Prevent merge commits from being pushed to non feature branches.
   This ensures a linear commit history.
 
@@ -150,7 +155,7 @@ The programming language of choice for this project was Rust.
 Rust is a systems programming language that is designed to be fast, reliable and secure.  
 It's extensive type system ensures that the code is safe and robust.  
 The language is also very well suited for writing concurrent code, which is a requirement for this project.
-Since Rust can be compiled to web assembly, it could also be used to write the configuration frontend.
+Since Rust can be compiled to [WebAssembly](https://www.rust-lang.org/what/wasm), it could also be used to write the configuration frontend.
 Furthermore, the developer experience is very good. This is reflected in the [Stack Overflow developer survey](https://survey.stackoverflow.co/2022/), where Rust is ranked as the most loved programming language for the past seven years.
 Last but not least, Rust has a very active community and a big ecosystem of `crates` (libraries) that simplified the development of the project greatly.
 
@@ -195,7 +200,31 @@ The configuration frontend is a web application that allows the user to configur
 The frontend was written using the [Yew](https://yew.rs/) framework.  
 Yew is a component-based framework for writing web applications in Rust.  
 
+The components are written in Rust and HTML.  
+In order for them to live in a single file, `Yew` provides a macro called `html!` that allows to write HTML in Rust.  
+
+```rust
+#[derive(Properties, PartialEq)]
+pub struct ConfigCardProps {
+    pub children: Children,
+}
+
+#[function_component(ConfigCardComponent)]
+pub fn config_card_component(props: &ConfigCardProps) -> Html {
+    html! {
+        <div class="p-4 my-3">
+            { for props.children.iter() }
+        </div>
+    }
+}
+```
+
+The example above shows a component that renders children components with some padding.  
+Components can receive properties from their parent component.  
+
 To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used.
+
+The following screenshot shows the configuration frontend:
 
 ![frontend](images/dashboard.jpeg)
 
@@ -203,17 +232,53 @@ To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwind
 
 ### Display renderer
 
-The `renderer` module is responsible for rendering the display output.  
+The `renderer` module is responsible for rendering the display output using [cursive](https://github.com/gyscos/cursive) which is a `crate` for building terminal-based user interfaces (TUIs).  
+The output consists of a number of widgets.  
+`Widget` is the term used by this project to describe the individual pieces of information that are displayed on the screen.  
+Widgets have a name and a corresponding value, that is updated dynamically.  
 
-The display output is rendered using the [cursive](https://github.com/gyscos/cursive) which is a `crate` for building terminal-based user interfaces (TUIs).  
+```rust
+/// Base trait for all widgets
+/// Every widget must implement this trait
+#[async_trait]
+pub trait Widget {
+    fn new() -> Self
+    where
+        Self: Sized;
 
+    /// Returns the meta data of the widget
+    /// This is used to identify the widget on the display and on the frontend dashboard application
+    fn get_meta_data(&self) -> WidgetMetaData;
+
+    /// Returns the content of the widget
+    /// Widgets may use newlines to display multiple lines
+    fn get_content(&self) -> &str;
+
+    /// Updates the widget content
+    /// This method is called periodically by the renderer
+    /// The widget must implement its own timeout logic to prevent unnecessary updates
+    async fn update(&mut self, config: &WidgetConfiguration);
+}
+```
+
+Every widget must implement the `Widget` trait.  
+
+The renderer first loads the configuration from the embedded database.  
+It then instantiates all widgets that are enabled by the user.  
+After that, it starts a loop in which it calles the `update` method of each widget once a second.  
+This gives the widgets the opportunity to update their content.  
+Most widgets may not need to update their content every second, so they can implement their own timeout logic.  
+
+After updating the widgets, the renderer renders the content of all widgets to the display.
 
 <div class="page"/>
 
 ### Web server
 
 The `server` module is responsible for serving the configuration frontend and providing a REST API for accessing the system configuration.  
+
 The module uses the [rocket](https://crates.io/crates/rocket) crate for this purpose.  
+This makes it very easy to implement the REST API.
 
 ```rust
 /// Saves the system configuration
@@ -319,6 +384,8 @@ $(frontend_build): $(tailwind_output_css) $(dependencies)
  cd frontend && trunk build --release
 ```
 
+<div class="page"/>
+
 ### Tests
 
 TODO
@@ -334,60 +401,57 @@ There were the following requirements:
 
 To achieve this, three seperate workflows were created.
 
-The following workflow definition is used to build and publish a new release on every version tag on the main branch:
+![GitHub release](images/github_release.png)
 
-```yaml
-name: Build release
-on:
-  push:
-    tags:
-      # Push events to matching v*, i.e. v1.0, v20.15.10
-      - 'v*'
-env:
-  CARGO_TERM_COLOR: always
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - uses: actions/checkout@v3
-    - name: Add WASM target
-      run: rustup target add wasm32-unknown-unknown
-    - name: Install cargo dependencies
-      run: cargo install cross --locked &&
-        cargo install --locked trunk
-    - name: Install tailwindcss
-      run: cd frontend && npm install
-    - name: Build for Raspberry Pi 2/3/4)
-      run: make app_armv7
-    - name: Build for Raspberry Pi 0/1
-      run: make app_arm
-    - name: Rename artifacts
-      run: |
-        mv app/target/armv7-unknown-linux-gnueabihf/release/wg_display app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
-        mv app/target/arm-unknown-linux-gnueabihf/release/wg_display app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
-    - uses: ncipollo/release-action@v1
-      with:
-          artifacts: "app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
-          artifactErrorsFailBuild: true
-```
+The above image shows a release that was automatically created.  
+It includes the individal commit messages going into the release and the cross compiled binaries for all supported targets.
 
 ### Deployment
 
-TODO
+Having made the decision to compile the project down to a single binary, the deployment process is very simple.  
+The binary can simply be copied to the Raspberry Pi and executed.  
+
+This process is described in the `README` of the project.  
+It can be [found](#readmemd) in the appendix.
 
 <div class="page"/>
 
 ## Results
 
-TODO
-
 <div class="page"/>
 
 ## Future extensions
 
-TODO
+The current state of the project provides a good foundation for future extensions.  
+Several features were not implemented due to time constraints but would greatly improve the user experience.
+
+- **Adding more widgets**  
+  Currently, only a few widgets are implemented.  
+  Implementing a few more widgets could help to make the project more popular.
+- **Supportting more widget output formats**  
+  Currently, widgets can only output their content as text.  
+  Supporting more output formats would allow for more interesting widgets.  
+- **User authentication**  
+  The current state of the project does not provide any authentication.  
+  This means that anyone with access to the network can change the configuration.  
+  This is not a problem for a "WG" but could be a problem when the display is installed in larger networks.  
+  A possible solution would be to implement a simple authentication mechanism using a username and password.  
+- **Configuring WiFi credentials**  
+  Currently, there is no way for the user to configure the WiFi credentials.  
+  This means that the WiFi credentials need to be configured manually on the Raspberry Pi.  
+  This could be part of the configuration page.  
+  The Raspberry Pi would initially have to create it's own WiFi network for the user to connect to and configure the WiFi credentials.
+- **Updating the application**  
+  Currently, the application needs to be updated manually.  
+  This could be done by adding a button to the configuration page that would trigger an update.  
+  The update would then be downloaded and installed automatically.  
+  This would also require the application to be able to update itself.  
+  This could be achieved by using a crate like [self_update](https://crates.io/crates/self_update).
+- **Dynamically loading widgets**  
+  Currently, the widgets are statically defined in the `app` crate.  
+  Newly added widgets require a new release of the application.  
+  This could be changed by dynamically loading the widgets from a directory.  
+  This could be achieved by using a crate like [libloading](https://crates.io/crates/libloading).
 
 <div class="page"/>
 
@@ -404,12 +468,14 @@ TODO
 - Cargo: The Rust package manager.
 - Makefile: A file that contains a set of directives used by a program called make for automatically building a software program.
 - Cross compilation: Cross compilation is the process of compiling a program on one computer to run on a different computer.
+- WebAssembly: WebAssembly (abbreviated Wasm) is a binary instruction format for a stack-based virtual machine.  
+  Wasm is designed as a portable compilation target for programming languages, enabling deployment on the web for client and server applications.
 
 <div class="page"/>
 
 ## Appendix
 
-### The main README.md of the project
+### README.md
 
 :[README.md](../README.md)
 
