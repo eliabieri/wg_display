@@ -19,18 +19,18 @@ Date: 03.01.2022
 - [Requirements](#requirements)
   - [Functional](#functional)
   - [Non-functional](#non-functional)
-  - [System context](#system-context)
 - [Method](#method)
   - [Project management](#project-management)
   - [Repository settings](#repository-settings)
 - [System architecture](#system-architecture)
   - [Programming language](#programming-language)
   - [Overview](#overview)
+  - [Build process](#build-process)
   - [Main Rust crates used in the project](#main-rust-crates-used-in-the-project)
   - [Other dependencies](#other-dependencies)
   - [Configuration frontend](#configuration-frontend)
   - [Cross compilation](#cross-compilation)
-  - [Build process](#build-process)
+  - [Build process](#build-process-1)
   - [Tests](#tests)
   - [Continuous integration](#continuous-integration)
   - [Deployment](#deployment)
@@ -91,15 +91,17 @@ The deliverables for this project are:
 
 ### Functional
 
-
+TODO
 
 ### Non-functional
 
-TODO
-
-### System context
-
-TODO
+- The sofware should be robust and crash as little as possible.
+- Users should be able to configure the software to their needs.
+- Configuration changes should be applied without restarting the software.
+- The software should be well documented.
+- The documentation should be fun to read.
+- The project should be open source and available on GitHub.
+- The project should be easy to contribute to.
 
 <div class="page"/>
 
@@ -168,6 +170,11 @@ Renderer
 
 - Render information to a terminal UI
 
+
+### Build process
+
+
+
 ### Main Rust crates used in the project
 
 - [cursive](https://github.com/gyscos/cursive) for rendering the display output
@@ -202,6 +209,89 @@ This project allows to build Rust projects for different targets using prebuilt 
 Not having to manually install the required toolchains for each target is a huge advantage.  
 
 ### Build process
+
+```mermaid
+flowchart LR
+   A[frontend crate sources - rs, html] -- tailwind-build --> B[output.css]
+   B -- trunk build --> C[frontend dist - WASM, JS, HTML, CSS]
+   A -- trunk build --> C
+
+   C -- Rust Embed --> D
+
+   D[app crate sources - rs] -- cargo build --> X[app - binary]
+   E[common crate sources - rs] -- cargo build --> X
+```
+
+```makefile
+# Make does not offer a recursive wildcard function, so here's one:
+rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+
+frontend_dist = frontend/dist
+tailwind_output_css = $(frontend_dist)/$(wildcard output-*.css)
+yew_index_html = $(frontend_dist)/index.html
+frontend_build = $(yew_index_html)
+
+build_native_release = app/target/release/wg_display
+build_native_release_debug = app/target/debug/wg_display
+
+app:
+
+.PHONY: clean
+clean:
+ rm -rf app/target
+ rm -rf common/target
+ rm -rf frontend/dist
+
+## Build the application
+dependencies = \
+ $(call rwildcard,app/src/,*.rs) \
+ $(call rwildcard,common/src/,*.rs) \
+ $(call rwildcard,frontend/src,*.rs) \
+ $(call rwildcard,app/src/,*.rs) \
+ $(call rwildcard,common/src/,*.rs) \
+ $(call rwildcard,app/,Cargo.*) \
+ $(call rwildcard,common/,Cargo.*) \
+ $(call rwildcard,frontend/,Cargo.*)
+
+# Generate docs
+docs: $(dependencies) $(frontend_build)
+ cd app && cargo doc --no-deps
+ cd common && cargo doc --no-deps
+ cd frontend && cargo doc --no-deps
+
+# Build complete app for the native platform
+$(build_native_release): $(dependencies) $(frontend_build)
+ cd app && cargo build --release
+app: $(build_native_release)
+
+# Build complete app for the native platform in debug mode
+$(build_native_release_debug): $(dependencies) $(frontend_build)
+ cd app && cargo build
+app_debug: $(build_native_release_debug)
+
+# Build complete app for arm (Raspberry Pi 2/3/4)
+target/armv7-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
+ cd app && cross build --release --target armv7-unknown-linux-gnueabihf
+app_armv7: target/armv7-unknown-linux-gnueabihf/wg_display
+
+# Build complete app for arm (Raspberry Pi 0/1)
+target/arm-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
+ cd app && cross build --release --target arm-unknown-linux-gnueabihf
+app_arm: target/arm-unknown-linux-gnueabihf/wg_display
+
+## Build frontend using trunk
+dependencies = \
+ $(call rwildcard,frontend/src/,*.rs) \
+ frontend/index.html \
+ frontend/package.json
+$(tailwind_output_css): $(dependencies)
+ # Force regeneration
+ rm -rf $(tailwind_output_css)
+ cd frontend && npm run tailwind-build
+
+$(frontend_build): $(tailwind_output_css) $(dependencies)
+ cd frontend && trunk build --release
+```
 
 TODO
 
