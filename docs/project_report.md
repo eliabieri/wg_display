@@ -226,7 +226,7 @@ To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwind
 
 The following screenshot shows the configuration frontend:
 
-![frontend](images/dashboard.jpeg)
+![frontend](images/hand_dashboard.png)
 
 <div class="page"/>
 
