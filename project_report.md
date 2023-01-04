@@ -1,17 +1,26 @@
-
-# WG Display - Project Report
-
-Report for the course Project 2  
-Author: Elia Bieri  
-Supervisor: Michael Röthlin  
-Date: 03.01.2022  
-
-![WG Display](./images/wg_display.jpg)
+<div align="center">
+    <br>
+    <img src="docs/images/wg_display.jpg" style="height: 480px">
+    <br>
+    <br>
+    <strong>
+        <h1>WG Display - Project Report</h1>
+    </strong>
+    <h3>🦀 Hackable information display fully built in Rust</h3>
+    <h4>Extensible, open-source and connected to the local community</h4>
+    <br/>
+    <p>
+    Author: Elia Bieri<br>
+    Supervisor: Michael Röthlin<br>
+    Date: 03.01.2022<br>
+    </p>
+</div>
 
 <div class="page"/>
 
 ## Table of contents
 
+- [Table of contents](#table-of-contents)
 - [Abstract](#abstract)
 - [Introduction](#introduction)
   - [Motivation](#motivation)
@@ -29,6 +38,7 @@ Date: 03.01.2022
   - [Display renderer](#display-renderer)
   - [Web server](#web-server)
   - [Configuration persistence](#configuration-persistence)
+  - [Concurrency](#concurrency)
   - [Cross compilation](#cross-compilation)
   - [Build process](#build-process)
   - [Tests](#tests)
@@ -54,6 +64,8 @@ This project aims to develop a new version of the WG Display that is more robust
 
 The result of this project is a working prototype of the WG Display that is user friendy, extensible, can be configured by the users and is well documented.
 
+<div class="page"/>
+
 ## Introduction
 
 ### Motivation
@@ -75,8 +87,6 @@ That's how the idea of a complete rewrite of the software arose.
 The need for such a display was clearly validated over the years and we had enough time to determine the shortcomings of the previous solution.  
 The new software should be more robust, easier to configure and better documented.
 
-<div class="page"/>
-
 ### Deliverables
 
 The deliverables for this project are:
@@ -86,6 +96,8 @@ The deliverables for this project are:
 - A GitHub repository configured so that it can form the basis for growing a community around the project
 - A project report that describes the project and the software architecture
 - A presentation that explains the project and the software architecture
+
+<div class="page"/>
 
 ## Requirements
 
@@ -119,14 +131,14 @@ Since the project was developed in a way that allowed for contributions from mul
 
 The GitHub project board was used as a task management tool.
 
-![GitHub project board](./images/github_project.png)
+![GitHub project board](github_project.png)
 
 This has the advantage, that the project board is tightly integrated with the code repository.  
 Tasks can be connected to pull requests and issues.  
 
 Tasks were assigned to a milestone, that represented the the end of the Project 2 course.  
 
-![milestone](./images/milestone.png)
+![milestone](milestone.png)
 Since tasks were subdivided into smaller tasks, the milestone view gave a nice overview of the progress of the project.
 
 <div class="page"/>
@@ -224,9 +236,9 @@ Components can receive properties from their parent component.
 
 To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used.
 
-The following screenshot shows the configuration frontend:
+![frontend](hand_dashboard.png)
 
-![frontend](images/hand_dashboard.png)
+The configuration frontend being accessed on an iPhone.
 
 <div class="page"/>
 
@@ -269,7 +281,13 @@ After that, it starts a loop in which it calles the `update` method of each widg
 This gives the widgets the opportunity to update their content.  
 Most widgets may not need to update their content every second, so they can implement their own timeout logic.  
 
-After updating the widgets, the renderer renders the content of all widgets to the display.
+After updating the widgets, the renderer renders the content of all widgets to the display.  
+
+The `update` method of the widgets is asynchronous.  
+This allows widgets to perform network requests or other time-consuming tasks.  
+The `renderer` can await the completion of all `update` calls concurrently.
+
+See the [Concurrency](#concurrency) section for more details.
 
 <div class="page"/>
 
@@ -301,6 +319,35 @@ This database is a key-value store that is optimized for speed and low memory us
 It could satisfy all the requirements of this project, was easy to use and is actively maintained.
 
 The [serde](https://serde.rs) crate was used to serialize the configuration to JSON before storing it in the database.
+
+### Concurrency
+
+The application needs to do two things concurrently:
+
+- The `renderer` needs to update the widgets periodically and rerender the output based on the updated content.
+- The `server` needs to listen for incoming requests and serve the frontend.
+
+To achieve this, the project uses the [tokio](https://tokio.rs) async runtime.  
+The `tokio` runtime allows to spawn tasks that run concurrently.
+
+Quoting the [tokio task](https://docs.rs/tokio/latest/tokio/task/index.html) documentation
+
+> A task is a light weight, non-blocking unit of execution.
+ A task is similar to an OS thread, but rather than being managed by the OS scheduler, they are managed by the  Tokio runtime.
+
+The following code shows the main entry point of the application.  
+It instantiates the `renderer`, spawns a `task` for the `server` and then awaits the completion of both the renderer task and the `run` method of the `server`.
+
+```rust
+#[tokio::main]
+async fn main() {
+    let mut renderer = renderer::Renderer::new();
+    let _unused = join!(
+        tokio::spawn(async { server::serve_dashboard().await }),
+        renderer.run()
+    );
+}
+```
 
 ### Cross compilation
 
@@ -401,7 +448,7 @@ There were the following requirements:
 
 To achieve this, three seperate workflows were created.
 
-![GitHub release](images/github_release.png)
+![GitHub release](github_release.png)
 
 The above image shows a release that was automatically created.  
 It includes the individal commit messages going into the release and the cross compiled binaries for all supported targets.
@@ -417,6 +464,8 @@ It can be [found](#readmemd) in the appendix.
 <div class="page"/>
 
 ## Results
+
+TODO
 
 <div class="page"/>
 
@@ -477,13 +526,13 @@ Several features were not implemented due to time constraints but would greatly 
 
 ### README.md
 
-:[README.md](../README.md)
+:[README.md](README.md)
 
 <div class="page"/>
 
 ### Documentation on how to write a new widget
 
-:[widget.md](write_new_widget.md)
+:[widget.md](docs/write_new_widget.md)
 
 <div class="page"/>
 
