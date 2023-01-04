@@ -6,8 +6,8 @@ tailwind_output_css = $(frontend_dist)/$(wildcard output-*.css)
 yew_index_html = $(frontend_dist)/index.html
 frontend_build = $(yew_index_html)
 
-build_native_release = app/target/release/wg_display
-build_native_release_debug = app/target/debug/wg_display
+build_native_release = app/target/release/app
+build_native_release_debug = app/target/debug/app
 
 app:
 
@@ -45,14 +45,14 @@ $(build_native_release_debug): $(dependencies) $(frontend_build)
 app_debug: $(build_native_release_debug)
 
 # Build complete app for arm (Raspberry Pi 2/3/4)
-target/armv7-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
+target/armv7-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
 	cd app && cross build --release --target armv7-unknown-linux-gnueabihf
-app_armv7: target/armv7-unknown-linux-gnueabihf/wg_display
+app_armv7: target/armv7-unknown-linux-gnueabihf/app
 
 # Build complete app for arm (Raspberry Pi 0/1)
-target/arm-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
+target/arm-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
 	cd app && cross build --release --target arm-unknown-linux-gnueabihf
-app_arm: target/arm-unknown-linux-gnueabihf/wg_display
+app_arm: target/arm-unknown-linux-gnueabihf/app
 
 ## Build frontend using trunk
 dependencies = \
