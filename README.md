@@ -4,7 +4,7 @@
     <br>
     <br>
     <strong>
-        🦀 Hackable Google Home™ replacement fully built in Rust
+        🦀 Hackable information display fully built in Rust
     </strong>
     <p>Extensible, open-source and connected to the local community</p>
     <br/>
@@ -14,10 +14,11 @@
 
 ## ⭐️ What WG Display can show you
 
-- The next public transport connections between two stations
-- The current temperature of the Aare River and whether is a good idea to take a dip
-- The current date and time
-- The current occupacy in the "Sauna Lorrainebad" in Bern, CH
+- 🚂 The next public transport connections between two stations
+- 🏊🏻 The current temperature of the Aare River and whether it is a good idea to take a dip
+- ⏰ The current date and time
+- 🧖🏽‍♀️ The current occupancy in the "Sauna Lorrainebad" in Bern, CH
+- 🕺🏾 The next event at the Cafete Club
 - .. what ever idea you might have? Simply write your own widget
 
 ## ✨ Features
@@ -56,15 +57,15 @@ The web interface allows the users to configure system aspects like the backgrou
 ## 🚀 Getting started
 
 1. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
-   - Raspberry PI Zero 1 / Zero W / Zero WH -> wg-display-arm-unknown-linux-gnueabihf
-   - Raspberry PI 2 / 3 / 4 / Zero 2 W -> wg-display-armv7-unknown-linux-gnueabihf
+   - Raspberry Pi Zero 1 / Zero W / Zero WH -> wg-display-arm-unknown-linux-gnueabihf
+   - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> wg-display-armv7-unknown-linux-gnueabihf
 2. Copy the binary over to the target
 3. Add the full path of the binary to the end of ~/.bashrc  
    This way, the binary is run at reboot.
 
 ## 🛠️ Assembling the hardware
 
-WG Display is best deployed on a Raspberry PI and a cheap display hat.
+WG Display is best deployed on a Raspberry Pi and a cheap display hat.
 
 ```text
 💡 Even a Raspberry PI Zero is sufficient! 
@@ -134,7 +135,7 @@ Then simply copy over the generated binary to the target and run it.
 
 Want your WG Display to show you
 
-- 🥳 the upcoming events in your favorite night club
+- 🥳 the upcoming events in your favorite nightclub
 - 🚮 the trash calendar in your municipality
 - 🍺 beers on sale in your local supermarket?  
 
@@ -151,7 +152,7 @@ The rustdocs can be built using
 make docs
 ```
 
-This generates three seperate documentations, one for each crate
+This generates three separate documentations, one for each crate
 
 [app](app/target/doc/wg_display/index.html): ```app/target/doc/app/index.html```  
 [common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```  
