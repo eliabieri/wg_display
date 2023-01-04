@@ -24,19 +24,19 @@ Date: 03.01.2022
   - [Repository settings](#repository-settings)
 - [System architecture](#system-architecture)
   - [Programming language](#programming-language)
-  - [Overview](#overview)
-  - [Build process](#build-process)
-  - [Main Rust crates used in the project](#main-rust-crates-used-in-the-project)
-  - [Other dependencies](#other-dependencies)
+  - [Components](#components)
   - [Configuration frontend](#configuration-frontend)
+  - [Display renderer](#display-renderer)
+  - [Web server](#web-server)
+  - [Configuration persistence](#configuration-persistence)
   - [Cross compilation](#cross-compilation)
-  - [Build process](#build-process-1)
+  - [Build process](#build-process)
   - [Tests](#tests)
   - [Continuous integration](#continuous-integration)
   - [Deployment](#deployment)
 - [Results](#results)
+- [Future extensions](#future-extensions)
 - [Glossary](#glossary)
-- [References](#references)
 - [Appendix](#appendix)
   - [The main README.md of the project](#the-main-readmemd-of-the-project)
   - [Documentation on how to write a new widget](#documentation-on-how-to-write-a-new-widget)
@@ -75,6 +75,8 @@ That's how the idea of a complete rewrite of the software arose.
 The need for such a display was clearly validated over the years and we had enough time to determine the shortcomings of the previous solution.  
 The new software should be more robust, easier to configure and better documented.
 
+<div class="page"/>
+
 ### Deliverables
 
 The deliverables for this project are:
@@ -85,13 +87,11 @@ The deliverables for this project are:
 - A project report that describes the project and the software architecture
 - A presentation that explains the project and the software architecture
 
-<div class="page"/>
-
 ## Requirements
 
 ### Functional
 
-TODO
+- Easy deployment (compile to a single binary)
 
 ### Non-functional
 
@@ -122,6 +122,8 @@ Tasks were assigned to a milestone, that represented the the end of the Project 
 
 ![milestone](./images/milestone.png)
 Since tasks were subdivided into smaller tasks, the milestone view gave a nice overview of the progress of the project.
+
+<div class="page"/>
 
 ### Repository settings
 
@@ -154,39 +156,38 @@ Last but not least, Rust has a very active community and a big ecosystem of `cra
 
 Given all this, Rust presented itself as the perfect choice for this project.
 
-### Overview
+### Components
 
-Configuration backend
+The codebase is generally structured around three main crates.  
 
-- Serve frontend (html, css, webasm)
-- Provide REST API for frontend to read and write configuration parameters
+There's the frontend crate. It contains all the sources for the configuration frontend.  
+The frontend is a web application that is written using the [Yew](https://yew.rs/) framework.
 
-Configuration frontend
+The app crate contains the main application logic.  
+It is subdevided into several modules, each of which is responsible for a specific task.
+The renderer module contains the logic responsible for rendering the display output.
+The server module contains the logic responsible for serving the configuration frontend and providing a REST API for accessing the system configuration.  
+A third module, called shared, holds the configuration persistence logic, that is shared between the renderer and the server.  
 
-- Provide UI and logic for user to configure widgets and other system aspects
-- Interact with REST API provided by the backend
+Finally, there's the common crate. As it's name implies, it contains code that is shared between the frontend and the app crate.  
+It's main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.
 
-Renderer
+The following diagram shows the crate and module structure of the project.
 
-- Render information to a terminal UI
+```text
+├── app
+│   └── src
+│       ├── renderer
+│       ├── server
+│       └── shared
+├── common
+│   └── src
+└── frontend
+    └── src
+        └── components
+```
 
-
-### Build process
-
-
-
-### Main Rust crates used in the project
-
-- [cursive](https://github.com/gyscos/cursive) for rendering the display output
-- [yew](https://crates.io/crates/yew) for the configuration frontend
-- [rocket](https://crates.io/crates/rocket) for the configuration backend (server and REST API)
-- [cross](https://github.com/cross-rs/cross) for simplified cross-compilation
-- [tokio](https://tokio.rs) asynchronous runtime
-- [sled](http://sled.rs) embedded database for storing the configuration
-
-### Other dependencies
-
-- [tailwindcss](https://tailwindcss.com) for styling the configuration frontend
+<div class="page"/>
 
 ### Configuration frontend
 
@@ -194,21 +195,85 @@ The configuration frontend is a web application that allows the user to configur
 The frontend was written using the [Yew](https://yew.rs/) framework.  
 Yew is a component-based framework for writing web applications in Rust.  
 
+To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used.
+
+![frontend](images/dashboard.jpeg)
+
+<div class="page"/>
+
+### Display renderer
+
+The `renderer` module is responsible for rendering the display output.  
+
+The display output is rendered using the [cursive](https://github.com/gyscos/cursive) which is a `crate` for building terminal-based user interfaces (TUIs).  
+
+
+<div class="page"/>
+
+### Web server
+
+The `server` module is responsible for serving the configuration frontend and providing a REST API for accessing the system configuration.  
+The module uses the [rocket](https://crates.io/crates/rocket) crate for this purpose.  
+
+```rust
+/// Saves the system configuration
+#[post("/config", format = "json", data = "<config>")]
+async fn save_config(config: json::Json<SystemConfiguration>) {
+    Persistence::save_config(config.into_inner());
+}
+
+/// Returns the system configuration
+#[get("/config")]
+fn get_config() -> Option<json::Value> {
+    Some(json::json!(Persistence::get_config()))
+}
+```
+
+### Configuration persistence
+
+The configuration is stored in an embedded database called [sled](http://sled.rs).
+This database is a key-value store that is optimized for speed and low memory usage.
+It could satisfy all the requirements of this project, was easy to use and is actively maintained.
+
+The [serde](https://serde.rs) crate was used to serialize the configuration to JSON before storing it in the database.
+
 ### Cross compilation
 
 Since this project is expected to run on all Raspberry Pi models, cross compilation was used to build the project for all supported targets.  
 
 The following targets are supported:
 
-- arm-unknown-linux-gnueabihf (Raspberry PI Zero 1 / Zero W / Zero WH)
-- armv7-unknown-linux-gnueabihf (Raspberry PI 2 / 3 / 4 / Zero 2 W)
+- `arm-unknown-linux-gnueabihf` (Raspberry PI Zero 1 / Zero W / Zero WH)
+- `armv7-unknown-linux-gnueabihf` (Raspberry PI 2 / 3 / 4 / Zero 2 W)
 - native (whatever the build machine is)
 
 To achieve this, the [cross](https://github.com/cross-rs/cross) project was used.  
 This project allows to build Rust projects for different targets using prebuilt Docker images.  
 Not having to manually install the required toolchains for each target is a huge advantage.  
 
+<div class="page"/>
+
 ### Build process
+
+A goal of the project was to compile down to a single binary.  
+In order for this to work, the frontend artifacts need to be embedded into the binary.  
+Fortunately, there's a crate called [Rust Embed](https://crates.io/crates/rust-embed) that provides a custom derive macro for embedding files into a binary.
+
+```rust
+#[derive(RustEmbed)]
+#[folder = "../frontend/dist"]
+struct Asset;
+```
+
+The files are then accessible at runtime through the `Asset` struct.  
+
+```rust
+let filename = "index.html";
+let asset = Asset::get(&filename)?;
+// asset now contains the contents of index.html
+```
+
+Since the frontend artifacts first need to be built before they can be embedded, the build process is like a dependency graph:
 
 ```mermaid
 flowchart LR
@@ -222,78 +287,37 @@ flowchart LR
    E[common crate sources - rs] -- cargo build --> X
 ```
 
+First, tailwind is used to build the CSS file from the frontend sources that contain Tailwind classes.  
+Then, the frontend sources are compiled using [trunk](https://trunkrs.dev), a WASM webapplication bundler for Rust.
+
+Lastly, the main `app` crate can be compiled.  
+The `app` crate depends on the `common` crate and embeds the previously built frontend artifacts.
+
+The result is a single selfcontained binary called `app`.
+
+In order to track these dependencies during the build process, a `Makefile` was used.  
+
+Below you can find a simplified excerpt of it:
+
 ```makefile
-# Make does not offer a recursive wildcard function, so here's one:
-rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
-
-frontend_dist = frontend/dist
-tailwind_output_css = $(frontend_dist)/$(wildcard output-*.css)
-yew_index_html = $(frontend_dist)/index.html
-frontend_build = $(yew_index_html)
-
-build_native_release = app/target/release/wg_display
-build_native_release_debug = app/target/debug/wg_display
-
-app:
-
-.PHONY: clean
-clean:
- rm -rf app/target
- rm -rf common/target
- rm -rf frontend/dist
-
-## Build the application
-dependencies = \
- $(call rwildcard,app/src/,*.rs) \
- $(call rwildcard,common/src/,*.rs) \
- $(call rwildcard,frontend/src,*.rs) \
- $(call rwildcard,app/src/,*.rs) \
- $(call rwildcard,common/src/,*.rs) \
- $(call rwildcard,app/,Cargo.*) \
- $(call rwildcard,common/,Cargo.*) \
- $(call rwildcard,frontend/,Cargo.*)
-
-# Generate docs
-docs: $(dependencies) $(frontend_build)
- cd app && cargo doc --no-deps
- cd common && cargo doc --no-deps
- cd frontend && cargo doc --no-deps
-
 # Build complete app for the native platform
 $(build_native_release): $(dependencies) $(frontend_build)
  cd app && cargo build --release
 app: $(build_native_release)
 
-# Build complete app for the native platform in debug mode
-$(build_native_release_debug): $(dependencies) $(frontend_build)
- cd app && cargo build
-app_debug: $(build_native_release_debug)
-
-# Build complete app for arm (Raspberry Pi 2/3/4)
+# Build complete app for armv7
 target/armv7-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
  cd app && cross build --release --target armv7-unknown-linux-gnueabihf
 app_armv7: target/armv7-unknown-linux-gnueabihf/wg_display
 
-# Build complete app for arm (Raspberry Pi 0/1)
-target/arm-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
- cd app && cross build --release --target arm-unknown-linux-gnueabihf
-app_arm: target/arm-unknown-linux-gnueabihf/wg_display
-
-## Build frontend using trunk
-dependencies = \
- $(call rwildcard,frontend/src/,*.rs) \
- frontend/index.html \
- frontend/package.json
+## Build Tailwind CSS
 $(tailwind_output_css): $(dependencies)
- # Force regeneration
- rm -rf $(tailwind_output_css)
  cd frontend && npm run tailwind-build
 
+## Build frontend artifacts using trunk
 $(frontend_build): $(tailwind_output_css) $(dependencies)
  cd frontend && trunk build --release
 ```
-
-TODO
 
 ### Tests
 
@@ -361,6 +385,12 @@ TODO
 
 <div class="page"/>
 
+## Future extensions
+
+TODO
+
+<div class="page"/>
+
 ## Glossary
 
 - Raspberry Pi: A small single-board computer developed in the UK by the Raspberry Pi Foundation.
@@ -369,12 +399,11 @@ TODO
   It contains all the changes that were made to the repository since the last commit.
 - Branch: Used to develop features in isolation from each other.
 - Pull request: A pull request is a request to merge a branch into another branch.
-
-<div class="page"/>
-
-## References
-
-TODO
+- Crate: A crate is a compilation unit in Rust.  
+  A crate can be either a binary or a library.
+- Cargo: The Rust package manager.
+- Makefile: A file that contains a set of directives used by a program called make for automatically building a software program.
+- Cross compilation: Cross compilation is the process of compiling a program on one computer to run on a different computer.
 
 <div class="page"/>
 
