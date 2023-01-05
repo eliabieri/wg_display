@@ -45,7 +45,11 @@
   - [Continuous integration](#continuous-integration)
   - [Deployment](#deployment)
 - [Results](#results)
-- [Future extensions](#future-extensions)
+  - [Outcome](#outcome)
+  - [User feedback](#user-feedback)
+  - [Reception on GitHub](#reception-on-github)
+  - [Difficulties](#difficulties)
+- [Future ideas](#future-ideas)
 - [Glossary](#glossary)
 - [Appendix](#appendix)
   - [README.md](#readmemd)
@@ -213,6 +217,7 @@ The frontend was written using the [Yew](https://yew.rs/) framework.
 Yew is a component-based framework for writing web applications in Rust.  
 
 The components are written in Rust and HTML.  
+The CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used to style the components.
 In order for them to live in a single file, `Yew` provides a macro called `html!` that allows to write HTML in Rust.  
 
 ```rust
@@ -232,9 +237,8 @@ pub fn config_card_component(props: &ConfigCardProps) -> Html {
 ```
 
 The example above shows a component that renders children components with some padding.  
+`p-4` and `my-3` are Tailwind CSS classes.  
 Components can receive properties from their parent component.  
-
-To style the frontend, the CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used.
 
 ![frontend](hand_dashboard.png)
 
@@ -250,9 +254,6 @@ The output consists of a number of widgets.
 Widgets have a name and a corresponding value, that is updated dynamically.  
 
 ```rust
-/// Base trait for all widgets
-/// Every widget must implement this trait
-#[async_trait]
 pub trait Widget {
     fn new() -> Self
     where
@@ -463,6 +464,8 @@ To achieve this, three seperate workflows were created.
 The above image shows a release that was automatically created.  
 It includes the individal commit messages going into the release and the cross compiled binaries for all supported targets.
 
+<div class="page"/>
+
 ### Deployment
 
 Having made the decision to compile the project down to a single binary, the deployment process is very simple.  
@@ -475,14 +478,36 @@ It can be [found](#readmemd) in the appendix.
 
 ## Results
 
+### Outcome
+
+The project was a big success for me.  
+It yielded a V1.0 release that provides a good foundation for future extensions and improvements.  
+
+### User feedback
+
+The feedback I received from the users (my roommates) was very positive.  
+They especially liked the fact that they can now configure the display on their own.  
+Just having to open a simple URL in the browser was intuitive for everyone.  
+
+Since the size of the widget collection is the most important factor for the usefulness of the display, I already received some requests for new widgets.  
+Having a well-structured project gives me a lot of motivation to satisfy these requests and develop many more widgets.
+
+### Reception on GitHub
+
+I wrote a short post that links to the GitHub project for my various social media channels.  
+This resulted in some traffic from people I both know and don't know, resulting in 17 stars as of writing this.  
+My hope is that growing the widget collection, implementing additional features and further simplifying the deployment process will hopefully result in other people contributing to the project.
+
+### Difficulties
+
 TODO
 
 <div class="page"/>
 
-## Future extensions
+## Future ideas
 
 The current state of the project provides a good foundation for future extensions.  
-Several features were not implemented due to time constraints but would greatly improve the user experience.
+Several features and ideas were not implemented due to time constraints but would greatly improve the user experience.
 
 - **Adding more widgets**  
   Currently, only a few widgets are implemented.  
@@ -511,6 +536,13 @@ Several features were not implemented due to time constraints but would greatly 
   Newly added widgets require a new release of the application.  
   This could be changed by dynamically loading the widgets from a directory.  
   This could be achieved by using a crate like [libloading](https://crates.io/crates/libloading).
+- **Selling it as a product**  
+  The display could be sold as a product.  
+  This would require me to source the hardware, preflash the SD cards and provide support.  
+  This would allow even the most unexperienced users to install a WG Display.  
+  This idea would first require the software to be
+  - self-updating
+  - provide a way to configure the WiFi credentials
 
 <div class="page"/>
 
