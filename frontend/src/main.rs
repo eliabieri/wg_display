@@ -71,14 +71,14 @@ fn main_component() -> Html {
                         <img src="assets/logo.png" alt="" class="h-24 object-contain py-4"/>
                         // Content
                         <div>
-                            <DividerComponent text="Configuration"/>
+                            <DividerComponent text="General"/>
 
                             <BackgroundColorConfigComponent
                                 config={system_config.clone()}
                             />
 
 
-                            <DividerComponent text="Widget configuration"/>
+                            <DividerComponent text="Widgets"/>
 
                             <div>
                                 <ConfigCardComponent>
