@@ -10,7 +10,11 @@
     <br/>
 </div>
 
-[![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/eliabieri/wg_display/cargo_test.yml?label=test&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/eliabieri/wg_display/build.yml?logo=github)
+
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/eliabieri/wg_display?logo=github)
+![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/eliabieri/wg_display/latest/main?logo=github)
 
 ## ⭐️ What WG Display can show you
 
