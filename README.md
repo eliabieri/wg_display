@@ -42,6 +42,7 @@
   - [Building the project](#building-the-project)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
+- [🧪 Testing](#-testing)
 - [🔮 What comes next](#-what-comes-next)
 - [🔒 Safety](#-safety)
 - [♻️ Updating the dependencies](#️-updating-the-dependencies)
@@ -160,6 +161,11 @@ This generates three separate documentations, one for each crate
 [app](app/target/doc/wg_display/index.html): ```app/target/doc/app/index.html```  
 [common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```  
 [frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
+
+## 🧪 Testing
+
+Widgets should provide unit tests for their functionality where adequate.  
+Asynchronous functions can be tested using the [tokio_test::block_on](https://docs.rs/tokio-test/latest/tokio_test/fn.block_on.html) function.
 
 ## 🔮 What comes next
 
