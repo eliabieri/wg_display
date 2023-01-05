@@ -298,6 +298,8 @@ The `server` module is responsible for serving the configuration frontend and pr
 The module uses the [rocket](https://crates.io/crates/rocket) crate for this purpose.  
 This makes it very easy to implement the REST API.
 
+The following code excerpt shows the implementation of the REST endpoints required for the configuration frontend.
+
 ```rust
 /// Saves the system configuration
 #[post("/config", format = "json", data = "<config>")]
@@ -435,7 +437,15 @@ $(frontend_build): $(tailwind_output_css) $(dependencies)
 
 ### Tests
 
-TODO
+This project uses the built-in test support of Rust.  
+Tests are simple functions that are annotated with `#[test]`.  
+They live in the same file as the code they test but are located in their own module called `tests`.  
+This module is only compiled when running the tests.  
+`Cargo` provides a command to run all tests in a crate.
+
+```bash
+cargo test
+```
 
 ### Continuous integration
 
