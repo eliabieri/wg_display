@@ -74,11 +74,11 @@ The result of this project is a working prototype of the WG Display that is user
 
 ### Motivation
 
-Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all room mates. This information could be anything from the current weather, the next bus departures from the nearest public transport station to the temperature of the Aare river. The idea is to have a central place where all this information is displayed. This place is the WG Display.
+Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all roommates. This information could be anything from the current weather, the next bus departures from the nearest public transport station to the temperature of the Aare river. The idea was to have a central place where all this information could be displayed. This place is the WG Display.
 
-Since we had quite a bit of experience with the Raspberry Pi, we decided to use it as the main controller.  
+Since we had quite a bit of experience with the Raspberry Pis, we decided to use them as the main controller.  
 Together with a 5" display case that we had lying around, we were able to quickly build a prototype.
-The software was implemented in Python, which allowed us to quickly develop the first version of the software.  
+The software was implemented using Python, which allowed us to quickly develop the first version of the software.  
 
 Over time, the software was extended to support more features.  
 Guests coming over to our place started to take notice and wanted to have a WG Display of their own.  
@@ -89,7 +89,13 @@ We also had occasional problems with the software crashing, which was hard to de
 
 That's how the idea of a complete rewrite of the software arose.  
 The need for such a display was clearly validated over the years and we had enough time to determine the shortcomings of the previous solution.  
-The new software should be more robust, easier to configure and better documented.
+The new software should be more robust, easier to configure and better documented.  
+
+My motivation was only strengthened by the fact, that the project would be "my own".  
+I would solve a problem that I personally had and I knew that building it would not only satisfy me but many people around me.  
+
+I also wanted to develop the software in a way that would allow for contributions from other people.  
+The display could only grow in usefulness if other people would contribute code that would serve their needs.  
 
 ### Deliverables
 
@@ -175,7 +181,9 @@ Since Rust can be compiled to [WebAssembly](https://www.rust-lang.org/what/wasm)
 Furthermore, the developer experience is very good. This is reflected in the [Stack Overflow developer survey](https://survey.stackoverflow.co/2022/), where Rust is ranked as the most loved programming language for the past seven years.
 Last but not least, Rust has a very active community and a big ecosystem of `crates` (libraries) that simplified the development of the project greatly.
 
-Given all this, Rust presented itself as the perfect choice for this project.
+Given all this, Rust presented itself as the perfect choice for this project.  
+
+Besides all the technical reasons, there was also my personal motivation to learn Rust while building a project.  
 
 ### Components
 
@@ -191,7 +199,10 @@ The server module contains the logic responsible for serving the configuration f
 A third module, called shared, holds the configuration persistence logic, that is shared between the renderer and the server.  
 
 Finally, there's the common crate. As it's name implies, it contains code that is shared between the frontend and the app crate.  
-It's main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.
+It's main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.  
+
+The beauty of using Rust in both the front- and backend is that the same models can be used in both places.  
+In case a model is changed, the compiler will ensure that all places where the model is used are updated accordingly.  
 
 The following diagram shows the crate and module structure of the project.
 
@@ -314,6 +325,10 @@ fn get_config() -> Option<json::Value> {
     Some(json::json!(Persistence::get_config()))
 }
 ```
+
+The server is configured to listen on port 80.  
+Users are adviced to configure the hostname of their WG Display to be `wgdisplay`.  
+This way, users can access the configuration frontend by navigating to `wgdisplay.local` in their browser.
 
 ### Configuration persistence
 
@@ -483,6 +498,10 @@ It can be [found](#readmemd) in the appendix.
 The project was a big success for me.  
 It yielded a V1.0 release that provides a good foundation for future extensions and improvements.  
 
+The project also allowed me to learn a lot of new things on the way.  
+I got way more proficient in writing Rust code!
+Having decided to use many novel technologies like Tailwind, writing webapps with Rust and using GitHub Actions for cross compilation, I almost never felt like I was just doing dummy work. With every step on the way, I had to aquire new knowledge and skills, study documentation and exchange with other people.  
+
 ### User feedback
 
 The feedback I received from the users (my roommates) was very positive.  
@@ -500,7 +519,9 @@ My hope is that growing the widget collection, implementing additional features 
 
 ### Difficulties
 
-TODO
+As I did not have a lot of expercience writing software in Rust, I had to learn quite a few things along the way.  
+As Rust has a nutoriously steep learning curve, I had to be patient at times.  
+Features that would have taken me 30 minutes to implement in Python took two days to implement in Rust.  
 
 <div class="page"/>
 
