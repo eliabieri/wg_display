@@ -66,12 +66,14 @@ The web interface allows the users to configure system aspects like the backgrou
 2. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
    - Raspberry Pi Zero 1 / Zero W / Zero WH -> `wg-display-arm-unknown-linux-gnueabihf`
    - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> `wg-display-armv7-unknown-linux-gnueabihf`
-3. Copy the binary over to the target
+3. Copy the binary over to the target  
    `scp wg-display-arm-unknown-linux-gnueabihf pi@wgdisplay.local:/home/pi`
 4. Enable the binary to be run at reboot  
    `echo "/home/pi/wg-display-arm-unknown-linux-gnueabihf" >> ~/.bashrc`
-5. Allow the binary to be bind to port 80
+5. Allow the binary to be bind to port 80  
    `sudo setcap CAP_NET_BIND_SERVICE=+eip /home/pi/wg-display-arm-unknown-linux-gnueabihf`
+6. Reboot the target  
+   The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
 
 ## 🛠️ Assembling the hardware
 
@@ -175,6 +177,7 @@ Asynchronous functions can be tested using the [tokio_test::block_on](https://do
 
 ## 🔮 What comes next
 
+- [ ] Add installation script
 - [ ] Allow user to configure WiFi credentials via web interface
 - [ ] Starting the binary through systemd
 - [ ] Implement an update mechanism
