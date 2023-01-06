@@ -62,11 +62,11 @@
 
 The WG Display is a device that shows information relevant to people living together.
 The information is displayed on a screen that is mounted on the wall or placed on a counter.  
-Earlier prototypes of such a device were devloped over the years, but they never reached a state where they could be used by other people.
+Earlier prototypes of such a device were developed over the years, but they never reached a state where they could be used by other people.
 
 This project aims to develop a new version of the WG Display that is more robust, easier to configure and better documented.
 
-The result of this project is a working prototype of the WG Display that is user friendy, extensible, can be configured by the users and is well documented.
+The result of this project is a working prototype of the WG Display that is user-friendly, extensible, can be configured by the users and is well documented.
 
 <div class="page"/>
 
@@ -74,7 +74,7 @@ The result of this project is a working prototype of the WG Display that is user
 
 ### Motivation
 
-Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all roommates. This information could be anything from the current weather, the next bus departures from the nearest public transport station to the temperature of the Aare river. The idea was to have a central place where all this information could be displayed. This place is the WG Display.
+Over the years living with together with different people, the need arose to have a central place for displaying certain information that is relevant to all roommates. This information could be anything from the current weather, the next bus departures from the nearest public transport station, to the temperature of the Aare river. The idea was to have a central place where all this information could be displayed. This place is the WG Display.
 
 Since we had quite a bit of experience with the Raspberry Pis, we decided to use them as the main controller.  
 Together with a 5" display case that we had lying around, we were able to quickly build a prototype.
@@ -88,11 +88,11 @@ There was no way to configure it to the user's needs.
 We also had occasional problems with the software crashing, which was hard to debug.  
 
 That's how the idea of a complete rewrite of the software arose.  
-The need for such a display was clearly validated over the years and we had enough time to determine the shortcomings of the previous solution.  
+The need for such a display was clearly validated over the years, and we had enough time to determine the shortcomings of the previous solution.  
 The new software should be more robust, easier to configure and better documented.  
 
 My motivation was only strengthened by the fact, that the project would be "my own".  
-I would solve a problem that I personally had and I knew that building it would not only satisfy me but many people around me.  
+I would solve a problem that I personally had, and I knew that building it would not only satisfy me, but many people around me.  
 
 I also wanted to develop the software in a way that would allow for contributions from other people.  
 The display could only grow in usefulness if other people would contribute code that would serve their needs.  
@@ -119,12 +119,12 @@ The deliverables for this project are:
 - The configuration must be persisted across restarts
 - Configuration changes must be applied without restarting the software
 - The software must be deployable on all Raspberry Pi models
-- The sofware must run on various screen sizes (3.5", 5", 7")
+- The software must run on various screen sizes (3.5", 5", 7")
 - Prebuilt binaries must be available for download
 
 ### Non-functional
 
-- The sofware shall be robust and crash as little as possible
+- The software shall be robust and crash as little as possible
 - The software shall be well documented
 - The documentation shall be fun to read
 - The project shall be open source and available on GitHub
@@ -146,9 +146,9 @@ The GitHub project board was used as a task management tool.
 This has the advantage, that the project board is tightly integrated with the code repository.  
 Tasks can be connected to pull requests and issues.  
 
-Tasks were assigned to a milestone, that represented the the end of the Project 2 course.  
+Tasks were assigned to a milestone, that represented the end of the Project 2 course.  
 
-![milestone](milestone.png)
+![Milestone](milestone.png)
 Since tasks were subdivided into smaller tasks, the milestone view gave a nice overview of the progress of the project.
 
 <div class="page"/>
@@ -193,13 +193,13 @@ There's the frontend crate. It contains all the sources for the configuration fr
 The frontend is a web application that is written using the [Yew](https://yew.rs/) framework.
 
 The app crate contains the main application logic.  
-It is subdevided into several modules, each of which is responsible for a specific task.
+It is subdivided into several modules, each of which is responsible for a specific task.
 The renderer module contains the logic responsible for rendering the display output.
 The server module contains the logic responsible for serving the configuration frontend and providing a REST API for accessing the system configuration.  
 A third module, called shared, holds the configuration persistence logic, that is shared between the renderer and the server.  
 
-Finally, there's the common crate. As it's name implies, it contains code that is shared between the frontend and the app crate.  
-It's main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.  
+Finally, there's the common crate. As its name implies, it contains code that is shared between the frontend and the app crate.  
+Its main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.  
 
 The beauty of using Rust in both the front- and backend is that the same models can be used in both places.  
 In case a model is changed, the compiler will ensure that all places where the model is used are updated accordingly.  
@@ -289,7 +289,7 @@ Every widget must implement the `Widget` trait.
 
 The renderer first loads the configuration from the embedded database.  
 It then instantiates all widgets that are enabled by the user.  
-After that, it starts a loop in which it calles the `update` method of each widget once a second.  
+After that, it starts a loop in which it calls the `update` method of each widget once a second.  
 This gives the widgets the opportunity to update their content.  
 Most widgets may not need to update their content every second, so they can implement their own timeout logic.  
 
@@ -327,7 +327,7 @@ fn get_config() -> Option<json::Value> {
 ```
 
 The server is configured to listen on port 80.  
-Users are adviced to configure the hostname of their WG Display to be `wgdisplay`.  
+Users are advised to configure the hostname of their WG Display to be `wgdisplay`.  
 This way, users can access the configuration frontend by navigating to `wgdisplay.local` in their browser.
 
 ### Configuration persistence
@@ -351,7 +351,7 @@ The `tokio` runtime allows to spawn tasks that run concurrently.
 Quoting the [tokio task](https://docs.rs/tokio/latest/tokio/task/index.html) documentation
 
 > A task is a light weight, non-blocking unit of execution.
- A task is similar to an OS thread, but rather than being managed by the OS scheduler, they are managed by the  Tokio runtime.
+ A task is similar to an OS thread, but rather than being managed by the OS scheduler, they are managed by the  tokio runtime.
 
 The following code shows the main entry point of the application.  
 It instantiates the `renderer`, spawns a `task` for the `server` and then awaits the completion of both the renderer task and the `run` method of the `server`.
@@ -378,8 +378,8 @@ The following targets are supported:
 - native (whatever the build machine is)
 
 To achieve this, the [cross](https://github.com/cross-rs/cross) project was used.  
-This project allows to build Rust projects for different targets using prebuilt Docker images.  
-Not having to manually install the required toolchains for each target is a huge advantage.  
+This project allows building Rust projects for different targets using prebuilt Docker images.  
+Not having to manually install the required tool chains for each target is a huge advantage.  
 
 <div class="page"/>
 
@@ -418,16 +418,16 @@ flowchart LR
 ```
 
 First, tailwind is used to build the CSS file from the frontend sources that contain Tailwind classes.  
-Then, the frontend sources are compiled using [trunk](https://trunkrs.dev), a WASM webapplication bundler for Rust.
+Then, the frontend sources are compiled using [trunk](https://trunkrs.dev), a WASM web application bundler for Rust.
 
 Lastly, the main `app` crate can be compiled.  
 The `app` crate depends on the `common` crate and embeds the previously built frontend artifacts.
 
-The result is a single selfcontained binary called `app`.
+The result is a single self contained binary called `app`.
 
 In order to track these dependencies during the build process, a `Makefile` was used.  
 
-Below you can find a simplified excerpt of it:
+Below, you can find a simplified excerpt of it:
 
 ```makefile
 # Build complete app for the native platform
@@ -455,7 +455,7 @@ $(frontend_build): $(tailwind_output_css) $(dependencies)
 
 This project uses the built-in test support of Rust.  
 Tests are simple functions that are annotated with `#[test]`.  
-They live in the same file as the code they test but are located in their own module called `tests`.  
+They live in the same file as the code they test, but are located in their own module called `tests`.  
 This module is only compiled when running the tests.  
 `Cargo` provides a command to run all tests in a crate.
 
@@ -472,12 +472,12 @@ There were the following requirements:
 - The project should be built for all supported targets on every push to a feature branch.
 - A new release should be created for every new version tag on the main branch.
 
-To achieve this, three seperate workflows were created.
+To achieve this, three separate workflows were created.
 
 ![GitHub release](github_release.png)
 
 The above image shows a release that was automatically created.  
-It includes the individal commit messages going into the release and the cross compiled binaries for all supported targets.
+It includes the individual commit messages going into the release and the cross compiled binaries for all supported targets.
 
 <div class="page"/>
 
@@ -500,7 +500,7 @@ It yielded a V1.0 release that provides a good foundation for future extensions 
 
 The project also allowed me to learn a lot of new things on the way.  
 I got way more proficient in writing Rust code!
-Having decided to use many novel technologies like Tailwind, writing webapps with Rust and using GitHub Actions for cross compilation, I almost never felt like I was just doing dummy work. With every step on the way, I had to aquire new knowledge and skills, study documentation and exchange with other people.  
+Having decided to use many novel technologies like Tailwind, writing web apps with Rust and using GitHub Actions for cross compilation, I almost never felt like I was just doing dummy work. With every step on the way, I had to acquire new knowledge and skills, study documentation and exchange with other people.  
 
 ### User feedback
 
@@ -519,8 +519,8 @@ My hope is that growing the widget collection, implementing additional features 
 
 ### Difficulties
 
-As I did not have a lot of expercience writing software in Rust, I had to learn quite a few things along the way.  
-As Rust has a nutoriously steep learning curve, I had to be patient at times.  
+As I did not have a lot of experience writing software in Rust, I had to learn quite a few things along the way.  
+As Rust has a notoriously steep learning curve, I had to be patient at times.  
 Features that would have taken me 30 minutes to implement in Python took two days to implement in Rust.  
 
 <div class="page"/>
@@ -528,12 +528,12 @@ Features that would have taken me 30 minutes to implement in Python took two day
 ## Future ideas
 
 The current state of the project provides a good foundation for future extensions.  
-Several features and ideas were not implemented due to time constraints but would greatly improve the user experience.
+Several features and ideas were not implemented due to time constraints, but would greatly improve the user experience.
 
 - **Adding more widgets**  
   Currently, only a few widgets are implemented.  
   Implementing a few more widgets could help to make the project more popular.
-- **Supportting more widget output formats**  
+- **Supporting more widget output formats**  
   Currently, widgets can only output their content as text.  
   Supporting more output formats would allow for more interesting widgets.  
 - **User authentication**  
@@ -560,7 +560,7 @@ Several features and ideas were not implemented due to time constraints but woul
 - **Selling it as a product**  
   The display could be sold as a product.  
   This would require me to source the hardware, preflash the SD cards and provide support.  
-  This would allow even the most unexperienced users to install a WG Display.  
+  This would allow even the most inexperienced users to install a WG Display.  
   This idea would first require the software to be
   - self-updating
   - provide a way to configure the WiFi credentials
