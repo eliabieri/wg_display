@@ -79,7 +79,7 @@ impl Widget for PublicTransport {
     async fn update(&mut self, config: &WidgetConfiguration) {
         let config = &config.public_transport_config;
         if config.from.is_empty() || config.to.is_empty() {
-            self.content = "From and to need to be specified!".to_string();
+            self.content = "`from` and `to` need to be configured!".to_string();
             return;
         }
 
@@ -106,13 +106,13 @@ impl Widget for PublicTransport {
                         .dedup_by(|a, b| a.from.departure == b.from.departure);
                     self.last_updated = Some(Instant::now());
                 }
-                Err(e) => {
-                    self.content = format!("Could not deserialize data: {}", e);
+                Err(_) => {
+                    self.content = "Could not deserialize data".to_string();
                     self.last_updated = Some(Instant::now());
                 }
             },
-            Err(error) => {
-                self.content = format!("Could not update data: {}", error);
+            Err(_) => {
+                self.content = "Could not update data".to_string();
             }
         }
     }
@@ -121,6 +121,11 @@ impl Widget for PublicTransport {
 impl PublicTransport {
     fn update_departure_string(&mut self, num_departures: usize) {
         self.content = format!("{} -> {}", self.data.from.name, self.data.to.name);
+
+        if self.data.connections.is_empty() {
+            self.content += "\nNo departures";
+            return;
+        }
 
         let connections = self
             .data
@@ -146,14 +151,119 @@ impl PublicTransport {
         let format = format_description::parse("[hour]:[minute]").unwrap();
         match departure.format(&format) {
             Ok(departure) => departure,
-            Err(e) => {
-                format!("Could not format departure: {}", e)
-            }
+            Err(_) => "Could not format departure".to_string(),
         }
     }
 
     fn format_departure_offset(departure: OffsetDateTime) -> String {
         let departure_offset = departure - OffsetDateTime::now_utc();
         HumanTime::from(departure_offset.unsigned_abs()).to_text_en(Accuracy::Rough, Tense::Future)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use common::models::{BaseWidgetConfig, PublicTransportConfig, WidgetConfiguration};
+
+    use super::*;
+
+    #[test]
+    fn test_formatting() {
+        let mut public_transport = PublicTransport::new();
+        public_transport.last_updated = Some(Instant::now());
+        public_transport.data = PublicTransportData {
+            connections: vec![
+                ConnectionData {
+                    from: FromData {
+                        departure: OffsetDateTime::now_utc() + Duration::from_secs(23 * 60 + 1),
+                    },
+                },
+                ConnectionData {
+                    from: FromData {
+                        departure: OffsetDateTime::now_utc() + Duration::from_secs(120 * 60 + 1),
+                    },
+                },
+            ],
+            from: FromMetaData {
+                name: "Bern".to_string(),
+            },
+            to: ToMetaData {
+                name: "Basel".to_string(),
+            },
+        };
+
+        let config = WidgetConfiguration {
+            public_transport_config: PublicTransportConfig {
+                base_config: BaseWidgetConfig { enabled: true },
+                from: "Bern".to_string(),
+                to: "Basel".to_string(),
+                num_connections_to_show: 2,
+            },
+            ..Default::default()
+        };
+        tokio_test::block_on(public_transport.update(&config));
+
+        assert!(public_transport.content.contains("Bern -> Basel"));
+        assert!(public_transport.content.contains("\nin 23 minutes"));
+        assert!(public_transport.content.contains("\nin 2 hours"));
+    }
+
+    #[test]
+    fn test_formatting_with_no_departures() {
+        let mut public_transport = PublicTransport::new();
+        public_transport.last_updated = Some(Instant::now());
+        public_transport.data = PublicTransportData {
+            connections: vec![],
+            from: FromMetaData {
+                name: "Bern".to_string(),
+            },
+            to: ToMetaData {
+                name: "Basel".to_string(),
+            },
+        };
+
+        let config = WidgetConfiguration {
+            public_transport_config: PublicTransportConfig {
+                base_config: BaseWidgetConfig { enabled: true },
+                from: "Bern".to_string(),
+                to: "Basel".to_string(),
+                num_connections_to_show: 2,
+            },
+            ..Default::default()
+        };
+        tokio_test::block_on(public_transport.update(&config));
+
+        assert_eq!(public_transport.content, "Bern -> Basel\nNo departures");
+    }
+
+    #[test]
+    fn test_from_to_not_configured() {
+        let mut public_transport = PublicTransport::new();
+        public_transport.last_updated = Some(Instant::now());
+        public_transport.data = PublicTransportData {
+            connections: vec![],
+            from: FromMetaData {
+                name: "Bern".to_string(),
+            },
+            to: ToMetaData {
+                name: "Basel".to_string(),
+            },
+        };
+
+        let config = WidgetConfiguration {
+            public_transport_config: PublicTransportConfig {
+                base_config: BaseWidgetConfig { enabled: true },
+                from: "".to_string(),
+                to: "".to_string(),
+                num_connections_to_show: 2,
+            },
+            ..Default::default()
+        };
+        tokio_test::block_on(public_transport.update(&config));
+
+        assert_eq!(
+            public_transport.content,
+            "`from` and `to` need to be configured!"
+        );
     }
 }

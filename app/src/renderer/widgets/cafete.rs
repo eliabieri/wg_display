@@ -59,13 +59,13 @@ impl Widget for Cafete {
                     self.content = data.get_lineup();
                     self.last_updated = Instant::now();
                 }
-                Err(e) => {
-                    self.content = format!("Could not deserialize data: {}", e);
+                Err(_) => {
+                    self.content = "Could not deserialize data".to_string();
                     self.last_updated = Instant::now();
                 }
             },
-            Err(error) => {
-                self.content = format!("Could not update data: {}", error);
+            Err(_) => {
+                self.content = "Could not update data".to_string();
             }
         }
     }

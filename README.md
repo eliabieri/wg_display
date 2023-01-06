@@ -10,7 +10,11 @@
     <br/>
 </div>
 
-[![Cargo test](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml/badge.svg)](https://github.com/eliabieri/wg_display/actions/workflows/cargo_test.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/eliabieri/wg_display/cargo_test.yml?label=test&logo=github)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/eliabieri/wg_display/build.yml?logo=github)
+
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/eliabieri/wg_display?logo=github)
+![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/eliabieri/wg_display/latest/main?logo=github)
 
 ## ⭐️ What WG Display can show you
 
@@ -42,7 +46,8 @@
   - [Building the project](#building-the-project)
 - [👏 Writing your own widget](#-writing-your-own-widget)
 - [📖 Documentation (rustdocs)](#-documentation-rustdocs)
-- [🔮 Upcoming features](#-upcoming-features)
+- [🧪 Testing](#-testing)
+- [🔮 What comes next](#-what-comes-next)
 - [🔒 Safety](#-safety)
 - [♻️ Updating the dependencies](#️-updating-the-dependencies)
 - [🦾 Developing on target](#-developing-on-target)
@@ -57,11 +62,14 @@ The web interface allows the users to configure system aspects like the backgrou
 ## 🚀 Getting started
 
 1. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
-   - Raspberry Pi Zero 1 / Zero W / Zero WH -> wg-display-arm-unknown-linux-gnueabihf
-   - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> wg-display-armv7-unknown-linux-gnueabihf
+   - Raspberry Pi Zero 1 / Zero W / Zero WH -> `wg-display-arm-unknown-linux-gnueabihf`
+   - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> `wg-display-armv7-unknown-linux-gnueabihf`
 2. Copy the binary over to the target
 3. Add the full path of the binary to the end of ~/.bashrc  
    This way, the binary is run at reboot.
+4. Change the hostname of the target to wgdisplay  
+   This way, the configuration interface can be accessed via [wgdisplay.local](http://wgdisplay.local)  
+   `sudo raspi-config` -> `Network Options` -> `Hostname`
 
 ## 🛠️ Assembling the hardware
 
@@ -158,10 +166,18 @@ This generates three separate documentations, one for each crate
 [common](common/target/doc/common/index.html): ```common/target/doc/common/index.html```  
 [frontend](frontend/target/doc/frontend/index.html): ```frontend/target/doc/frontend/index.html```
 
-## 🔮 Upcoming features
+## 🧪 Testing
+
+Widgets should provide unit tests for their functionality where adequate.  
+Asynchronous functions can be tested using the [tokio_test::block_on](https://docs.rs/tokio-test/latest/tokio_test/fn.block_on.html) function.
+
+## 🔮 What comes next
 
 - [ ] Allow user to configure WiFi credentials via web interface
 - [ ] Starting the binary through systemd
+- [ ] Implement an update mechanism
+- [ ] Implement authencation for the web interface
+- [ ] Dynamically loading widgets (currently, the widgets are part of the app crate)
 
 ## 🔒 Safety
 
