@@ -73,7 +73,8 @@ WG Display is best deployed on a Raspberry Pi and a cheap display hat.
 
 ```text
 💡 Even a Raspberry PI Zero is sufficient! 
-The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
+The application is very ressource efficient
+and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
 
 Some displays that are tested to be good
@@ -132,7 +133,8 @@ make app_armv7
 Then simply copy over the generated binary to the target and run it.
 
 ```text
-💡 To run it at boot, simply add the path to the binary to the end of the ~/.bashrc file.
+💡 To run it at boot, simply add the path
+to the binary to the end of the ~/.bashrc file.
 ```
 
 ## 👏 Writing your own widget
