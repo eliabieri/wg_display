@@ -72,8 +72,8 @@ The web interface allows the users to configure system aspects like the backgrou
 WG Display is best deployed on a Raspberry Pi and a cheap display hat.
 
 ```text
-💡 Even a Raspberry PI Zero is sufficient! 
-The application is very ressource efficient
+💡 Even a Raspberry PI Zero is sufficient!  
+The application is very ressource efficient  
 and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
 
@@ -200,7 +200,8 @@ set -e
 # Note:
 # - Set hostname of target to wgdisplay
 # - Add public key to authorized_keys on target
-# - Enable root ssh login: https://raspberrypi.stackexchange.com/questions/48056/how-to-login-as-root-remotely
+# - Enable root ssh login:  
+#   https://raspberrypi.stackexchange.com/questions/48056/how-to-login-as-root-remotely
 
 make app_arm
 ssh pi@wgdisplay.local "sudo /usr/bin/pkill -9 app || true"
