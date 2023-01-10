@@ -57,15 +57,19 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-1. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
+1. Change the hostname of the target to wgdisplay  
+   `sudo raspi-config` -> `Network Options` -> `Hostname`
+2. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
    - Raspberry Pi Zero 1 / Zero W / Zero WH -> `wg-display-arm-unknown-linux-gnueabihf`
    - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> `wg-display-armv7-unknown-linux-gnueabihf`
-2. Copy the binary over to the target
-3. Add the full path of the binary to the end of ~/.bashrc  
-   This way, the binary is run at reboot.
-4. Change the hostname of the target to wgdisplay  
-   This way, the configuration interface can be accessed via [wgdisplay.local](http://wgdisplay.local)  
-   `sudo raspi-config` -> `Network Options` -> `Hostname`
+3. Copy the binary over to the target  
+   `scp wg-display-arm-unknown-linux-gnueabihf pi@wgdisplay.local:/home/pi`
+4. Enable the binary to be run at reboot  
+   `echo "/home/pi/wg-display-arm-unknown-linux-gnueabihf" >> ~/.bashrc`
+5. Allow the binary to be bind to port 80  
+   `sudo setcap CAP_NET_BIND_SERVICE=+eip /home/pi/wg-display-arm-unknown-linux-gnueabihf`
+6. Reboot the target  
+   The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
 
 ## 🛠️ Assembling the hardware
 
