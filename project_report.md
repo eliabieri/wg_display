@@ -46,6 +46,7 @@
   - [Deployment](#deployment)
 - [Results](#results)
   - [Outcome](#outcome)
+  - [Implemented widgets](#implemented-widgets)
   - [User feedback](#user-feedback)
   - [Reception on GitHub](#reception-on-github)
   - [Difficulties](#difficulties)
@@ -473,7 +474,32 @@ I got way more proficient in writing Rust code! Having decided to use many novel
 
 ![WG Display](docs/images/wg_display.jpg)
 
+Picture of the WG Display software running on a Raspberry Pi 3B+ and an attached 5" 800x480 display. The background color can be configured through the configuration frontend.
+
 <div class="page"/>
+
+### Implemented widgets
+
+The following widgets were implemented:
+
+- **Today**  
+  Shows the current time and date.
+- **Aare**  
+  Shows the current temperature of the Aare river and a short description text.  
+  Uses the [aareguru API](http://aareguru.existenz.ch).  
+- **Bernaqua**  
+  Shows the current occupancy rate of the Bernaqua facilities.  
+  Uses their internal API.  
+- **Cafete**  
+  Shows the next upcoming event at the Cafete nightclub.  
+  Uses their internal API.  
+- **Public transport**  
+  Shows the next public transport departures from a specified station to another station.  
+  These two stations can be configured via the configuration fronend.  
+  The number of connections shown can also be configured.  
+  Uses the [Swiss public transport API](https://transport.opendata.ch).  
+
+This is only a minimal set of possible widgets. As the time was limited, I had to focus on building the base application and there was not much time for actually implementing widgets.
 
 ### User feedback
 
@@ -507,6 +533,9 @@ Several features and ideas were not implemented due to time constraints, but wou
 - **Beautifying the display UI**  
   Currently, the display UI is very simple.  
   It would be nice to add some more styling to make it look nicer.
+- **Improved error handling**  
+  Various places in the codebase can `panic`.  
+  Some of these could be refactored to handle errors gracefully.  
 - **User authentication**  
   The current state of the project does not provide any authentication.  
   This means that anyone with access to the network can change the configuration.  
@@ -588,6 +617,8 @@ Several features and ideas were not implemented due to time constraints, but wou
 ### Other references
 
 - Stack Overflow developer survey [https://survey.stackoverflow.co/2022/](https://survey.stackoverflow.co/2022/)
+- aareguru API [http://aareguru.existenz.ch](http://aareguru.existenz.ch)
+- Swiss public transport API [https://transport.opendata.ch](https://transport.opendata.ch)
 
 <div class="page"/>
 
