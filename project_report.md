@@ -51,6 +51,11 @@
   - [Difficulties](#difficulties)
 - [Future ideas](#future-ideas)
 - [Glossary](#glossary)
+- [References](#references)
+  - [Rust](#rust)
+  - [Python](#python)
+  - [Other technologies](#other-technologies)
+  - [Other references](#other-references)
 - [Appendix](#appendix)
   - [README.md](#readmemd)
   - [Documentation on how to write a new widget](#documentation-on-how-to-write-a-new-widget)
@@ -212,7 +217,7 @@ The following diagram shows the crate and module structure of the project.
 
 ### Configuration frontend
 
-The configuration frontend is a web application that allows the user to configure the WG Display. The frontend was written using the [Yew](https://yew.rs/) framework. Yew is a component-based framework for writing web applications in Rust.  
+The configuration frontend is a web application that allows the user to configure the WG Display. The frontend was written using the [Yew](https://yew.rs/) framework. `Yew` is a component-based framework for writing web applications in Rust.  
 
 All components are written in Rust and HTML. The CSS utility framework [Tailwind CSS](https://tailwindcss.com) was used to style the components.
 In order for them to live in a single file, `Yew` provides a macro called `html!` that allows to write HTML in Rust.  
@@ -548,6 +553,41 @@ Several features and ideas were not implemented due to time constraints, but wou
 - Cross compilation: Cross compilation is the process of compiling a program on one computer to run on a different computer.
 - WebAssembly: WebAssembly (abbreviated Wasm) is a binary instruction format for a stack-based virtual machine.  
   Wasm is designed as a portable compilation target for programming languages, enabling deployment on the web for client and server applications.
+
+<div class="page"/>
+
+## References
+
+### Rust
+
+- Rust [https://www.rust-lang.org/](https://www.rust-lang.org/)
+- Cargo [https://github.com/rust-lang/cargo](https://github.com/rust-lang/cargo)
+- Yew [https://yew.rs/](https://yew.rs/)
+- cursive [https://github.com/gyscos/cursive](https://github.com/gyscos/cursive)
+- rocket [https://crates.io/crates/rocket](https://crates.io/crates/rocket)
+- sled [http://sled.rs](http://sled.rs)
+- serde [https://serde.rs](https://serde.rs)
+- rocket [https://crates.io/crates/rocket](https://crates.io/crates/rocket)
+- tokio [https://tokio.rs](https://tokio.rs)
+- tokio task [https://docs.rs/tokio/latest/tokio/task/index.html](https://docs.rs/tokio/latest/tokio/task/index.html)
+- cross [https://github.com/cross-rs/cross](https://github.com/cross-rs/cross)
+- Rust Embed [https://crates.io/crates/rust-embed](https://crates.io/crates/rust-embed)
+- trunk [https://trunkrs.dev](https://trunkrs.dev)
+- self_update [https://crates.io/crates/self_update](https://crates.io/crates/self_update)
+- libloading [https://crates.io/crates/libloading](https://crates.io/crates/libloading)
+
+### Python
+
+- rich [https://github.com/Textualize/rich](https://github.com/Textualize/rich)
+
+### Other technologies
+
+- WebAssembly [https://www.rust-lang.org/what/wasm](https://www.rust-lang.org/what/wasm)
+- Tailwind CSS [https://tailwindcss.com](https://tailwindcss.com)
+
+### Other references
+
+- Stack Overflow developer survey [https://survey.stackoverflow.co/2022/](https://survey.stackoverflow.co/2022/)
 
 <div class="page"/>
 
