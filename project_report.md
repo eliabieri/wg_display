@@ -158,28 +158,20 @@ These rules should ensure that the codebase stays clean and maintainable.
 
 ### Programming language
 
-The programming language of choice for this project was Rust.
-
-Rust is a multi paradigm systems programming language that is designed to be fast, reliable and secure. It's extensive type system ensures that the code is safe and robust, and it lets the compiler catch many errors at compile time. The language is also very well suited for writing concurrent code, which is a requirement for this project. Since Rust can be compiled to [WebAssembly](https://www.rust-lang.org/what/wasm), it could also be used to write the configuration frontend. Furthermore, the developer experience is very good. This is reflected in the [Stack Overflow developer survey](https://survey.stackoverflow.co/2022/), where Rust is ranked as the most loved programming language for the past seven years.
+The programming language of choice for this project was Rust, which is a multi paradigm systems programming language that is designed to be fast, reliable and secure. It's extensive type system ensures that the code is safe and robust, and it lets the compiler catch many errors at compile time. The language is also very well suited for writing concurrent code, which is a requirement for this project. Since Rust can be compiled to [WebAssembly](https://www.rust-lang.org/what/wasm), it could also be used to write the configuration frontend. Furthermore, the developer experience is very good. This is reflected in the [Stack Overflow developer survey](https://survey.stackoverflow.co/2022/), where Rust is ranked as the most loved programming language for the past seven years.
 Last but not least, Rust has a very active community and a big ecosystem of `crates` (libraries) that would simplify the development of the project greatly.
 
 Given all that, Rust presented itself as the perfect choice for this project. Besides all the technical reasons, there was also my personal motivation to learn Rust while building a project.
 
-<div class="page"/>
-
 ### Codebase structure
 
-The codebase is generally structured around three main crates:
-
-There's the `frontend` crate. It contains all the sources for the configuration frontend. It allows the user to configure the display by accessing a web interface.
+The codebase is generally structured around three main crates: The `frontend` crate. It contains all the sources for the configuration frontend. It allows the user to configure the display by accessing a web interface.
 
 The `app` crate contains the main application logic. It is subdivided into several modules, each of which is responsible for a specific task. The `renderer` module contains the logic responsible for rendering the display output. The `server` module contains the logic responsible for serving the configuration frontend and providing a REST API for accessing the system configuration. A third module, called `shared`, holds the configuration persistence logic, that is shared between the renderer and the server as they both need to access the configuration.
 
 Finally, there's the `common` crate. As its name implies, it contains code that is shared between the frontend and the app crate. Its main content are models (structs) that hold the configuration data and an enumeration that represents the individual widgets and their metadata.  
 
-The beauty of using Rust in both the front- and backend is that the same models can be used in both places. In case a model is changed, the compiler will ensure that all places where the model is used are updated accordingly.
-
-The following diagram shows the crate and module structure of the project:
+The beauty of using Rust in both the front- and backend is that the same models can be used in both places. In case a model is changed, the compiler will ensure that all places where the model is used are updated accordingly. The following diagram shows the crate and module structure of the project:
 
 ```text
 ├── app
@@ -257,7 +249,7 @@ pub trait Widget {
 
 Every widget must implement the `Widget` trait. Traits are Rust's way of defining shared behavior between different types, and can be compared to interfaces in other languages.  
 
-The renderer first loads the configuration from the embedded database. It then instantiates all widgets that are enabled by the user. After that, it starts a loop in which it calls the `update` method of each widget once a second. This gives the widgets the opportunity to update their content. Most widgets may not need to update their content every second, so they can implement their own timeout logic. After updating the widgets, the renderer renders the content of all widgets to the display. The renderer also queries the `Persistence` module for new configuration changes. If there are any, the renderer updates the widgets accordingly.
+The renderer first loads the configuration from the embedded database. It then instantiates all widgets that are enabled by the user. After that, it starts a loop in which it calls the `update` method of each widget once a second. This gives the widgets the opportunity to update their content. Most widgets may not need to update their content every second, so they can implement their own timeout logic. After updating the widgets, the renderer renders the content of all widgets to the display. The renderer also queries the `persistence` module for new configuration changes. If there are any, the renderer updates the widgets accordingly.
 
 The `update` method of the widgets is asynchronous. This allows widgets to perform network requests or other time-consuming tasks. The `renderer` can await the completion of all `update` calls concurrently.
 
@@ -292,6 +284,8 @@ The server is configured to listen on port 80. Users are advised to configure th
 The configuration is stored in an embedded database called [sled](http://sled.rs). This database is a key-value store that is optimized for speed and low memory usage. It satisfies all the requirements, was easy to use and is actively maintained.
 
 The [serde](https://serde.rs) crate was used to serialize the configuration to JSON before storing it as UTF-8 encoded byte-string in the database.
+
+<div class="page"/>
 
 ### Concurrency
 
@@ -337,14 +331,9 @@ A goal of the project was to compile down to a single binary. In order for this 
 #[derive(RustEmbed)]
 #[folder = "../frontend/dist"]
 struct Asset;
-```
 
-The files are then accessible at runtime through the `Asset` struct:
-
-```rust
-let filename = "index.html";
-let asset = Asset::get(&filename)?;
-// asset now contains the contents of index.html
+// The files are accessible at runtime through the `Asset` struct
+let asset = Asset::get("index.html")?;
 ```
 
 Since the frontend artifacts first need to be built before they can be embedded, the build process is like a dependency graph:
@@ -361,31 +350,21 @@ flowchart LR
    E[common crate sources - rs] -- cargo build --> X
 ```
 
-First, tailwind is used to build the CSS file from the frontend sources that contain Tailwind classes. Then, the frontend sources are compiled using [trunk](https://trunkrs.dev), a WASM web application bundler for Rust.
-
-Lastly, the main `app` crate can be compiled. The `app` crate depends on the `common` crate and embeds the previously built frontend artifacts.
-
-The result is a single, self-contained binary called `app`. In order to track these dependencies during the build process, a `Makefile` was used.
-
-<div class="page"/>
-
-Below, you can find a simplified excerpt of said Makefile:
+First, tailwind is used to build the CSS file from the frontend sources that contain Tailwind classes. Then, the frontend sources are compiled using [trunk](https://trunkrs.dev), a WASM web application bundler for Rust. Lastly, the main `app` crate can be compiled. The `app` crate depends on the `common` crate and embeds the previously built frontend artifacts. The result is a single, self-contained binary called `app`. In order to track these dependencies during the build process, a `Makefile` was used. Below, you can find a simplified excerpt of said Makefile:
 
 ```makefile
 # Build complete app for the native platform
-$(build_native_release): $(dependencies) $(frontend_build)
+release/app: $(dependencies) $(frontend_build)
  cd app && cargo build --release
-app: $(build_native_release)
 
 # Build complete app for armv7
-target/armv7-unknown-linux-gnueabihf/wg_display: $(dependencies) $(frontend_build)
+armv7-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
  cd app && cross build --release --target armv7-unknown-linux-gnueabihf
 app_armv7: target/armv7-unknown-linux-gnueabihf/wg_display
 
 ## Build Tailwind CSS
 $(tailwind_output_css): $(dependencies)
  cd frontend && npm run tailwind-build
-
 ## Build frontend artifacts using trunk
 $(frontend_build): $(tailwind_output_css) $(dependencies)
  cd frontend && trunk build --release
@@ -416,14 +395,9 @@ To achieve this, three separate workflows were created.
 
 The above image shows a release that was automatically created. It includes the individual commit messages going into the release and the cross compiled binaries for all supported targets.
 
-<div class="page"/>
-
 ### Deployment
 
-Having made the decision to compile the project down to a single binary, the deployment process is very simple. The binary can simply be copied to the Raspberry Pi and executed.
-
-This process is described in the `README` of the project.
-It can be found in the [appendix](#readmemd).
+Having made the decision to compile the project down to a single binary, the deployment process is very simple. The binary can simply be copied to the Raspberry Pi and executed. This process is described in the `README` of the project. It can be found in the [appendix](#readmemd).
 
 <div class="page"/>
 
@@ -432,10 +406,7 @@ It can be found in the [appendix](#readmemd).
 ### Outcome
 
 The project was a big success for me.
-It yielded a V1.0 release that provides a good foundation for future extensions and improvements.  
-
-The project also allowed me to learn a lot of new things on the way.
-I got way more proficient in writing Rust code! Having decided to use many novel technologies like Tailwind, writing web apps with Rust and using GitHub Actions for cross compilation, I almost never felt like I was just doing boring work. With every step on the way, I had to acquire new knowledge and skills, study documentation and exchange with other people.
+It yielded a V1.0 release that provides a good foundation for future extensions and improvements. The project also allowed me to learn a lot of new things on the way. I got way more proficient in writing Rust code! Having decided to use many novel technologies like Tailwind, writing web apps with Rust and using GitHub Actions for cross compilation, I almost never felt like I was just doing boring work. With every step on the way, I had to acquire new knowledge and skills, study documentation and exchange with other people.
 
 ![WG Display](docs/images/wg_display.jpg)
 
@@ -468,9 +439,7 @@ This is only a minimal set of possible widgets. As the time was limited, I had t
 
 ### User feedback
 
-The feedback I received from the users (my roommates and guests) was very positive. They especially liked the fact that they can now configure the display on their own. Just having to open a simple URL in the browser was intuitive for everyone.
-
-Since the size of the widget collection is the most important factor for the usefulness of the display, I already received some requests for new widgets. Having a well-structured project gives me a lot of motivation to satisfy these requests and develop many more widgets.
+The feedback I received from the users (my roommates and guests) was very positive. They especially liked the fact that they can now configure the display on their own. Just having to open a simple URL in the browser was intuitive for everyone. Since the size of the widget collection is the most important factor for the usefulness of the display, I already received some requests for new widgets. Having a well-structured project gives me a lot of motivation to satisfy these requests and develop many more widgets.
 
 ### Reception on GitHub
 
@@ -521,6 +490,7 @@ The current state of the project provides a good foundation for future extension
   Newly added widgets require a new release of the application.  
   This could be changed by dynamically loading the widgets from a directory.  
   This could be achieved by using a crate like [libloading](https://crates.io/crates/libloading).
+  <div class="page"/>
 - **Selling it as a product**  
   The display could be sold as a product.  
   This would require me to source the hardware, preflash the SD cards and provide support.  

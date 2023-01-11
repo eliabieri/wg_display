@@ -29,6 +29,8 @@
 - 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
+<div class="page"/>
+
 ## 📚 Table of contents
 
 - [⭐️ What WG Display can show you](#️-what-wg-display-can-show-you)
@@ -50,7 +52,7 @@
 
 ![WG Display image front](docs/images/wg_display.jpg)
 
----
+<div class="page"/>
 
 ![Configuration dashboard](docs/images/dashboard.jpeg)
 The web interface allows the users to configure system aspects like the background color used on the display or various configuration options of the different widgets.
@@ -70,6 +72,8 @@ The web interface allows the users to configure system aspects like the backgrou
    `sudo setcap CAP_NET_BIND_SERVICE=+eip /home/pi/wg-display-arm-unknown-linux-gnueabihf`
 6. Reboot the target  
    The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
+
+<div class="page"/>
 
 ## 🛠️ Assembling the hardware
 

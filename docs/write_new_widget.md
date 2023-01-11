@@ -45,6 +45,8 @@ pub struct PublicTransportConfig {
 }
 ```
 
+<div class="page"/>
+
 ```text
 💡 Configuration structs need to  
 #[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
@@ -81,6 +83,8 @@ Next, implement your HTML component.
 You can use normal HTML elements like `<input>` or `<select>`.  
 To style ✨ your component, use [Tailwind CSS](https://tailwindcss.com).
 The [PublicTransportConfigComponent](../frontend/src/components/public_transport_config.rs) serves as a good example here.
+
+<div class="page"/>
 
 Implementing the change callbacks is a bit more tricky.  
 Let's assume you have a `<select>` element, that allows the user to select a value.
