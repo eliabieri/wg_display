@@ -61,19 +61,18 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-1. Change the hostname of the target to wgdisplay  
-   `sudo raspi-config` -> `Network Options` -> `Hostname`
-2. Download the latest [release](https://github.com/eliabieri/wg_display/releases)
-   - Raspberry Pi Zero 1 / Zero W / Zero WH -> `wg-display-arm-unknown-linux-gnueabihf`
-   - Raspberry Pi 2 / 3 / 4 / Zero 2 W -> `wg-display-armv7-unknown-linux-gnueabihf`
-3. Copy the binary over to the target  
-   `scp wg-display-arm-unknown-linux-gnueabihf pi@wgdisplay.local:/home/pi`
-4. Enable the binary to be run at reboot  
-   `echo "/home/pi/wg-display-arm-unknown-linux-gnueabihf" >> ~/.bashrc`
-5. Allow the binary to be bind to port 80  
-   `sudo setcap CAP_NET_BIND_SERVICE=+eip /home/pi/wg-display-arm-unknown-linux-gnueabihf`
-6. Reboot the target  
-   The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
+1. Flash the latest Raspberry Pi OS Lite (32-bit) image to an SD card.  
+   You can use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+   It allows you to configure the Wi-Fi credentials and enable SSH (you'll need it in the next step).
+2. SSH into the Raspberry Pi and run the installation script
+   ```bash
+   # SSH into the Raspberry Pi
+   ssh pi@raspberrypi.local
+   # Run the installation script (after you've logged in over SSH)
+   curl -sL https://raw.githubusercontent.com/eliabieri/wg_display/main/install_on_raspberry.py | python3
+   ```
+
+The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
 
 ## 🛠️ Assembling the hardware
 
