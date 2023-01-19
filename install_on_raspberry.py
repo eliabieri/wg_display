@@ -30,7 +30,7 @@ def make_executable() -> None:
 
 def patch_bashrc() -> None:
     COMMANDS = [
-        f"sudo setcap CAP_NET_BIND_SERVICE=+eip {WG_DISPLAY_PATH}\n",
+        f"iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080\n",
         f"{WG_DISPLAY_PATH}\n"
     ]
     BASHRC_FILE = '/home/pi/.bashrc'
@@ -51,6 +51,9 @@ def change_hostname() -> None:
     print("Changing hostname to wgdisplay")
     os.system("sudo sh -c 'echo wgdisplay > /etc/hostname'")
 
+def enable_console_autologin() -> None:
+    pass
+
 def reboot() -> None:
     print("Rebooting...")
     os.system("sudo reboot")
@@ -58,10 +61,11 @@ def reboot() -> None:
 def main() -> None:
     print("Welcome to WG Display installer")
     release_name = get_release_name()
-    download_release(release_name)
+    # download_release(release_name)
     make_executable()
     patch_bashrc()
     change_hostname()
+    enable_console_autologin()
     reboot()
 
 if __name__ == '__main__':
