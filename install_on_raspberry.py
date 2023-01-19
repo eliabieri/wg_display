@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import os
 import sys
+import time
 import platform
 from urllib import request
 
 WG_DISPLAY_PATH = '/home/pi/wgdisplay'
+
 
 def get_release_name() -> str:
     machine = platform.machine()
@@ -28,23 +30,26 @@ def download_release(release_name: str) -> None:
 def make_executable() -> None:
     os.system(f"sudo chmod +x {WG_DISPLAY_PATH}")
 
+def install_dependencies() -> None:
+    os.system("sudo apt install iptables -y")
+
 def patch_bashrc() -> None:
-    COMMANDS = [
-        f"iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 8080\n",
+    commands = [
+        "sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8000\n",
         f"{WG_DISPLAY_PATH}\n"
     ]
-    BASHRC_FILE = '/home/pi/.bashrc'
-    with open(BASHRC_FILE, 'r+') as f:
+    bashrc_file = '/home/pi/.bashrc'
+    with open(bashrc_file, 'r+', encoding='utf-8') as f:
         content = f.readlines()
-        if any(command in content for command in COMMANDS):
+        if any(command in content for command in commands):
             print('Already patched .bashrc')
             return
-    with open(BASHRC_FILE, 'a+') as f:
-            f.writelines([
-                "# WG Display\n",
-                *COMMANDS
-            ])
-            print('Patched .bashrc')
+    with open(bashrc_file, 'a+', encoding='utf-8') as f:
+        f.writelines([
+            "# WG Display\n",
+            *commands
+        ])
+        print('Patched .bashrc')
 
 
 def change_hostname() -> None:
@@ -52,17 +57,23 @@ def change_hostname() -> None:
     os.system("sudo sh -c 'echo wgdisplay > /etc/hostname'")
 
 def enable_console_autologin() -> None:
-    pass
+    print("Enabling autologin")
+    content = "[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin pi --noclear %I $TERM"
+    shell_command = f'echo "{content}" > /etc/systemd/system/getty@tty1.service.d/autologin.conf'
+    command = f"sudo sh -c '{shell_command}'"
+    os.system(command)
 
 def reboot() -> None:
     print("Rebooting...")
+    time.sleep(5)
     os.system("sudo reboot")
 
 def main() -> None:
     print("Welcome to WG Display installer")
     release_name = get_release_name()
-    # download_release(release_name)
+    download_release(release_name)
     make_executable()
+    install_dependencies()
     patch_bashrc()
     change_hostname()
     enable_console_autologin()
