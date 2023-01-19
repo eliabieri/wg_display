@@ -95,8 +95,8 @@ impl Renderer {
             let padded_view = name_widget.child(content_widget);
             linear_layout.add_child(padded_view);
         });
-
-        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title("wgdisplay.local")
+        let title = Renderer::get_title();
+        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title(title)
     }
 
     /// Calls the update function on all enabled widgets
@@ -129,5 +129,18 @@ impl Renderer {
             .max()
             .unwrap()
             + 2
+    }
+
+    /// Computes the title of the application panel
+    /// # Returns
+    /// The title of the application panel
+    fn get_title() -> String {
+        match hostname::get() {
+            Ok(hostname) => match hostname.into_string() {
+                Ok(hostname) => format!("{}.local", hostname),
+                Err(_) => "hostname format error".into(),
+            },
+            Err(_) => "unkown hostname".into(),
+        }
     }
 }
