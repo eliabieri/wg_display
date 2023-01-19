@@ -38,9 +38,8 @@ impl BuffetNord {
             let title = BuffetNord::parse_title(&menu_item);
             let dietary = BuffetNord::parse_dietary(&menu_item);
             match title {
-                Some(title) => {
-                    text.push_str(format!("{} ({})\n", title, dietary.unwrap_or_default()).as_str())
-                }
+                Some(title) => text
+                    .push_str(format!("• {} ({})\n", title, dietary.unwrap_or_default()).as_str()),
                 None => continue,
             }
         }
