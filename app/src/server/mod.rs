@@ -58,7 +58,6 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
     // Make dashboard accessible from outside
     let config = Config::figment()
         .merge(("address", "0.0.0.0"))
-        .merge(("port", 80))
         .merge(("log_level", "off"));
     let _rocket = rocket::custom(config)
         .mount("/", routes![index, dist, save_config, get_config])
