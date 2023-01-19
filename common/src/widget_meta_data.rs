@@ -6,6 +6,7 @@ pub enum WidgetMetaData {
     Today,
     Bernaqua,
     PublicTransport,
+    BuffetNord,
 }
 
 impl WidgetMetaData {
@@ -17,6 +18,7 @@ impl WidgetMetaData {
             WidgetMetaData::Today => "Today",
             WidgetMetaData::Bernaqua => "Bernaqua",
             WidgetMetaData::PublicTransport => "Next departure",
+            WidgetMetaData::BuffetNord => "Buffet Nord",
         }
     }
 
@@ -28,6 +30,7 @@ impl WidgetMetaData {
             WidgetMetaData::Today => "The current date and time",
             WidgetMetaData::Bernaqua => "Occupancy of the Bernaqua facilities",
             WidgetMetaData::PublicTransport => "Next public transport departures",
+            WidgetMetaData::BuffetNord => "Todays menu of the Buffet Nord canteen in Bern, Bümpliz",
         }
     }
 }
