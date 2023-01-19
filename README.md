@@ -61,12 +61,15 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-1. Flash the latest Raspberry Pi OS Lite image to a SD card (32-bit).  
-   You can use the marvelous [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
-   It allows you to configure the Wi-Fi credentials and enable SSH.
-2. Run the installation script on the Raspberry Pi
+1. Flash the latest Raspberry Pi OS Lite (32-bit) image to an SD card.  
+   You can use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+   It allows you to configure the Wi-Fi credentials and enable SSH (you'll need it in the next step).
+2. SSH into the Raspberry Pi and run the installation script
    ```bash
-   curl -sL https://raw.githubusercontent.com/eliabieri/wg_display/features/installation_script/install_on_raspberry.py | python3
+   # SSH into the Raspberry Pi
+   ssh pi@raspberrypi.local
+   # Run the installation script (after you've logged in over SSH)
+   curl -sL https://raw.githubusercontent.com/eliabieri/wg_display/main/install_on_raspberry.py | python3
    ```
 
 The configuration dashboard should be available at [wgdisplay.local](http://wgdisplay.local)
