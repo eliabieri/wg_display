@@ -122,6 +122,16 @@ fn main_component() -> Html {
                                 </ConfigCardComponent>
 
                                 <ConfigCardComponent>
+                                    <DefaultWidgetConfigComponent
+                                        meta_data={WidgetMetaData::BuffetNord}
+                                        config={system_config.widget_config.buffet_nord_config.clone()}
+                                    on_change={Callback::from(captures::capture!(clone system_config, |config| {
+                                        system_config.dispatch(SystemConfigurationAction::SetBuffetNordConfig(config));
+                                    }))}
+                                    />
+                                </ConfigCardComponent>
+
+                                <ConfigCardComponent>
                                     <WidgetConfigComponent
                                         meta_data={WidgetMetaData::PublicTransport}
                                         config={system_config.widget_config.public_transport_config.base_config.clone()}

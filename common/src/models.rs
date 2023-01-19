@@ -39,6 +39,7 @@ pub struct WidgetConfiguration {
     pub cafete_config: BaseWidgetConfig,
     pub bernaqua_config: BaseWidgetConfig,
     pub public_transport_config: PublicTransportConfig,
+    pub buffet_nord_config: BaseWidgetConfig,
 }
 
 /// The system configuration.
@@ -75,6 +76,7 @@ pub enum SystemConfigurationAction {
     SetBernaquaConfig(BaseWidgetConfig),
     SetPublicTransportBaseConfig(BaseWidgetConfig),
     SetPublicTransportConfig(PublicTransportConfig),
+    SetBuffetNordConfig(BaseWidgetConfig),
 }
 
 impl Reducible for SystemConfiguration {
@@ -128,6 +130,13 @@ impl Reducible for SystemConfiguration {
             SystemConfigurationAction::SetPublicTransportConfig(widget_config) => Self {
                 widget_config: WidgetConfiguration {
                     public_transport_config: widget_config,
+                    ..self.widget_config.clone()
+                },
+                ..(*self).clone()
+            },
+            SystemConfigurationAction::SetBuffetNordConfig(widget_config) => Self {
+                widget_config: WidgetConfiguration {
+                    buffet_nord_config: widget_config,
                     ..self.widget_config.clone()
                 },
                 ..(*self).clone()

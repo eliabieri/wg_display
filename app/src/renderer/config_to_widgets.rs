@@ -8,6 +8,8 @@ use crate::renderer::widgets::today::Today;
 
 use common::models::WidgetConfiguration;
 
+use super::widgets::buffet_nord::BuffetNord;
+
 /// Converts the widget configuration to a vector of widgets using the `enabled` flag
 /// # Arguments
 /// * `config` - The widget configuration
@@ -29,6 +31,9 @@ pub fn config_to_widgets(config: &WidgetConfiguration) -> Vec<Box<dyn Widget>> {
     }
     if config.public_transport_config.base_config.enabled {
         widgets.push(Box::new(PublicTransport::new()));
+    }
+    if config.buffet_nord_config.enabled {
+        widgets.push(Box::new(BuffetNord::new()));
     }
     widgets
 }
