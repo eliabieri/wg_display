@@ -33,8 +33,12 @@ impl BuffetNord {
         let menu_item_selector =
             Selector::parse(r"#__layout > div > div.main > div > article > div > section").unwrap();
 
-        let mut text = "No menu today".to_string();
-        for menu_item in document.select(&menu_item_selector) {
+        let mut menu_items = document.select(&menu_item_selector).peekable();
+        if menu_items.peek().is_none() {
+            return "No menu today".to_string();
+        }
+        let mut text = String::new();
+        for menu_item in menu_items {
             let title = BuffetNord::parse_title(&menu_item);
             let dietary = BuffetNord::parse_dietary(&menu_item);
             match title {
