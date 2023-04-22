@@ -12,12 +12,40 @@ use std::path::PathBuf;
 use common::models::SystemConfiguration;
 
 use crate::shared::persistence::Persistence;
+use crate::widgets::running::runtime::Runtime;
+use crate::widgets::utils::loader::Loader;
 
 /// Contains the frontend files
 /// They are embedded using the [RustEmbed](https://crates.io/crates/rust-embed) crate
 #[derive(RustEmbed)]
 #[folder = "../frontend/dist"]
 struct Asset;
+
+/// Returns the configuration schema of a widget
+#[get("/config_schema/<widget_name>")]
+fn get_config_schema(widget_name: &str) -> Option<String> {
+    let mut runtime = Runtime::new();
+    let component_binary = Loader::load_core_module_as_component(
+        format!("widgets/{}/plugin.wasm", widget_name).as_str(),
+    );
+    let Ok(component_binary) = component_binary else {
+        println!("Could not load WASM module");
+        return None;
+    };
+
+    let plugin = runtime.instantiate_plugin(component_binary);
+    let Ok(plugin) = plugin else {
+        println!("Could not instantiate plugin");
+        return None;
+    };
+
+    let schema = runtime.get_config_schema(&plugin);
+    let Ok(schema) = schema else {
+        println!("Could not get config schema");
+        return None;
+    };
+    Some(schema)
+}
 
 /// Saves the system configuration
 #[post("/config", format = "json", data = "<config>")]
@@ -60,7 +88,10 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
         .merge(("address", "0.0.0.0"))
         .merge(("log_level", "off"));
     let _rocket = rocket::custom(config)
-        .mount("/", routes![index, dist, save_config, get_config])
+        .mount(
+            "/",
+            routes![index, dist, save_config, get_config, get_config_schema],
+        )
         .launch()
         .await?;
     Ok(())

@@ -13,27 +13,20 @@ use cursive::view::Nameable;
 use cursive::views::{LinearLayout, PaddedView, Panel, TextView};
 use cursive::{CursiveRunnable, CursiveRunner};
 
-use common::models::WidgetConfiguration;
-
 use crate::shared::persistence::Persistence;
 
-mod widgets;
 use crate::widgets::running::runtime::Plugin;
 use crate::widgets::running::runtime::Runtime;
 use crate::widgets::utils::loader::Loader;
 
-mod config_to_widgets;
-
 struct WasmWidget {
     name: String,
     plugin: Plugin,
-    config_path: String,
 }
 
 pub struct Renderer {
     widgets: Vec<WasmWidget>,
     runtime: Runtime,
-    widget_paths: Vec<String>,
 }
 
 // Renders the widget on the display using the [Cursive](https://crates.io/crates/cursive) crate
@@ -41,11 +34,9 @@ impl Renderer {
     pub fn new() -> Self {
         // let config = Persistence::get_config().expect("Could not load config");
         let mut runtime = Runtime::new();
-        let widget_paths = Renderer::get_widget_paths();
         Self {
-            widgets: Renderer::initialize_widgets(&mut runtime, &widget_paths),
+            widgets: Renderer::initialize_widgets(&mut runtime),
             runtime,
-            widget_paths,
         }
     }
 
@@ -65,7 +56,8 @@ impl Renderer {
             .collect()
     }
 
-    fn initialize_widgets(runtime: &mut Runtime, widget_paths: &[String]) -> Vec<WasmWidget> {
+    fn initialize_widgets(runtime: &mut Runtime) -> Vec<WasmWidget> {
+        let widget_paths = Renderer::get_widget_paths();
         widget_paths
             .iter()
             .map(|path| {
@@ -79,11 +71,8 @@ impl Renderer {
                 let name = runtime
                     .get_plugin_name(&plugin)
                     .expect("Could not get plugin name");
-                WasmWidget {
-                    name,
-                    plugin,
-                    config_path: format!("{}/config.json", path),
-                }
+
+                WasmWidget { name, plugin }
             })
             .collect()
     }
@@ -97,10 +86,11 @@ impl Renderer {
         loop {
             if let Some(new_config) = Persistence::get_config_change() {
                 config = new_config;
+
                 self.initialize_layout(&config, &mut siv)
             }
 
-            self.update_widgets(&mut siv, &config.widget_config);
+            self.update_widgets(&mut siv);
             siv.step();
             siv.refresh();
 
@@ -153,13 +143,12 @@ impl Renderer {
     /// # Args
     /// * `siv` - The cursive instance
     /// * `config` - The widget configuration
-    fn update_widgets(
-        &mut self,
-        siv: &mut CursiveRunner<CursiveRunnable>,
-        config: &WidgetConfiguration,
-    ) {
+    fn update_widgets(&mut self, siv: &mut CursiveRunner<CursiveRunnable>) {
         self.widgets.iter_mut().for_each(|widget| {
-            let res = self.runtime.run_plugin(&widget.plugin, &widget.config_path);
+            let widget_config = Persistence::get_widget_config(widget.name.as_str());
+            let widget_config = widget_config.unwrap_or("{}".to_string());
+
+            let res = self.runtime.run_plugin(&widget.plugin, &widget_config);
             let res = match res {
                 Ok(res) => res.data,
                 Err(e) => "Error while running plugin".into(),

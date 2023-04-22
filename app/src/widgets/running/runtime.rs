@@ -52,21 +52,13 @@ impl Runtime {
         Ok(plugin)
     }
 
-    pub fn run_plugin(
-        &mut self,
-        plugin: &Plugin,
-        config_path: &str,
-    ) -> wasmtime::Result<PluginResult> {
-        let config = std::fs::read(config_path)
-            .unwrap_or_else(|_| panic!("No plugin config file at {}", config_path));
-        let config = String::from_utf8(config).unwrap();
-
+    pub fn run_plugin(&mut self, plugin: &Plugin, config: &str) -> wasmtime::Result<PluginResult> {
         let context = PluginContext {
             last_invocation: Datetime {
                 seconds: 0,
                 nanoseconds: 0,
             },
-            config: &config,
+            config: config,
         };
 
         let start = std::time::Instant::now();
