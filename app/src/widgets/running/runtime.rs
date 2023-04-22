@@ -58,7 +58,7 @@ impl Runtime {
                 seconds: 0,
                 nanoseconds: 0,
             },
-            config: config,
+            config,
         };
 
         let start = std::time::Instant::now();

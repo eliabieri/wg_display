@@ -31,7 +31,7 @@ impl Persistence {
     /// Load the system configuration
     /// # Returns
     /// The system configuration
-    pub fn get_config() -> Option<SystemConfiguration> {
+    pub fn get_system_config() -> Option<SystemConfiguration> {
         let config = DB
             .get(Persistence::DB_KEY)
             .expect("FATAL: Could not read DB");
@@ -45,13 +45,16 @@ impl Persistence {
             }
             _ => {
                 Persistence::create_default_config();
-                Persistence::get_config()
+                Persistence::get_system_config()
             }
         }
     }
 
+    /// Load json configuration for a specific widget
+    /// # Returns
+    /// The widget configuration
     pub fn get_widget_config(widget_name: &str) -> Option<String> {
-        let config = Persistence::get_config();
+        let config = Persistence::get_system_config();
         let Some(config) = config else {
             return None;
         };
@@ -68,7 +71,7 @@ impl Persistence {
     pub fn get_config_change() -> Option<SystemConfiguration> {
         if CONFIG_UPDATED.load(Ordering::Relaxed) {
             CONFIG_UPDATED.store(false, Ordering::Relaxed);
-            Some(Persistence::get_config().expect("Could not load config"))
+            Some(Persistence::get_system_config().expect("Could not load config"))
         } else {
             None
         }
@@ -83,22 +86,18 @@ impl Persistence {
 
 #[cfg(test)]
 mod tests {
-    use common::models::{BaseWidgetConfig, WidgetConfiguration};
 
     use super::*;
 
-    // #[test]
-    // fn test_persistence() {
-    //     let config = SystemConfiguration {
-    //         background_color: "#FF3A3A".to_string(),
-    //         widget_config: WidgetConfiguration {
-    //             bernaqua_config: BaseWidgetConfig { enabled: true },
-    //             ..Default::default()
-    //         },
-    //     };
-    //     Persistence::save_config(config.clone());
-    //     let read_config = Persistence::get_config();
-    //     assert!(read_config.is_some());
-    //     assert_eq!(config, read_config.unwrap());
-    // }
+    #[test]
+    fn test_persistence() {
+        let config = SystemConfiguration {
+            background_color: "#FF3A3A".to_string(),
+            widget_config: vec![],
+        };
+        Persistence::save_config(config.clone());
+        let read_config = Persistence::get_system_config();
+        assert!(read_config.is_some());
+        assert_eq!(config, read_config.unwrap());
+    }
 }

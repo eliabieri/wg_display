@@ -56,7 +56,7 @@ async fn save_config(config: json::Json<SystemConfiguration>) {
 /// Returns the system configuration
 #[get("/config")]
 fn get_config() -> Option<json::Value> {
-    Some(json::json!(Persistence::get_config()))
+    Some(json::json!(Persistence::get_system_config()))
 }
 
 /// Serves index.html

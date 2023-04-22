@@ -80,7 +80,7 @@ impl Renderer {
     /// Runs the renderer (blocking)
     pub fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
-        let mut config = Persistence::get_config().expect("Could not load config");
+        let mut config = Persistence::get_system_config().expect("Could not load config");
         self.initialize_layout(&config, &mut siv);
 
         loop {
@@ -151,7 +151,7 @@ impl Renderer {
             let res = self.runtime.run_plugin(&widget.plugin, &widget_config);
             let res = match res {
                 Ok(res) => res.data,
-                Err(e) => "Error while running plugin".into(),
+                Err(_) => "Error while running plugin".into(),
             };
             siv.call_on_name(widget.name.as_str(), |view: &mut TextView| {
                 view.set_content(res);
