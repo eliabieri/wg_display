@@ -1,4 +1,5 @@
 //! Widgets to display rendering implementation using [Cursive](https://crates.io/crates/cursive)
+use std::fs;
 use std::thread;
 use std::time::Duration;
 
@@ -11,34 +12,84 @@ use cursive::theme::PaletteColor::Background;
 use cursive::view::Nameable;
 use cursive::views::{LinearLayout, PaddedView, Panel, TextView};
 use cursive::{CursiveRunnable, CursiveRunner};
-use futures::future::join_all;
-use rocket::tokio::join;
 
 use common::models::WidgetConfiguration;
 
 use crate::shared::persistence::Persistence;
 
 mod widgets;
-use crate::renderer::widgets::base::Widget;
+use crate::widgets::running::runtime::Plugin;
+use crate::widgets::running::runtime::Runtime;
+use crate::widgets::utils::loader::Loader;
 
 mod config_to_widgets;
-use config_to_widgets::config_to_widgets;
+
+struct WasmWidget {
+    name: String,
+    plugin: Plugin,
+    config_path: String,
+}
 
 pub struct Renderer {
-    widgets: Vec<Box<dyn Widget>>,
+    widgets: Vec<WasmWidget>,
+    runtime: Runtime,
+    widget_paths: Vec<String>,
 }
 
 // Renders the widget on the display using the [Cursive](https://crates.io/crates/cursive) crate
 impl Renderer {
     pub fn new() -> Self {
-        let config = Persistence::get_config().expect("Could not load config");
+        // let config = Persistence::get_config().expect("Could not load config");
+        let mut runtime = Runtime::new();
+        let widget_paths = Renderer::get_widget_paths();
         Self {
-            widgets: config_to_widgets(&config.widget_config),
+            widgets: Renderer::initialize_widgets(&mut runtime, &widget_paths),
+            runtime,
+            widget_paths,
         }
     }
 
+    fn get_widget_paths() -> Vec<String> {
+        let widgets_folder = fs::read_dir("widgets").expect("Could not read widgets directory");
+        widgets_folder
+            .filter_map(|entry| {
+                let entry = entry.expect("Could not read entry");
+                let path = entry.path();
+                if path.is_dir() {
+                    let path = path.to_str().expect("Could not convert path to string");
+                    Some(path.to_string())
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
+
+    fn initialize_widgets(runtime: &mut Runtime, widget_paths: &[String]) -> Vec<WasmWidget> {
+        widget_paths
+            .iter()
+            .map(|path| {
+                let component_binary =
+                    Loader::load_core_module_as_component(format!("{}/plugin.wasm", path).as_str())
+                        .expect("Could not load WASM module");
+
+                let plugin = runtime
+                    .instantiate_plugin(component_binary)
+                    .expect("Could not instantiate plugin");
+                let name = runtime
+                    .get_plugin_name(&plugin)
+                    .expect("Could not get plugin name");
+                WasmWidget {
+                    name,
+                    plugin,
+                    config_path: format!("{}/config.json", path),
+                }
+            })
+            .collect()
+    }
+
     /// Runs the renderer (blocking)
-    pub async fn run(&mut self) {
+    pub fn run(&mut self) {
         let mut siv = cursive::default().into_runner();
         let mut config = Persistence::get_config().expect("Could not load config");
         self.initialize_layout(&config, &mut siv);
@@ -49,9 +100,10 @@ impl Renderer {
                 self.initialize_layout(&config, &mut siv)
             }
 
-            self.update_widgets(&mut siv, &config.widget_config).await;
+            self.update_widgets(&mut siv, &config.widget_config);
             siv.step();
             siv.refresh();
+
             thread::sleep(Duration::from_millis(1000));
         }
     }
@@ -65,8 +117,6 @@ impl Renderer {
         config: &SystemConfiguration,
         siv: &mut CursiveRunner<CursiveRunnable>,
     ) {
-        let widgets = config_to_widgets(&config.widget_config);
-        self.widgets = widgets;
         *siv = cursive::default().into_runner();
         siv.update_theme(|theme| theme.shadow = false);
         siv.update_theme(|theme| {
@@ -85,16 +135,16 @@ impl Renderer {
         self.widgets.iter().for_each(|widget| {
             let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
                 "{:width$}",
-                widget.get_meta_data().name(),
+                widget.name,
                 width = self.name_column_width()
             )));
 
-            let content_widget =
-                TextView::new(widget.get_content()).with_name(widget.get_meta_data().name());
+            let content_widget = TextView::new("-".to_string()).with_name(widget.name.clone());
 
             let padded_view = name_widget.child(content_widget);
             linear_layout.add_child(padded_view);
         });
+
         let title = Renderer::get_title();
         Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title(title)
     }
@@ -103,18 +153,19 @@ impl Renderer {
     /// # Args
     /// * `siv` - The cursive instance
     /// * `config` - The widget configuration
-    async fn update_widgets(
+    fn update_widgets(
         &mut self,
         siv: &mut CursiveRunner<CursiveRunnable>,
         config: &WidgetConfiguration,
     ) {
-        join!(join_all(
-            self.widgets.iter_mut().map(|widget| widget.update(config))
-        ));
-
         self.widgets.iter_mut().for_each(|widget| {
-            siv.call_on_name(widget.get_meta_data().name(), |view: &mut TextView| {
-                view.set_content(widget.get_content());
+            let res = self.runtime.run_plugin(&widget.plugin, &widget.config_path);
+            let res = match res {
+                Ok(res) => res.data,
+                Err(e) => "Error while running plugin".into(),
+            };
+            siv.call_on_name(widget.name.as_str(), |view: &mut TextView| {
+                view.set_content(res);
             });
         });
     }
@@ -125,7 +176,7 @@ impl Renderer {
     fn name_column_width(&self) -> usize {
         self.widgets
             .iter()
-            .map(|widget| widget.get_meta_data().name().len())
+            .map(|widget| widget.name.len())
             .max()
             .unwrap()
             + 2

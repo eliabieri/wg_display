@@ -1,0 +1,22 @@
+default interface types {
+    record datetime {
+        // Seconds since epoch
+        seconds: u64,
+        nanoseconds: u32,
+    }
+
+    // Configuration that the plugin receives from the host.
+    record plugin-context {
+        // Timestamp of the last plugin invocation.
+        last-invocation: datetime,
+        // Plugin specific configuration serialized as JSON
+        // Must comply with the plugin's config schema obtained by get-config-schema
+        config: string
+    }
+
+    // The result of a plugin invocation.
+    record plugin-result {
+        // Serialized as JSON
+        data: string
+    }
+}

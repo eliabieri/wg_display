@@ -1,0 +1,17 @@
+// WIT interface for the interaction between the host application and plugins
+// Inspired by work-in-progress WASI Preview 2 WIT definitions (https://github.com/bytecodealliance/preview2-prototyping/tree/main/wit)
+default world plugin {
+    use pkg.types.{plugin-context, plugin-result}
+
+    import http: pkg.http
+    import random: pkg.random
+    import clocks: pkg.clocks
+    import logging: pkg.logging
+
+    // Return the name of the plugin
+    export get-name: func() -> string
+    // Return the config JSON schema string
+    export get-config-schema: func() -> string
+    // Invoke the plugin with the given context
+    export run: func(context: plugin-context) -> plugin-result
+}

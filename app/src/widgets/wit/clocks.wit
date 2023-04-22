@@ -1,0 +1,7 @@
+// Note: For host implementation see: https://github.com/bytecodealliance/preview2-prototyping/blob/main/wasi-common/cap-std-sync/src/clocks.rs
+default interface clocks {
+    use pkg.types.{datetime}
+
+    // TODO: make more research into wether monotonic clock is needed
+    now: func() -> datetime
+}

@@ -1,0 +1,29 @@
+// HTTP interface for plugins.
+// Allows them to make HTTP/HTTPS requests.
+default interface http {
+    type status = u16
+
+    variant method {
+        get,
+        head,
+        post,
+        put,
+        delete,
+    }
+
+    record response {
+        // HTTP status code
+        status: status,
+        // content-length, if known
+        content-length: option<u64>,
+        // response body as raw bytes
+        bytes: list<u8>,
+    }
+
+    request: func(
+        method: method,
+        url: string,
+        // Only relevant for POST/PUT requests
+        body: option<list<u8>>,
+    ) -> response
+}
