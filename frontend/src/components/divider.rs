@@ -12,7 +12,7 @@ pub struct DividerProps {
 #[function_component(DividerComponent)]
 pub fn divider_component(props: &DividerProps) -> Html {
     html! {
-        <div class="relative">
+        <div class="relative mb-4">
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
                 <div class="w-full border-t border-gray-300"></div>
             </div>

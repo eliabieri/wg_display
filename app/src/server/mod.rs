@@ -2,6 +2,7 @@
 use rocket::config::Config;
 use rocket::http::ContentType;
 use rocket::response::content::RawHtml;
+use rocket::response::status::Custom;
 use rocket::serde::json;
 use rust_embed::RustEmbed;
 
@@ -9,11 +10,11 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-use common::models::SystemConfiguration;
+use common::models::{InstallationData, SystemConfiguration};
 
 use crate::shared::persistence::Persistence;
+use crate::shared::widget_manager::WidgetManager;
 use crate::widgets::running::runtime::Runtime;
-use crate::widgets::utils::loader::Loader;
 
 /// Contains the frontend files
 /// They are embedded using the [RustEmbed](https://crates.io/crates/rust-embed) crate
@@ -21,19 +22,33 @@ use crate::widgets::utils::loader::Loader;
 #[folder = "../frontend/dist"]
 struct Asset;
 
+/// Install a new widget
+#[post("/install_widget", format = "json", data = "<installation_data>")]
+async fn install_widget(
+    installation_data: json::Json<InstallationData>,
+) -> Result<(), Custom<String>> {
+    let InstallationData { download_url } = installation_data.into_inner();
+    let result = WidgetManager::install_widget(download_url.as_str()).await;
+    match result {
+        Ok(_) => Ok(()),
+        Err(err) => Err(Custom(
+            rocket::http::Status::InternalServerError,
+            format!("Could not install widget: {}", err),
+        )),
+    }
+}
+
 /// Returns the configuration schema of a widget
 #[get("/config_schema/<widget_name>")]
 fn get_config_schema(widget_name: &str) -> Option<String> {
     let mut runtime = Runtime::new();
-    let component_binary = Loader::load_core_module_as_component(
-        format!("widgets/{}/plugin.wasm", widget_name).as_str(),
-    );
+    let component_binary = WidgetManager::get_widget(widget_name);
     let Ok(component_binary) = component_binary else {
         println!("Could not load WASM module");
         return None;
     };
 
-    let plugin = runtime.instantiate_plugin(component_binary);
+    let plugin = runtime.instantiate_plugin(component_binary.as_slice());
     let Ok(plugin) = plugin else {
         println!("Could not instantiate plugin");
         return None;
@@ -90,7 +105,14 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
     let _rocket = rocket::custom(config)
         .mount(
             "/",
-            routes![index, dist, save_config, get_config, get_config_schema],
+            routes![
+                index,
+                dist,
+                save_config,
+                get_config,
+                get_config_schema,
+                install_widget
+            ],
         )
         .launch()
         .await?;

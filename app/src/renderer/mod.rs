@@ -1,5 +1,4 @@
 //! Widgets to display rendering implementation using [Cursive](https://crates.io/crates/cursive)
-use std::fs;
 use std::thread;
 use std::time::Duration;
 
@@ -15,9 +14,9 @@ use cursive::{CursiveRunnable, CursiveRunner};
 
 use crate::shared::persistence::Persistence;
 
+use crate::shared::widget_manager::WidgetManager;
 use crate::widgets::running::runtime::Plugin;
 use crate::widgets::running::runtime::Runtime;
-use crate::widgets::utils::loader::Loader;
 
 struct WasmWidget {
     name: String,
@@ -32,7 +31,6 @@ pub struct Renderer {
 // Renders the widget on the display using the [Cursive](https://crates.io/crates/cursive) crate
 impl Renderer {
     pub fn new() -> Self {
-        // let config = Persistence::get_config().expect("Could not load config");
         let mut runtime = Runtime::new();
         Self {
             widgets: Renderer::initialize_widgets(&mut runtime),
@@ -40,33 +38,12 @@ impl Renderer {
         }
     }
 
-    fn get_widget_paths() -> Vec<String> {
-        let widgets_folder = fs::read_dir("widgets").expect("Could not read widgets directory");
-        widgets_folder
-            .filter_map(|entry| {
-                let entry = entry.expect("Could not read entry");
-                let path = entry.path();
-                if path.is_dir() {
-                    let path = path.to_str().expect("Could not convert path to string");
-                    Some(path.to_string())
-                } else {
-                    None
-                }
-            })
-            .collect()
-    }
-
     fn initialize_widgets(runtime: &mut Runtime) -> Vec<WasmWidget> {
-        let widget_paths = Renderer::get_widget_paths();
-        widget_paths
+        WidgetManager::get_widgets()
             .iter()
-            .map(|path| {
-                let component_binary =
-                    Loader::load_core_module_as_component(format!("{}/plugin.wasm", path).as_str())
-                        .expect("Could not load WASM module");
-
+            .map(|widget_binary| {
                 let plugin = runtime
-                    .instantiate_plugin(component_binary)
+                    .instantiate_plugin(widget_binary)
                     .expect("Could not instantiate plugin");
                 let name = runtime
                     .get_plugin_name(&plugin)
@@ -86,7 +63,7 @@ impl Renderer {
         loop {
             if let Some(new_config) = Persistence::get_config_change() {
                 config = new_config;
-
+                self.widgets = Renderer::initialize_widgets(&mut self.runtime);
                 self.initialize_layout(&config, &mut siv)
             }
 

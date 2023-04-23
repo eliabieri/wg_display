@@ -38,7 +38,7 @@ impl Runtime {
         }
     }
 
-    pub fn instantiate_plugin(&mut self, binary: Vec<u8>) -> Result<Plugin, Error> {
+    pub fn instantiate_plugin(&mut self, binary: &[u8]) -> Result<Plugin, Error> {
         let start = std::time::Instant::now();
         let component =
             Component::from_binary(&self.engine, &binary).expect("Could not load component");

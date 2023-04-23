@@ -10,6 +10,8 @@ default world plugin {
 
     // Return the name of the plugin
     export get-name: func() -> string
+    // Return the semantic version of the plugin
+    export get-version: func() -> string
     // Return the config JSON schema string
     export get-config-schema: func() -> string
     // Invoke the plugin with the given context

@@ -28,6 +28,12 @@ pub struct SystemConfiguration {
     pub widget_config: Vec<WidgetConfiguration>,
 }
 
+/// Stores the data needed for a widget installation
+#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
+pub struct InstallationData {
+    pub download_url: String,
+}
+
 fn persist_system_config(config: SystemConfiguration) {
     log!("Persisting new system config..");
     wasm_bindgen_futures::spawn_local(async move {

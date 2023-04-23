@@ -7,8 +7,6 @@ use common::models::BaseWidgetConfig;
 
 use crate::components::default_widget_config::DefaultWidgetConfigComponent;
 
-use common::widget_meta_data::WidgetMetaData;
-
 /// Props for the WidgetConfigComponent
 #[derive(Properties, PartialEq)]
 pub struct WidgetConfigProps {

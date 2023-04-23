@@ -1,5 +1,5 @@
 //! Implementation of the system configuration persistence
-use common::models::SystemConfiguration;
+use common::models::{SystemConfiguration, WidgetConfiguration};
 use rocket::serde::json::serde_json;
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -26,6 +26,21 @@ impl Persistence {
         DB.insert(Persistence::DB_KEY, serialized.as_bytes())
             .expect("Could not save configuration");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
+    }
+
+    // Add widget default config
+    pub fn add_widget_default_config(widget_name: &str) {
+        let config = Persistence::get_system_config().unwrap();
+        let mut widget_config = config.widget_config;
+        widget_config.push(WidgetConfiguration {
+            name: widget_name.to_string(),
+            json_config: "{}".to_string(),
+        });
+        let new_config = SystemConfiguration {
+            widget_config,
+            ..config
+        };
+        Persistence::save_config(new_config);
     }
 
     /// Load the system configuration
@@ -81,6 +96,16 @@ impl Persistence {
     /// This is used on systems that never stored a configuration before
     fn create_default_config() {
         Persistence::save_config(SystemConfiguration::default());
+    }
+
+    pub fn save_binary(key: &str, bytes: &[u8]) {
+        DB.insert(key, bytes).expect("Could not save binary");
+        CONFIG_UPDATED.store(true, Ordering::Relaxed);
+    }
+
+    pub fn get_binary(key: &str) -> Option<Vec<u8>> {
+        let bytes = DB.get(key).expect("Could not read binary");
+        bytes.map(|bytes| bytes.to_vec())
     }
 }
 
