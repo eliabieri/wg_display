@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use anyhow::Error;
 use wasmtime::{
     self,
@@ -18,6 +20,7 @@ pub struct Runtime {
     engine: Engine,
     store: Store<PluginState>,
     linker: Linker<PluginState>,
+    last_run: HashMap<String, Datetime>,
 }
 
 impl Runtime {
@@ -35,13 +38,14 @@ impl Runtime {
             engine,
             store,
             linker,
+            last_run: HashMap::new(),
         }
     }
 
     pub fn instantiate_plugin(&mut self, binary: &[u8]) -> Result<Plugin, Error> {
         let start = std::time::Instant::now();
         let component =
-            Component::from_binary(&self.engine, &binary).expect("Could not load component");
+            Component::from_binary(&self.engine, binary).expect("Could not load component");
         let (plugin, _) = Plugin::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
@@ -53,11 +57,10 @@ impl Runtime {
     }
 
     pub fn run_plugin(&mut self, plugin: &Plugin, config: &str) -> wasmtime::Result<PluginResult> {
+        let name = self.get_plugin_name(plugin)?;
+        let last_invocation = *self.last_run.get(&name).unwrap_or(&Datetime::now());
         let context = PluginContext {
-            last_invocation: Datetime {
-                seconds: 0,
-                nanoseconds: 0,
-            },
+            last_invocation,
             config,
         };
 
