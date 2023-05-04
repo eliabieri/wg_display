@@ -1,7 +1,5 @@
-use anyhow::Error;
-use common::models::SystemConfiguration;
-
 use crate::widgets::{running::runtime::Runtime, utils::loader::Loader};
+use anyhow::Error;
 
 use super::persistence::Persistence;
 

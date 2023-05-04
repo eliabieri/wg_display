@@ -25,5 +25,5 @@ default interface http {
         url: string,
         // Only relevant for POST/PUT requests
         body: option<list<u8>>,
-    ) -> response
+    ) -> result<response>
 }
