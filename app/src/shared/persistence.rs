@@ -92,12 +92,6 @@ impl Persistence {
         }
     }
 
-    /// Create a default system configuration
-    /// This is used on systems that never stored a configuration before
-    fn create_default_config() {
-        Persistence::save_config(SystemConfiguration::default());
-    }
-
     pub fn save_binary(key: &str, bytes: &[u8]) {
         DB.insert(key, bytes).expect("Could not save binary");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
@@ -106,6 +100,12 @@ impl Persistence {
     pub fn get_binary(key: &str) -> Option<Vec<u8>> {
         let bytes = DB.get(key).expect("Could not read binary");
         bytes.map(|bytes| bytes.to_vec())
+    }
+
+    /// Create a default system configuration
+    /// This is used on systems that never stored a configuration before
+    fn create_default_config() {
+        Persistence::save_config(SystemConfiguration::default());
     }
 }
 

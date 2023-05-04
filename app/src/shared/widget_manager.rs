@@ -15,7 +15,11 @@ impl WidgetManager {
         let plugin = runtime.instantiate_plugin(&component)?;
         let widget_name = runtime.get_plugin_name(&plugin)?;
         Persistence::save_binary(widget_name.as_str(), &component);
-        Persistence::add_widget_default_config(widget_name.as_str());
+
+        if Persistence::get_widget_config(widget_name.as_str()).is_none() {
+            Persistence::add_widget_default_config(widget_name.as_str());
+        }
+
         Ok(())
     }
 
