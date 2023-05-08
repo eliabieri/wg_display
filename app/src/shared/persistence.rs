@@ -85,7 +85,7 @@ impl Persistence {
     /// # Returns
     /// The widget configuration
     pub fn remove_widget_config(widget_name: &str) {
-        let mut config = Persistence::get_system_config();
+        let config = Persistence::get_system_config();
         let Some(mut config) = config else {
             return;
         };
