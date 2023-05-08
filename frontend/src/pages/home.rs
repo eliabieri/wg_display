@@ -84,6 +84,8 @@ pub fn home() -> Html {
                                         <ConfigCardComponent>
                                             <div class="text-white text-md font-medium pb-2">{widget.name.clone()}</div>
                                             <button value={widget.name.clone()} onclick={on_deinstall_widget} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
+                                            <br/>
+                                            <Link<Route> to={Route::ConfigSchema { widget_name: widget.name.clone() }}><div class="text-gray-300 text-sm font-semibold" >{"Open config schema"}</div></Link<Route>>
                                         </ConfigCardComponent>
                                     }
                                 }) }
