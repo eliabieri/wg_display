@@ -1,9 +1,9 @@
 use crate::widgets::running::runtime::{
     logging::{Host, Level},
-    PluginState,
+    WidgetState,
 };
 
-impl Host for PluginState {
+impl Host for WidgetState {
     fn log(&mut self, level: Level, context: String, message: String) -> wasmtime::Result<()> {
         const PREFIX: &str = "PLUGIN";
         match level {

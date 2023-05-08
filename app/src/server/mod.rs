@@ -48,7 +48,7 @@ fn get_config_schema(widget_name: &str) -> Option<String> {
         return None;
     };
 
-    let plugin = runtime.instantiate_plugin(component_binary.as_slice());
+    let plugin = runtime.instantiate_widget(component_binary.as_slice());
     let Ok(plugin) = plugin else {
         println!("Could not instantiate plugin");
         return None;

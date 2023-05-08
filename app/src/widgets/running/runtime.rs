@@ -11,15 +11,15 @@ use crate::widgets::{running::runtime::clocks::Datetime, utils::logging::LOGGING
 
 use self::types::Host;
 
-wasmtime::component::bindgen!({ path: "src/widgets/wit", world: "plugin" });
+wasmtime::component::bindgen!({ path: "../wg_display_widget_wit/wit", world: "widget" });
 
-pub struct PluginState {}
-impl Host for PluginState {}
+pub struct WidgetState {}
+impl Host for WidgetState {}
 
 pub struct Runtime {
     engine: Engine,
-    store: Store<PluginState>,
-    linker: Linker<PluginState>,
+    store: Store<WidgetState>,
+    linker: Linker<WidgetState>,
     last_run: HashMap<String, Datetime>,
 }
 
@@ -29,9 +29,9 @@ impl Runtime {
         Config::wasm_component_model(&mut config, true);
 
         let engine = Engine::new(&config).expect("Could not create engine");
-        let store = Store::new(&engine, PluginState {});
+        let store = Store::new(&engine, WidgetState {});
         let mut linker = Linker::new(&engine);
-        Plugin::add_to_linker(&mut linker, |state: &mut PluginState| state)
+        Widget::add_to_linker(&mut linker, |state: &mut WidgetState| state)
             .expect("Could not link host API");
 
         Self {
@@ -42,30 +42,30 @@ impl Runtime {
         }
     }
 
-    pub fn instantiate_plugin(&mut self, binary: &[u8]) -> Result<Plugin, Error> {
+    pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
         let start = std::time::Instant::now();
         let component =
             Component::from_binary(&self.engine, binary).expect("Could not load component");
-        let (plugin, _) = Plugin::instantiate(&mut self.store, &component, &self.linker)?;
+        let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
             "{}: Loaded, transformed and compiled module in {} ms",
             LOGGING_PREFIX,
             duration.as_millis()
         );
-        Ok(plugin)
+        Ok(widget)
     }
 
-    pub fn run_plugin(&mut self, plugin: &Plugin, config: &str) -> wasmtime::Result<PluginResult> {
-        let name = self.get_plugin_name(plugin)?;
+    pub fn run_plugin(&mut self, widget: &Widget, config: &str) -> wasmtime::Result<WidgetResult> {
+        let name = self.get_widget_name(widget)?;
         let last_invocation = *self.last_run.get(&name).unwrap_or(&Datetime::now());
-        let context = PluginContext {
+        let context = WidgetContext {
             last_invocation,
             config,
         };
 
         let start = std::time::Instant::now();
-        let res = plugin.call_run(&mut self.store, context);
+        let res = widget.call_run(&mut self.store, context);
         let duration = start.elapsed();
 
         log::info!(
@@ -75,11 +75,11 @@ impl Runtime {
         );
         res
     }
-    pub fn get_plugin_name(&mut self, plugin: &Plugin) -> wasmtime::Result<String> {
-        plugin.call_get_name(&mut self.store)
+    pub fn get_widget_name(&mut self, widget: &Widget) -> wasmtime::Result<String> {
+        widget.call_get_name(&mut self.store)
     }
 
-    pub fn get_config_schema(&mut self, plugin: &Plugin) -> wasmtime::Result<String> {
-        plugin.call_get_config_schema(&mut self.store)
+    pub fn get_config_schema(&mut self, widget: &Widget) -> wasmtime::Result<String> {
+        widget.call_get_config_schema(&mut self.store)
     }
 }

@@ -1,9 +1,9 @@
 use crate::widgets::running::runtime::{
     http::{self, Response},
-    PluginState,
+    WidgetState,
 };
 
-impl http::Host for PluginState {
+impl http::Host for WidgetState {
     fn request(
         &mut self,
         method: http::Method,

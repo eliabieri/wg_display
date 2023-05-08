@@ -4,23 +4,25 @@ use std::time::Duration;
 
 use common::models::SystemConfiguration;
 use cursive::theme::BaseColor;
-use cursive::theme::BorderStyle;
 use cursive::theme::Color;
 use cursive::theme::Color::Dark;
 use cursive::theme::PaletteColor::Background;
+use cursive::theme::Style;
 use cursive::view::Nameable;
-use cursive::views::{LinearLayout, PaddedView, Panel, TextView};
+use cursive::view::Resizable;
+use cursive::views::PaddedView;
+use cursive::views::{LinearLayout, TextView};
 use cursive::{CursiveRunnable, CursiveRunner};
 
 use crate::shared::persistence::Persistence;
 
 use crate::shared::widget_manager::WidgetManager;
-use crate::widgets::running::runtime::Plugin;
 use crate::widgets::running::runtime::Runtime;
+use crate::widgets::running::runtime::Widget;
 
 struct WasmWidget {
     name: String,
-    plugin: Plugin,
+    plugin: Widget,
 }
 
 pub struct Renderer {
@@ -43,10 +45,10 @@ impl Renderer {
             .iter()
             .map(|widget_binary| {
                 let plugin = runtime
-                    .instantiate_plugin(widget_binary)
+                    .instantiate_widget(widget_binary)
                     .expect("Could not instantiate plugin");
                 let name = runtime
-                    .get_plugin_name(&plugin)
+                    .get_widget_name(&plugin)
                     .expect("Could not get plugin name");
 
                 WasmWidget { name, plugin }
@@ -90,30 +92,30 @@ impl Renderer {
             theme.palette[Background] =
                 Color::parse(config.background_color.as_str()).unwrap_or(Dark(BaseColor::Magenta))
         });
-        siv.update_theme(|theme| theme.borders = BorderStyle::None);
-        siv.add_layer(PaddedView::lrtb(1, 1, 0, 0, self.build_layout()));
+        // siv.update_theme(|theme| theme.borders = BorderStyle::None);
+        siv.add_layer(self.build_layout());
     }
 
     /// Builds the layout
     /// # Returns
     /// The layout as Panel
-    fn build_layout(&self) -> Panel<PaddedView<LinearLayout>> {
+    fn build_layout(&self) -> LinearLayout {
         let mut linear_layout = LinearLayout::vertical();
+
+        let title = TextView::new(Renderer::get_title())
+            .style(Style::title_primary())
+            .center();
+        linear_layout.add_child(title.full_width());
+
         self.widgets.iter().for_each(|widget| {
-            let name_widget = LinearLayout::horizontal().child(TextView::new(format!(
-                "{:width$}",
-                widget.name,
-                width = self.name_column_width()
-            )));
+            let name_widget = TextView::new(widget.name.clone()).style(Style::title_secondary());
 
             let content_widget = TextView::new("-".to_string()).with_name(widget.name.clone());
 
-            let padded_view = name_widget.child(content_widget);
-            linear_layout.add_child(padded_view);
+            linear_layout.add_child(PaddedView::lrtb(1, 0, 0, 0, name_widget));
+            linear_layout.add_child(PaddedView::lrtb(1, 0, 0, 0, content_widget));
         });
-
-        let title = Renderer::get_title();
-        Panel::new(PaddedView::lrtb(0, 0, 1, 0, linear_layout)).title(title)
+        linear_layout
     }
 
     /// Calls the update function on all enabled widgets
@@ -134,18 +136,6 @@ impl Renderer {
                 view.set_content(res);
             });
         });
-    }
-
-    /// Calculates the width of the name column
-    /// # Returns
-    /// The safe width of the name column
-    fn name_column_width(&self) -> usize {
-        self.widgets
-            .iter()
-            .map(|widget| widget.name.len())
-            .max()
-            .unwrap()
-            + 2
     }
 
     /// Computes the title of the application panel
