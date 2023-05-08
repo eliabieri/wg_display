@@ -44,6 +44,11 @@ $(build_native_release_debug): $(dependencies) $(frontend_build)
 	cd app && cargo build
 app_debug: $(build_native_release_debug)
 
+# Build complete app for arm (Raspberry 4, 64 bit)
+target/aarch64-unknown-linux-gnu/app: $(dependencies) $(frontend_build)
+	cd app && cross build --release --target aarch64-unknown-linux-gnu
+app_aarch64: target/aarch64-unknown-linux-gnu/app
+
 # Build complete app for arm (Raspberry Pi 2/3/4)
 target/armv7-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
 	cd app && cross build --release --target armv7-unknown-linux-gnueabihf
