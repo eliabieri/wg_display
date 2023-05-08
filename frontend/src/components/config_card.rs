@@ -12,7 +12,7 @@ pub struct ConfigCardProps {
 #[function_component(ConfigCardComponent)]
 pub fn config_card_component(props: &ConfigCardProps) -> Html {
     html! {
-        <div class="p-4 my-3 transition duration-800 rounded-md bg-zinc-700 shadow-md hover:scale-105 duration-500">
+        <div class="p-4 my-3 transition duration-800 rounded-md bg-zinc-700 shadow-md">
             { for props.children.iter() }
         </div>
     }

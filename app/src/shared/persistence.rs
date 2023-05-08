@@ -81,6 +81,24 @@ impl Persistence {
         None
     }
 
+    /// Remove the configuration for a specific widget
+    /// # Returns
+    /// The widget configuration
+    pub fn remove_widget_config(widget_name: &str) {
+        let mut config = Persistence::get_system_config();
+        let Some(mut config) = config else {
+            return;
+        };
+        if let Some(index) = config
+            .widget_config
+            .iter()
+            .position(|config: &WidgetConfiguration| config.name == widget_name)
+        {
+            config.widget_config.swap_remove(index);
+        }
+        Persistence::save_config(config);
+    }
+
     /// Returns Some system configuration if a new one is available
     /// Can be used for polling updates to the system configuration
     pub fn get_config_change() -> Option<SystemConfiguration> {
@@ -94,6 +112,11 @@ impl Persistence {
 
     pub fn save_binary(key: &str, bytes: &[u8]) {
         DB.insert(key, bytes).expect("Could not save binary");
+        CONFIG_UPDATED.store(true, Ordering::Relaxed);
+    }
+
+    pub fn remove_binary(key: &str) {
+        DB.remove(key).expect("Could not remove binary");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 

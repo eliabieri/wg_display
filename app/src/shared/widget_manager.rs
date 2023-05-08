@@ -22,6 +22,12 @@ impl WidgetManager {
         Ok(())
     }
 
+    pub async fn deinstall_widget(widget_name: &str) -> Result<(), Error> {
+        Persistence::remove_binary(widget_name);
+        Persistence::remove_widget_config(widget_name);
+        Ok(())
+    }
+
     pub fn get_widget(widget_name: &str) -> Result<Vec<u8>, Error> {
         let bytes =
             Persistence::get_binary(widget_name).ok_or(anyhow::anyhow!("Could not get widget"))?;

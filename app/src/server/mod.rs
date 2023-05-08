@@ -38,13 +38,26 @@ async fn install_widget(
     }
 }
 
+/// Install a new widget
+#[get("/deinstall_widget/<widget_name>")]
+async fn deinstall_widget(widget_name: &str) -> Result<(), Custom<String>> {
+    let result = WidgetManager::deinstall_widget(widget_name).await;
+    match result {
+        Ok(_) => Ok(()),
+        Err(err) => Err(Custom(
+            rocket::http::Status::InternalServerError,
+            format!("Could not deinstall widget: {}", err),
+        )),
+    }
+}
+
 /// Returns the configuration schema of a widget
 #[get("/config_schema/<widget_name>")]
 fn get_config_schema(widget_name: &str) -> Option<String> {
     let mut runtime = Runtime::new();
     let component_binary = WidgetManager::get_widget(widget_name);
     let Ok(component_binary) = component_binary else {
-        println!("Could not load WASM module");
+        println!("Could not load WASM component");
         return None;
     };
 
@@ -111,7 +124,8 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
                 save_config,
                 get_config,
                 get_config_schema,
-                install_widget
+                install_widget,
+                deinstall_widget
             ],
         )
         .launch()

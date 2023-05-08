@@ -70,10 +70,10 @@ pub fn install() -> Html {
                             <DividerComponent text="Installing a widget"/>
                             <ConfigCardComponent>
                                 <div>
-                                    <label for="url" class="block text-sm font-medium text-slate-300">{"Url"}</label>
+                                    <label for="url" class="block text-sm font-medium text-slate-300">{"URL"}</label>
                                     <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white"/>
                                     <br/>
-                                    <button class="pt-2 font-bold text-slate-300" onclick={on_install_widget}> {"Install"} </button>
+                                    <button class="pt-2 text-gray-300 text-sm font-semibold" onclick={on_install_widget}> {"Install"} </button>
                                 </div>
                             </ConfigCardComponent>
                         </div>

@@ -1,6 +1,8 @@
 use common::models::{SystemConfiguration, SystemConfigurationAction};
 use gloo_console::log;
 use gloo_net::http::Request;
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlButtonElement, MouseEvent};
 use yew::{function_component, html, use_effect_with_deps, use_reducer, Html};
 use yew_router::prelude::Link;
 
@@ -42,6 +44,19 @@ pub fn home() -> Html {
         );
     }
 
+    let on_deinstall_widget = move |event: MouseEvent| {
+        let event = event
+            .target()
+            .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
+        let widget_name = event.map(|e| e.value()).unwrap_or_default();
+        wasm_bindgen_futures::spawn_local(async move {
+            Request::get(format!("/deinstall_widget/{}", widget_name).as_str())
+                .send()
+                .await
+                .expect("Deinstallation request failed");
+        });
+    };
+
     html! {
         <div class="bg-zinc-400 h-screen">
             <meta name="viewport" content="width=device-width initial-scale=1.0"/>
@@ -67,8 +82,8 @@ pub fn home() -> Html {
                                 { for system_config.widget_config.iter().map(|widget| {
                                     html! {
                                         <ConfigCardComponent>
-                                            <div class="text-white text-md font-medium">{widget.name.clone()}</div>
-                                            <div class="text-slate-300 text-sm">{"Currently, widgets cannot be deinstalled"}</div>
+                                            <div class="text-white text-md font-medium pb-2">{widget.name.clone()}</div>
+                                            <button value={widget.name.clone()} onclick={on_deinstall_widget} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
                                         </ConfigCardComponent>
                                     }
                                 }) }
@@ -86,8 +101,8 @@ pub fn home() -> Html {
                             </div>
 
                             <div class="flex flex-col items-center pt-2">
-                                <div type="button" class=" text-zinc-700 border border-zinc-700 hover:bg-zinc-500 hover:text-white active:bg-zinc-500 font-bold text-sm px-3 py-1 uppercase rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 w-min">
-                                    <Link<Route> to={Route::Install}>{ "Add" }</Link<Route>>
+                                <div type="button" class=" text-zinc-700 border border-zinc-700 hover:bg-zinc-500 hover:text-white active:bg-zinc-500 font-bold text-sm px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                    <Link<Route> to={Route::Install}>{ "Add widget" }</Link<Route>>
                                 </div>
                             </div>
 

@@ -21,7 +21,7 @@ mod routing;
 fn app() -> Html {
     html! {
         <BrowserRouter>
-            <Switch<Route> render={routing::router::switch} /> // <- must be child of <BrowserRouter>
+            <Switch<Route> render={routing::router::switch} />
         </BrowserRouter>
     }
 }

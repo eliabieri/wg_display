@@ -49,7 +49,7 @@ impl Runtime {
         let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
-            "{}: Loaded, transformed and compiled module in {} ms",
+            "{}: Loaded, transformed and compiled component in {} ms",
             LOGGING_PREFIX,
             duration.as_millis()
         );
