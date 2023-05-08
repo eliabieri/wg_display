@@ -22,7 +22,7 @@ use crate::widgets::running::runtime::Widget;
 
 struct WasmWidget {
     name: String,
-    plugin: Widget,
+    widget: Widget,
 }
 
 pub struct Renderer {
@@ -44,14 +44,14 @@ impl Renderer {
         WidgetManager::get_widgets()
             .iter()
             .map(|widget_binary| {
-                let plugin = runtime
+                let widget = runtime
                     .instantiate_widget(widget_binary)
-                    .expect("Could not instantiate plugin");
+                    .expect("Could not instantiate widget");
                 let name = runtime
-                    .get_widget_name(&plugin)
-                    .expect("Could not get plugin name");
+                    .get_widget_name(&widget)
+                    .expect("Could not get widget name");
 
-                WasmWidget { name, plugin }
+                WasmWidget { name, widget }
             })
             .collect()
     }
@@ -127,10 +127,10 @@ impl Renderer {
             let widget_config = Persistence::get_widget_config(widget.name.as_str());
             let widget_config = widget_config.unwrap_or("{}".to_string());
 
-            let res = self.runtime.run_plugin(&widget.plugin, &widget_config);
+            let res = self.runtime.run_widget(&widget.widget, &widget_config);
             let res = match res {
                 Ok(res) => res.data,
-                Err(_) => "Error while running plugin".into(),
+                Err(err) => err.to_string(),
             };
             siv.call_on_name(widget.name.as_str(), |view: &mut TextView| {
                 view.set_content(res);

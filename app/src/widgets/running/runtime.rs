@@ -56,7 +56,7 @@ impl Runtime {
         Ok(widget)
     }
 
-    pub fn run_plugin(&mut self, widget: &Widget, config: &str) -> wasmtime::Result<WidgetResult> {
+    pub fn run_widget(&mut self, widget: &Widget, config: &str) -> wasmtime::Result<WidgetResult> {
         let name = self.get_widget_name(widget)?;
         let last_invocation = *self.last_run.get(&name).unwrap_or(&Datetime::now());
         let context = WidgetContext {
@@ -69,7 +69,7 @@ impl Runtime {
         let duration = start.elapsed();
 
         log::info!(
-            "{}: Plugin invocation took {} ms",
+            "{}: Widget invocation took {} ms",
             LOGGING_PREFIX,
             duration.as_millis()
         );

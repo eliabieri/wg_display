@@ -48,13 +48,13 @@ fn get_config_schema(widget_name: &str) -> Option<String> {
         return None;
     };
 
-    let plugin = runtime.instantiate_widget(component_binary.as_slice());
-    let Ok(plugin) = plugin else {
-        println!("Could not instantiate plugin");
+    let widget = runtime.instantiate_widget(component_binary.as_slice());
+    let Ok(widget) = widget else {
+        println!("Could not instantiate widget");
         return None;
     };
 
-    let schema = runtime.get_config_schema(&plugin);
+    let schema = runtime.get_config_schema(&widget);
     let Ok(schema) = schema else {
         println!("Could not get config schema");
         return None;
