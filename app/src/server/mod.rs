@@ -10,11 +10,12 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-use common::models::{InstallationData, SystemConfiguration};
+use common::models::{InstallationData, SystemConfiguration, WidgetStoreItem};
 
 use crate::shared::persistence::Persistence;
 use crate::shared::widget_manager::WidgetManager;
 use crate::widgets::running::runtime::Runtime;
+use crate::widgets::store::widget_store::WidgetStore;
 
 /// Contains the frontend files
 /// They are embedded using the [RustEmbed](https://crates.io/crates/rust-embed) crate
@@ -22,19 +23,57 @@ use crate::widgets::running::runtime::Runtime;
 #[folder = "../frontend/dist"]
 struct Asset;
 
+/// Returns the list of widgets available in the store
+#[get("/store_items")]
+async fn store_items() -> Result<json::Value, Custom<String>> {
+    let mut store = WidgetStore::new();
+    let res = store.update_store().await;
+    if let Err(err) = res {
+        return Err(Custom(
+            rocket::http::Status::InternalServerError,
+            format!("Could not update store: {}", err),
+        ));
+    }
+    Ok(json::json!(store.get_items()))
+}
+
 /// Install a new widget
 #[post("/install_widget", format = "json", data = "<installation_data>")]
 async fn install_widget(
     installation_data: json::Json<InstallationData>,
 ) -> Result<(), Custom<String>> {
-    let InstallationData { download_url } = installation_data.into_inner();
+    let download_url = match installation_data {
+        json::Json(InstallationData::DownloadUrl(url)) => url,
+        json::Json(InstallationData::Name(name)) => {
+            let mut store = WidgetStore::new();
+            let res = store.update_store().await;
+            if let Err(err) = res {
+                return Err(Custom(
+                    rocket::http::Status::InternalServerError,
+                    format!("Could not update store: {}", err),
+                ));
+            }
+            let item = store
+                .get_items()
+                .iter()
+                .find(|item: &&WidgetStoreItem| item.name == name)
+                .unwrap();
+            item.get_download_url()
+        }
+    };
+    log::info!("Installing widget from URL {}", download_url);
     let result = WidgetManager::install_widget(download_url.as_str()).await;
     match result {
         Ok(_) => Ok(()),
-        Err(err) => Err(Custom(
-            rocket::http::Status::InternalServerError,
-            format!("Could not install widget: {}", err),
-        )),
+        Err(err) => {
+            let err = format!(
+                "Could not install widget from URL {}: {}",
+                download_url,
+                err.root_cause()
+            );
+            log::error!("{}", err);
+            Err(Custom(rocket::http::Status::InternalServerError, err))
+        }
     }
 }
 
@@ -125,7 +164,8 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
                 get_config,
                 get_config_schema,
                 install_widget,
-                deinstall_widget
+                deinstall_widget,
+                store_items
             ],
         )
         .launch()

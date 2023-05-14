@@ -11,6 +11,7 @@ common = { path = "../common" }
 
 # General
 anyhow = "1.0.68"
+tokio = { version = "1.28.1", features = ["full"] }
 
 # Widgets
 openssl = { version = "0.10", features = ["vendored"] }
@@ -45,6 +46,3 @@ rust-embed = "6.4.2"
 # Persistence
 sled = "0.34.7"
 lazy_static = "1.4.0"
-
-# Testing
-tokio-test = "0.4.2"

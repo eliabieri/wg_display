@@ -44,8 +44,7 @@ impl Runtime {
 
     pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
         let start = std::time::Instant::now();
-        let component =
-            Component::from_binary(&self.engine, binary).expect("Could not load component");
+        let component = Component::from_binary(&self.engine, binary)?;
         let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(

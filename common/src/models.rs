@@ -29,9 +29,18 @@ pub struct SystemConfiguration {
 }
 
 /// Stores the data needed for a widget installation
-#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
-pub struct InstallationData {
-    pub download_url: String,
+#[derive(Deserialize, Serialize, Clone)]
+pub enum InstallationData {
+    DownloadUrl(String),
+    Name(String),
+}
+
+/// Represents the information associated with a widget in the store.
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct WidgetStoreItem {
+    pub name: String,
+    pub description: String,
+    pub repository: String,
 }
 
 fn persist_system_config(config: SystemConfiguration) {

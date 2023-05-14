@@ -44,7 +44,7 @@ pub fn home() -> Html {
         );
     }
 
-    let on_deinstall_widget = move |event: MouseEvent| {
+    let on_deinstall_widget = |event: MouseEvent| {
         let event = event
             .target()
             .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
@@ -104,7 +104,7 @@ pub fn home() -> Html {
 
                             <div class="flex flex-col items-center pt-2">
                                 <div type="button" class=" text-zinc-700 border border-zinc-700 hover:bg-zinc-500 hover:text-white active:bg-zinc-500 font-bold text-sm px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-                                    <Link<Route> to={Route::Install}>{ "Add widget" }</Link<Route>>
+                                    <Link<Route> to={Route::Install}>{ "Install a widget" }</Link<Route>>
                                 </div>
                             </div>
 

@@ -2,7 +2,6 @@
 //! This crate is the entry point for the application.
 //! It starts the server to serve the frontend and an API to fetch and modify the configuration.
 use futures::join;
-use rocket::tokio;
 
 #[macro_use]
 extern crate rocket;
