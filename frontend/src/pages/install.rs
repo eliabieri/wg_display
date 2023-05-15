@@ -98,30 +98,33 @@ pub fn install() -> Html {
                         <div>
                             <DividerComponent text="Install from URL"/>
                             <ConfigCardComponent>
-                                <div>
-                                    <label for="url" class="block text-sm font-medium text-slate-300">{"URL"}</label>
-                                    <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white"/>
-                                    <br/>
+                                <div class="flex flex-row justify-between">
+                                    <div class="pr-4">
+                                        <label for="url" class="block text-sm font-medium text-slate-300">{"URL"}</label>
+                                        <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white"/>
+                                    </div>
                                     <button class="pt-2 text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url}> {"Install"} </button>
                                 </div>
                             </ConfigCardComponent>
 
                             <DividerComponent text="Install from store"/>
-                            <ConfigCardComponent>
-                                <div class="flex flex-col">
+
                                     { for widget_store_items.iter().map(|item| {
                                         html! {
-                                            <div class="flex flex-row justify-between">
+                                            <ConfigCardComponent>
                                                 <div class="flex flex-col">
-                                                    <span class="text-slate-300 text-sm font-semibold"> {&item.name} </span>
-                                                    <span class="text-slate-300 text-xs"> {&item.description} </span>
+                                                    <div class="flex flex-row justify-between">
+                                                        <div class="flex flex-col pr-4">
+                                                            <span class="text-slate-300 text-sm font-semibold"> {&item.name} </span>
+                                                            <span class="text-slate-300 text-xs"> {&item.description} </span>
+                                                        </div>
+                                                        <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget}> {"Install"} </button>
+                                                    </div>
                                                 </div>
-                                                <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget}> {"Install"} </button>
-                                            </div>
+                                            </ConfigCardComponent>
                                         }
                                     })}
-                                </div>
-                            </ConfigCardComponent>
+
 
                         </div>
                     </div>
