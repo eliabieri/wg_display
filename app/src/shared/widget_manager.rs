@@ -37,8 +37,10 @@ impl WidgetManager {
     pub fn get_widgets() -> Vec<Vec<u8>> {
         let mut widgets = Vec::new();
         for widget in Persistence::get_system_config().unwrap().widget_config {
-            let bytes = Persistence::get_binary(&widget.name).unwrap();
-            widgets.push(bytes);
+            let bytes = Persistence::get_binary(&widget.name);
+            if let Some(b) = bytes {
+                widgets.push(b);
+            };
         }
         widgets
     }
