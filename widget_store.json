@@ -3,5 +3,10 @@
         "name": "Rust Widget Template",
         "description": "The template project to create a widget using Rust",
         "repository": "https://github.com/eliabieri/wg_display_widget_rs"
+    },
+    {
+        "name": "Date/time",
+        "description": "Display the current date and time",
+        "repository": "https://github.com/eliabieri/wg_display_widget_time"
     }
 ]
