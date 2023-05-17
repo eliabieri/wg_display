@@ -1,5 +1,6 @@
 use gloo_net::http::Request;
 use yew::{function_component, html, use_effect_with_deps, use_state, AttrValue, Html, Properties};
+use yew_hooks::use_clipboard;
 
 use crate::components::divider::DividerComponent;
 
@@ -11,6 +12,7 @@ pub struct Props {
 #[function_component(ConfigSchema)]
 pub fn config_schema(props: &Props) -> Html {
     let state = use_state(|| "Loading..".to_string());
+    let clipboard = use_clipboard();
 
     {
         let widget_name = props.widget_name.clone();
@@ -22,7 +24,8 @@ pub fn config_schema(props: &Props) -> Html {
                         .send()
                         .await
                         .expect("Could not load config schema");
-                    state_clone.set(response.text().await.unwrap());
+                    clipboard.write_text(response.text().await.unwrap());
+                    state_clone.set("The schema has been copied to your clipboard.".into());
                 });
                 || {}
             },
@@ -40,7 +43,7 @@ pub fn config_schema(props: &Props) -> Html {
                 <div class="bg-zinc-200 rounded-2xl p-5 m-10 shadow-2xl">
                     <div>
                         <DividerComponent text={ get_title() }/>
-                        <code>{ (*state).clone() }</code>
+                        <p>{ (*state).clone() }</p>
                     </div>
                 </div>
             </div>

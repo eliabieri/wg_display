@@ -1,12 +1,16 @@
-use crate::components::{config_card::ConfigCardComponent, divider::DividerComponent};
+use crate::{
+    components::{config_card::ConfigCardComponent, divider::DividerComponent},
+    routing::router::Route,
+};
 use common::models::{InstallationData, WidgetStoreItem};
 use gloo_console::log;
 use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
+use yew_router::prelude::use_navigator;
 
-fn install_widget(installation_data: InstallationData) {
+fn install_widget(installation_data: InstallationData, error_state: UseStateHandle<ErrorState>) {
     wasm_bindgen_futures::spawn_local(async move {
         let response = Request::post("/install_widget")
             .json(&installation_data)
@@ -20,16 +24,26 @@ fn install_widget(installation_data: InstallationData) {
                 response.text().await.unwrap()
             ),
             _ => {
+                error_state.set(ErrorState {
+                    error: response.text().await.unwrap(),
+                });
                 log!("Failed to install widget");
             }
         };
     })
 }
 
+#[derive(Clone, Debug, Default)]
+struct ErrorState {
+    error: String,
+}
+
 #[function_component(Install)]
 pub fn install() -> Html {
     let installation_data: UseStateHandle<Option<InstallationData>> = use_state(|| None);
     let widget_store_items = use_state(Vec::<WidgetStoreItem>::default);
+    let error_state = use_state(ErrorState::default);
+    let navigator = use_navigator().unwrap();
 
     {
         let widget_store_items = widget_store_items.clone();
@@ -67,21 +81,30 @@ pub fn install() -> Html {
     };
 
     let on_install_widget_from_url = {
-        move |_| {
+        let error_state = error_state.clone();
+        let navigator_clone = navigator.clone();
+        Callback::from(move |_| {
             if installation_data.is_some() {
-                install_widget(installation_data.as_ref().unwrap().clone());
+                install_widget(
+                    installation_data.as_ref().unwrap().clone(),
+                    error_state.clone(),
+                );
+                navigator_clone.push(&Route::Home);
             }
-        }
+        })
     };
 
-    let on_install_widget = move |event: MouseEvent| {
-        let value = event
-            .target()
-            .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
-        if let Some(value) = value {
-            let value = value.value();
-            install_widget(InstallationData::Name(value));
-        }
+    let on_install_widget = {
+        Callback::from(move |event: MouseEvent| {
+            let value = event
+                .target()
+                .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
+            if let Some(value) = value {
+                let value = value.value();
+                install_widget(InstallationData::Name(value), error_state.clone());
+                navigator.push(&Route::Home);
+            }
+        })
     };
 
     html! {
@@ -96,6 +119,7 @@ pub fn install() -> Html {
                         <img src="assets/logo.png" alt="" class="h-24 object-contain py-4"/>
                         // Content
                         <div>
+                            // <h1>{(&(*error_state)).error}</h1>
                             <DividerComponent text="Install from URL"/>
                             <ConfigCardComponent>
                                 <div class="flex flex-row justify-between">
@@ -118,7 +142,7 @@ pub fn install() -> Html {
                                                             <span class="text-slate-300 text-sm font-semibold"> {&item.name} </span>
                                                             <span class="text-slate-300 text-xs"> {&item.description} </span>
                                                         </div>
-                                                        <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget}> {"Install"} </button>
+                                                        <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget.clone()}> {"Install"} </button>
                                                     </div>
                                                 </div>
                                             </ConfigCardComponent>

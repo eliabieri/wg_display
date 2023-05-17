@@ -3,7 +3,7 @@ use gloo_console::log;
 use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlButtonElement, MouseEvent};
-use yew::{function_component, html, use_effect_with_deps, use_reducer, Html};
+use yew::{function_component, html, use_effect_with_deps, use_reducer, Callback, Html};
 use yew_router::prelude::Link;
 
 use crate::components::background_color_config::BackgroundColorConfigComponent;
@@ -44,17 +44,26 @@ pub fn home() -> Html {
         );
     }
 
-    let on_deinstall_widget = |event: MouseEvent| {
-        let event = event
-            .target()
-            .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
-        let widget_name = event.map(|e| e.value()).unwrap_or_default();
-        wasm_bindgen_futures::spawn_local(async move {
-            Request::get(format!("/deinstall_widget/{}", widget_name).as_str())
-                .send()
-                .await
-                .expect("Deinstallation request failed");
-        });
+    let on_deinstall_widget = {
+        Callback::from(move |event: MouseEvent| {
+            let event = event
+                .target()
+                .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
+            let widget_name = event.map(|e| e.value()).unwrap_or_default();
+            wasm_bindgen_futures::spawn_local(async move {
+                let res = Request::get(format!("/deinstall_widget/{}", widget_name).as_str())
+                    .send()
+                    .await;
+                match res {
+                    Ok(_) => {
+                        log!("Successfully deinstalled widget");
+                    }
+                    Err(_) => {
+                        log!("Failed to deinstall widget");
+                    }
+                }
+            });
+        })
     };
 
     html! {
@@ -83,7 +92,7 @@ pub fn home() -> Html {
                                     html! {
                                         <ConfigCardComponent>
                                             <div class="text-white text-md font-medium pb-2">{widget.name.clone()}</div>
-                                            <button value={widget.name.clone()} onclick={on_deinstall_widget} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
+                                            <button value={widget.name.clone()} onclick={on_deinstall_widget.clone()} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
                                             <br/>
                                             <Link<Route> to={Route::ConfigSchema { widget_name: widget.name.clone() }}><div class="text-gray-300 text-sm font-semibold" >{"Open config schema"}</div></Link<Route>>
                                         </ConfigCardComponent>
