@@ -42,6 +42,7 @@ async fn store_items() -> Result<json::Value, Custom<String>> {
 async fn install_widget(
     installation_data: json::Json<InstallationData>,
 ) -> Result<(), Custom<String>> {
+    let mut description = "No description".to_string();
     let download_url = match installation_data {
         json::Json(InstallationData::DownloadUrl(url)) => url,
         json::Json(InstallationData::Name(name)) => {
@@ -53,16 +54,17 @@ async fn install_widget(
                     format!("Could not update store: {}", err),
                 ));
             }
-            let item = store
+            let item: &WidgetStoreItem = store
                 .get_items()
                 .iter()
                 .find(|item: &&WidgetStoreItem| item.name == name)
                 .unwrap();
+            description = item.description.clone();
             item.get_download_url()
         }
     };
     log::info!("Installing widget from URL {}", download_url);
-    let result = WidgetManager::install_widget(download_url.as_str()).await;
+    let result = WidgetManager::install_widget(download_url.as_str(), description.as_str()).await;
     match result {
         Ok(_) => Ok(()),
         Err(err) => {

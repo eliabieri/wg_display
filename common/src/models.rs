@@ -5,16 +5,10 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
-/// The base configuration for all widgets.
-#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
-pub struct BaseWidgetConfig {
-    /// Whether the widget is enabled or not.
-    pub enabled: bool,
-}
-
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct WidgetConfiguration {
     pub name: String,
+    pub description: String,
     pub json_config: String,
 }
 

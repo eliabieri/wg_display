@@ -6,7 +6,7 @@ use super::persistence::Persistence;
 pub struct WidgetManager {}
 
 impl WidgetManager {
-    pub async fn install_widget(download_url: &str) -> Result<(), Error> {
+    pub async fn install_widget(download_url: &str, description: &str) -> Result<(), Error> {
         let response = reqwest::get(download_url).await?;
         let bytes = response.bytes().await?.to_vec();
 
@@ -16,7 +16,7 @@ impl WidgetManager {
         Persistence::save_binary(widget_name.as_str(), &bytes);
 
         if Persistence::get_widget_config(widget_name.as_str()).is_none() {
-            Persistence::add_widget_default_config(widget_name.as_str());
+            Persistence::add_widget_default_config(widget_name.as_str(), description);
         }
 
         Ok(())

@@ -29,11 +29,12 @@ impl Persistence {
     }
 
     // Add widget default config
-    pub fn add_widget_default_config(widget_name: &str) {
+    pub fn add_widget_default_config(widget_name: &str, description: &str) {
         let config = Persistence::get_system_config().unwrap();
         let mut widget_config = config.widget_config;
         widget_config.push(WidgetConfiguration {
             name: widget_name.to_string(),
+            description: description.to_owned(),
             json_config: "{}".to_string(),
         });
         let new_config = SystemConfiguration {
