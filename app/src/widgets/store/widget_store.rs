@@ -15,11 +15,18 @@ impl WidgetStore {
         }
     }
 
+    /// Get all items in the store
+    /// Use `fetch_from_store` to fetch the store before
+    /// # Returns
+    /// A vector of all items in the store
     pub fn get_items(&self) -> &Vec<WidgetStoreItem> {
         &self.store_items
     }
 
-    pub async fn update_store(&mut self) -> Result<()> {
+    /// Fetch the store from the internet
+    /// # Returns
+    /// An error if the fetch failed
+    pub async fn fetch_from_store(&mut self) -> Result<()> {
         let response = reqwest::get(WIDGET_LISTING_URL).await?;
         let body = response.text().await?;
         self.store_items = serde_json::from_str::<Vec<WidgetStoreItem>>(&body)?;
@@ -34,7 +41,7 @@ mod tests {
     #[tokio::test]
     async fn test_update_store() {
         let mut store = WidgetStore::new();
-        store.update_store().await.unwrap();
+        store.fetch_from_store().await.unwrap();
         assert!(!store.get_items().is_empty());
         let reference_item = store
             .get_items()

@@ -29,6 +29,9 @@ impl Persistence {
     }
 
     // Add widget default config
+    // # Arguments
+    // * `widget_name` - Name of the widget
+    // * `description` - Description of the widget
     pub fn add_widget_default_config(widget_name: &str, description: &str) {
         let config = Persistence::get_system_config().unwrap();
         let mut widget_config = config.widget_config;
@@ -102,6 +105,8 @@ impl Persistence {
 
     /// Returns Some system configuration if a new one is available
     /// Can be used for polling updates to the system configuration
+    /// # Returns
+    /// The system configuration if a new one is available
     pub fn get_config_change() -> Option<SystemConfiguration> {
         if CONFIG_UPDATED.load(Ordering::Relaxed) {
             CONFIG_UPDATED.store(false, Ordering::Relaxed);
@@ -111,16 +116,28 @@ impl Persistence {
         }
     }
 
+    /// Save binary data to the database
+    /// # Arguments
+    /// * `key` - The key to save the data under
+    /// * `bytes` - The data to save
     pub fn save_binary(key: &str, bytes: &[u8]) {
         DB.insert(key, bytes).expect("Could not save binary");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 
+    /// Remove binary data from the database
+    /// # Arguments
+    /// * `key` - The key to remove
     pub fn remove_binary(key: &str) {
         DB.remove(key).expect("Could not remove binary");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 
+    // Load binary data from the database
+    // # Arguments
+    // * `key` - The key to load
+    // # Returns
+    // The binary data
     pub fn get_binary(key: &str) -> Option<Vec<u8>> {
         let bytes = DB.get(key).expect("Could not read binary");
         bytes.map(|bytes| bytes.to_vec())

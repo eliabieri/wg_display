@@ -9,6 +9,10 @@ impl WidgetStoreItem {
         }
     }
 
+    /// Get the download url for the latest release of the widget
+    /// This information is derived from the repository url
+    /// # Returns
+    /// The download url
     pub fn get_download_url(&self) -> String {
         const SUFFIX: &str = "releases/latest/download/widget.wasm";
         if self.repository.ends_with('/') {

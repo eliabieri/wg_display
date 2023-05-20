@@ -4,7 +4,7 @@
     <br>
     <br>
     <strong>
-        🦀 Hackable information display fully built in Rust
+        🦀 Hackable information display fully built in Rust and extensible through WebAssembly Components 🦀
     </strong>
     <p>Extensible, open-source and connected to the local community</p>
     <br/>
@@ -28,8 +28,8 @@
 ## ✨ Features
 
 - 🦀 Fully built in Rust
-- 🔧 Easily extensible. Write your own widget with ease!
-- 🚀 Compiles to single binary
+- 🔧 Extensible through WebAssembly. Write your own widget in Rust or any other language that compiles to WebAssembly
+- 🚀 Easy deployment. Compiles to single binary
 - 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
@@ -176,12 +176,14 @@ Asynchronous functions can be tested using the [tokio_test::block_on](https://do
 
 ## 🔮 What comes next
 
-- [ ] Add installation script
-- [ ] Allow user to configure WiFi credentials via web interface
+- [X] Add installation script
+- [X] Dynamically load widgets
+- [X] Template repository for widgets written in Rust
+- [ ] Template repository for widgets written in JS
+- [ ] Allow user to configure Wi-Fi credentials via web interface
 - [ ] Starting the binary through systemd
 - [ ] Implement an update mechanism
-- [ ] Implement authencation for the web interface
-- [ ] Dynamically loading widgets (currently, the widgets are part of the app crate)
+- [ ] Implement authentication for the web interface
 
 ## 🔒 Safety
 

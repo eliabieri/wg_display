@@ -5,6 +5,7 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
+/// The configuration of a widget.
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
 pub struct WidgetConfiguration {
     pub name: String,

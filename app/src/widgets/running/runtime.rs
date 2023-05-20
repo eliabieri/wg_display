@@ -42,6 +42,11 @@ impl Runtime {
         }
     }
 
+    /// Instantiate a widget from a binary that can then be run using `run_widget`
+    /// # Arguments
+    /// * `binary` - The binary data of the widget
+    /// # Returns
+    /// The instantiated widget
     pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
         let start = std::time::Instant::now();
         let component = Component::from_binary(&self.engine, binary)?;
@@ -55,6 +60,12 @@ impl Runtime {
         Ok(widget)
     }
 
+    /// Run a widget with a given configuration
+    /// # Arguments
+    /// * `widget` - The widget to run. Can be produced by `instantiate_widget`
+    /// * `config` - The configuration to run the widget with. Must be valid JSON and match the schema returned by `get_config_schema`
+    /// # Returns
+    /// The result of the widget run
     pub fn run_widget(&mut self, widget: &Widget, config: &str) -> wasmtime::Result<WidgetResult> {
         let name = self.get_widget_name(widget)?;
         let last_invocation = *self.last_run.get(&name).unwrap_or(&Datetime::now());
@@ -74,10 +85,21 @@ impl Runtime {
         );
         res
     }
+
+    /// Get the name of a widget dynamically
+    /// # Arguments
+    /// * `widget` - The widget to get the name of. Can be produced by `instantiate_widget`
+    /// # Returns
+    /// The name of the widget
     pub fn get_widget_name(&mut self, widget: &Widget) -> wasmtime::Result<String> {
         widget.call_get_name(&mut self.store)
     }
 
+    /// Get the configuration schema of a widget
+    /// # Arguments
+    /// * `widget` - The widget to get the configuration schema of. Can be produced by `instantiate_widget`
+    /// # Returns
+    /// The configuration schema of the widget as string
     pub fn get_config_schema(&mut self, widget: &Widget) -> wasmtime::Result<String> {
         widget.call_get_config_schema(&mut self.store)
     }

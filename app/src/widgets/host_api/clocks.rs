@@ -8,10 +8,10 @@ use crate::widgets::running::runtime::{
 impl clocks::Host for WidgetState {
     fn now(&mut self) -> wasmtime::Result<Datetime> {
         let now = std::time::SystemTime::now();
+        let now = now.duration_since(UNIX_EPOCH).unwrap();
         Ok(Datetime {
-            seconds: now.duration_since(UNIX_EPOCH).unwrap().as_secs(),
-            // TODO: implement nanoseconds
-            nanoseconds: 0,
+            seconds: now.as_secs(),
+            nanoseconds: now.subsec_nanos(),
         })
     }
 }

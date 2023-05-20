@@ -1,3 +1,4 @@
+//! Simple widget to display an error message.
 use yew::{function_component, html, Html, Properties, UseStateHandle};
 
 #[derive(Properties, PartialEq)]

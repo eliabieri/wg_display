@@ -27,7 +27,7 @@ struct Asset;
 #[get("/store_items")]
 async fn store_items() -> Result<json::Value, Custom<String>> {
     let mut store = WidgetStore::new();
-    let res = store.update_store().await;
+    let res = store.fetch_from_store().await;
     if let Err(err) = res {
         return Err(Custom(
             rocket::http::Status::InternalServerError,
@@ -47,7 +47,7 @@ async fn install_widget(
         json::Json(InstallationData::DownloadUrl(url)) => url,
         json::Json(InstallationData::Name(name)) => {
             let mut store = WidgetStore::new();
-            let res = store.update_store().await;
+            let res = store.fetch_from_store().await;
             if let Err(err) = res {
                 return Err(Custom(
                     rocket::http::Status::InternalServerError,
