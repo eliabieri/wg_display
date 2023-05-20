@@ -32,12 +32,14 @@ impl Persistence {
     // # Arguments
     // * `widget_name` - Name of the widget
     // * `description` - Description of the widget
-    pub fn add_default_installation_data(widget_name: &str, description: &str) {
+    // * `version` - Version of the widget
+    pub fn add_default_installation_data(widget_name: &str, description: &str, version: &str) {
         let config = Persistence::get_system_config().unwrap();
         let mut widgets = config.widgets;
         widgets.push(WidgetInstallationData {
             name: widget_name.to_string(),
             description: description.to_owned(),
+            version: version.to_owned(),
             json_config: "{}".to_string(),
         });
         let new_config = SystemConfiguration { widgets, ..config };

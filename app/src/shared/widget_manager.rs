@@ -20,10 +20,15 @@ impl WidgetManager {
         let mut runtime = Runtime::new();
         let widget = runtime.instantiate_widget(&bytes)?;
         let widget_name = runtime.get_widget_name(&widget)?;
+        let version = runtime.get_widget_version(&widget)?;
         Persistence::save_binary(widget_name.as_str(), &bytes);
 
         if Persistence::get_widget_config(widget_name.as_str()).is_none() {
-            Persistence::add_default_installation_data(widget_name.as_str(), description);
+            Persistence::add_default_installation_data(
+                widget_name.as_str(),
+                description,
+                version.as_str(),
+            );
         }
 
         Ok(())

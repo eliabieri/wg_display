@@ -98,7 +98,8 @@ pub fn home() -> Html {
                                 { for system_config.widgets.iter().map(|widget| {
                                     html! {
                                         <ConfigCardComponent>
-                                            <div class="text-white text-lg font-bold pb-2">{widget.name.clone()}</div>
+                                            <div class="text-white text-lg font-bold pb-1">{widget.name.clone()}</div>
+                                            <div class="text-slate-400 text-sm pb-1">{widget.version.clone()}</div>
                                             <div class="text-slate-300 text-sm">{widget.description.clone()}</div>
                                             <button value={widget.name.clone()} onclick={on_deinstall_widget.clone()} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
                                             <br/>

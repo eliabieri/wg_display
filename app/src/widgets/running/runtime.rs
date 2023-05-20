@@ -103,4 +103,13 @@ impl Runtime {
     pub fn get_config_schema(&mut self, widget: &Widget) -> wasmtime::Result<String> {
         widget.call_get_config_schema(&mut self.store)
     }
+
+    /// Get the version of a widget
+    /// # Arguments
+    /// * `widget` - The widget to get the version of. Can be produced by `instantiate_widget`
+    /// # Returns
+    /// The version of the widget as string
+    pub fn get_widget_version(&mut self, widget: &Widget) -> wasmtime::Result<String> {
+        widget.call_get_version(&mut self.store)
+    }
 }

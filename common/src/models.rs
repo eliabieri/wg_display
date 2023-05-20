@@ -10,6 +10,7 @@ use yew::functional::Reducible;
 pub struct WidgetInstallationData {
     pub name: String,
     pub description: String,
+    pub version: String,
     pub json_config: String,
 }
 
