@@ -63,7 +63,7 @@ impl Renderer {
         self.initialize_layout(&config, &mut siv);
 
         loop {
-            if let Some(new_config) = Persistence::get_config_change() {
+            if let Some(new_config) = Persistence::get_system_config_change() {
                 config = new_config;
                 self.widgets = Renderer::initialize_widgets(&mut self.runtime);
                 self.initialize_layout(&config, &mut siv)

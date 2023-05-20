@@ -10,7 +10,7 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
-use common::models::{InstallationData, SystemConfiguration, WidgetStoreItem};
+use common::models::{InstallAction, SystemConfiguration, WidgetStoreItem};
 
 use crate::shared::persistence::Persistence;
 use crate::shared::widget_manager::WidgetManager;
@@ -38,14 +38,12 @@ async fn store_items() -> Result<json::Value, Custom<String>> {
 }
 
 /// Install a new widget
-#[post("/install_widget", format = "json", data = "<installation_data>")]
-async fn install_widget(
-    installation_data: json::Json<InstallationData>,
-) -> Result<(), Custom<String>> {
+#[post("/install_widget", format = "json", data = "<action>")]
+async fn install_widget(action: json::Json<InstallAction>) -> Result<(), Custom<String>> {
     let mut description = "No description".to_string();
-    let download_url = match installation_data {
-        json::Json(InstallationData::DownloadUrl(url)) => url,
-        json::Json(InstallationData::Name(name)) => {
+    let download_url = match action {
+        json::Json(InstallAction::FromUrl(url)) => url,
+        json::Json(InstallAction::FromStoreItemName(name)) => {
             let mut store = WidgetStore::new();
             let res = store.fetch_from_store().await;
             if let Err(err) = res {
@@ -119,7 +117,7 @@ fn get_config_schema(widget_name: &str) -> Option<String> {
 /// Saves the system configuration
 #[post("/config", format = "json", data = "<config>")]
 async fn save_config(config: json::Json<SystemConfiguration>) {
-    Persistence::save_config(config.into_inner());
+    Persistence::save_system_config(config.into_inner());
 }
 
 /// Returns the system configuration

@@ -4,7 +4,7 @@ use crate::{
     },
     routing::router::Route,
 };
-use common::models::{InstallationData, WidgetStoreItem};
+use common::models::{InstallAction, WidgetStoreItem};
 use gloo_console::log;
 use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
@@ -12,10 +12,10 @@ use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_router::prelude::use_navigator;
 
-fn install_widget(installation_data: InstallationData, error: UseStateHandle<Option<String>>) {
+fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>) {
     wasm_bindgen_futures::spawn_local(async move {
         let response = Request::post("/install_widget")
-            .json(&installation_data)
+            .json(&action)
             .expect("Failed to serialize installation data")
             .send()
             .await
@@ -35,7 +35,7 @@ fn install_widget(installation_data: InstallationData, error: UseStateHandle<Opt
 
 #[function_component(Install)]
 pub fn install() -> Html {
-    let installation_data: UseStateHandle<Option<InstallationData>> = use_state(|| None);
+    let installation_data: UseStateHandle<Option<InstallAction>> = use_state(|| None);
     let widget_store_items = use_state(Vec::<WidgetStoreItem>::default);
     let error = use_state(|| None as Option<String>);
     let navigator = use_navigator().unwrap();
@@ -79,7 +79,7 @@ pub fn install() -> Html {
             .and_then(|t| t.dyn_into::<HtmlInputElement>().ok());
         if let Some(input) = input {
             let input = input.value();
-            state.set(Some(InstallationData::DownloadUrl(input)));
+            state.set(Some(InstallAction::FromUrl(input)));
         }
     };
 
@@ -105,7 +105,7 @@ pub fn install() -> Html {
                 .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
             if let Some(value) = value {
                 let value = value.value();
-                install_widget(InstallationData::Name(value), error.clone());
+                install_widget(InstallAction::FromStoreItemName(value), error.clone());
                 if error.is_none() {
                     navigator.push(&Route::Home);
                 }

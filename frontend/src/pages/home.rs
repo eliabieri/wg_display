@@ -95,7 +95,7 @@ pub fn home() -> Html {
                             <DividerComponent text="Widgets"/>
 
                             <div>
-                                { for system_config.widget_config.iter().map(|widget| {
+                                { for system_config.widgets.iter().map(|widget| {
                                     html! {
                                         <ConfigCardComponent>
                                             <div class="text-white text-lg font-bold pb-2">{widget.name.clone()}</div>
@@ -109,7 +109,7 @@ pub fn home() -> Html {
                             </div>
                             <div>
                                 {
-                                    if system_config.widget_config.is_empty() {
+                                    if system_config.widgets.is_empty() {
                                         html! {
                                             <p class="text-center text-gray-400">{"No widgets installed"}</p>
                                         }

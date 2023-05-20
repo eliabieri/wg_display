@@ -5,9 +5,9 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use yew::functional::Reducible;
 
-/// The configuration of a widget.
+/// The installation data of a widget
 #[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
-pub struct WidgetConfiguration {
+pub struct WidgetInstallationData {
     pub name: String,
     pub description: String,
     pub json_config: String,
@@ -20,14 +20,14 @@ pub struct SystemConfiguration {
     #[serde(default)]
     pub background_color: String,
     #[serde(default)]
-    pub widget_config: Vec<WidgetConfiguration>,
+    pub widgets: Vec<WidgetInstallationData>,
 }
 
 /// Stores the data needed for a widget installation
 #[derive(Deserialize, Serialize, Clone)]
-pub enum InstallationData {
-    DownloadUrl(String),
-    Name(String),
+pub enum InstallAction {
+    FromUrl(String),
+    FromStoreItemName(String),
 }
 
 /// Represents the information associated with a widget in the store.
@@ -56,7 +56,7 @@ fn persist_system_config(config: SystemConfiguration) {
 pub enum SystemConfigurationAction {
     SetInitialConfig(SystemConfiguration),
     SetBackgroundColor(String),
-    AddWidget(WidgetConfiguration),
+    AddWidget(WidgetInstallationData),
 }
 
 impl Reducible for SystemConfiguration {
@@ -70,8 +70,8 @@ impl Reducible for SystemConfiguration {
                 ..(*self).clone()
             },
             SystemConfigurationAction::AddWidget(new_config) => Self {
-                widget_config: {
-                    let mut widget_config = self.widget_config.clone();
+                widgets: {
+                    let mut widget_config = self.widgets.clone();
                     widget_config.push(new_config);
                     widget_config
                 },

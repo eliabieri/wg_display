@@ -23,7 +23,7 @@ impl WidgetManager {
         Persistence::save_binary(widget_name.as_str(), &bytes);
 
         if Persistence::get_widget_config(widget_name.as_str()).is_none() {
-            Persistence::add_widget_default_config(widget_name.as_str(), description);
+            Persistence::add_default_installation_data(widget_name.as_str(), description);
         }
 
         Ok(())
@@ -36,7 +36,7 @@ impl WidgetManager {
     /// An error if the deinstallation failed
     pub async fn deinstall_widget(widget_name: &str) -> Result<(), Error> {
         Persistence::remove_binary(widget_name);
-        Persistence::remove_widget_config(widget_name);
+        Persistence::remove_installation_data(widget_name);
         Ok(())
     }
 
@@ -56,7 +56,7 @@ impl WidgetManager {
     /// A vector of widgets as bytes
     pub fn get_widgets() -> Vec<Vec<u8>> {
         let mut widgets = Vec::new();
-        for widget in Persistence::get_system_config().unwrap().widget_config {
+        for widget in Persistence::get_system_config().unwrap().widgets {
             let bytes = Persistence::get_binary(&widget.name);
             if let Some(b) = bytes {
                 widgets.push(b);
