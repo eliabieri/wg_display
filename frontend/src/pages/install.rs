@@ -1,8 +1,5 @@
-use crate::{
-    components::{
-        config_card::ConfigCardComponent, divider::DividerComponent, error_display::ErrorDisplay,
-    },
-    routing::router::Route,
+use crate::components::{
+    config_card::ConfigCardComponent, divider::DividerComponent, error_display::ErrorDisplay,
 };
 use common::models::{InstallAction, WidgetStoreItem};
 use gloo_console::log;
@@ -10,26 +7,34 @@ use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
-use yew_router::prelude::use_navigator;
 
 fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>) {
     wasm_bindgen_futures::spawn_local(async move {
         let response = Request::post("/install_widget")
             .json(&action)
-            .expect("Failed to serialize installation data")
+            .expect("Failed to serialize install action")
             .send()
-            .await
-            .expect("Installation data request failed");
-        match response.status() {
-            200 => log!(
-                "Successfully installed widget: {}",
-                response.text().await.unwrap()
-            ),
-            _ => {
-                error.set(Some(response.text().await.unwrap()));
+            .await;
+        match response {
+            Err(e) => {
+                error.set(Some(format!("Failed to install widget: {}", e)));
                 log!("Failed to install widget");
             }
-        };
+            Ok(response) => {
+                match response.status() {
+                    200 => log!(
+                        "Successfully installed widget: {}",
+                        response.text().await.unwrap()
+                    ),
+                    _ => {
+                        let response_text = response.text().await;
+                        let error_text = response_text.unwrap_or("No error message".to_string());
+                        error.set(Some(error_text));
+                        log!("Failed to install widget");
+                    }
+                };
+            }
+        }
     })
 }
 
@@ -38,7 +43,6 @@ pub fn install() -> Html {
     let installation_data: UseStateHandle<Option<InstallAction>> = use_state(|| None);
     let widget_store_items = use_state(Vec::<WidgetStoreItem>::default);
     let error = use_state(|| None as Option<String>);
-    let navigator = use_navigator().unwrap();
 
     {
         let widget_store_items = widget_store_items.clone();
@@ -85,14 +89,10 @@ pub fn install() -> Html {
 
     let on_install_widget_from_url = {
         let error = error.clone();
-        let navigator_clone = navigator.clone();
         Callback::from(move |_| {
             let error = error.clone();
             if installation_data.is_some() {
-                install_widget(installation_data.as_ref().unwrap().clone(), error.clone());
-                if error.is_none() {
-                    navigator_clone.push(&Route::Home);
-                }
+                install_widget(installation_data.as_ref().unwrap().clone(), error);
             }
         })
     };
@@ -106,9 +106,6 @@ pub fn install() -> Html {
             if let Some(value) = value {
                 let value = value.value();
                 install_widget(InstallAction::FromStoreItemName(value), error.clone());
-                if error.is_none() {
-                    navigator.push(&Route::Home);
-                }
             }
         })
     };
