@@ -155,7 +155,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_persistence() {
+    fn test_happy_day() {
         let config = SystemConfiguration {
             background_color: "#FF3A3A".to_string(),
             widgets: vec![],
@@ -164,5 +164,20 @@ mod tests {
         let read_config = Persistence::get_system_config();
         assert!(read_config.is_some());
         assert_eq!(config, read_config.unwrap());
+    }
+
+    #[test]
+    fn test_get_binary_not_found() {
+        let key = "non_existent_key";
+        let result = Persistence::get_binary(key);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_create_default_system_config() {
+        Persistence::create_default_system_config();
+        let read_config = Persistence::get_system_config().unwrap();
+        assert_eq!(read_config.background_color, "".to_string());
+        assert!(read_config.widgets.is_empty());
     }
 }

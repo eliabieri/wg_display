@@ -21,3 +21,21 @@ impl WidgetStoreItem {
         format!("{}/{}", self.repository, SUFFIX)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_download_url() {
+        let item = WidgetStoreItem::new(
+            "My Widget".to_string(),
+            "A widget for doing things".to_string(),
+            "https://github.com/myusername/mywidget".to_string(),
+        );
+        let expected_url =
+            "https://github.com/myusername/mywidget/releases/latest/download/widget.wasm"
+                .to_string();
+        assert_eq!(item.get_download_url(), expected_url);
+    }
+}

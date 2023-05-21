@@ -7,3 +7,15 @@ impl Host for WidgetState {
         Ok(rng.next_u64())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_random() {
+        let mut widget_state = WidgetState {};
+        let result = widget_state.get_random().unwrap();
+        assert!(result > 0);
+    }
+}
