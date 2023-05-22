@@ -5,7 +5,7 @@
         "repository": "https://github.com/eliabieri/wg_display_widget_rs"
     },
     {
-        "name": "Date/time",
+        "name": "Time",
         "description": "Display the current date and time",
         "repository": "https://github.com/eliabieri/wg_display_widget_time"
     }
