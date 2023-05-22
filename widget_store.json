@@ -6,7 +6,7 @@
     },
     {
         "name": "Time",
-        "description": "Display the current date and time",
+        "description": "Display the current time",
         "repository": "https://github.com/eliabieri/wg_display_widget_time"
     }
 ]
