@@ -1,8 +1,8 @@
 [
     {
-        "name": "Rust Widget Template",
-        "description": "The template project to create a widget using Rust",
-        "repository": "https://github.com/eliabieri/wg_display_widget_rs"
+        "name": "Aareguru",
+        "description": "Displays the current temperature of the Aare river",
+        "repository": "https://github.com/eliabieri/wg_display_widget_aareguru"
     },
     {
         "name": "Time",
