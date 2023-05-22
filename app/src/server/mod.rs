@@ -24,8 +24,8 @@ use crate::widgets::store::widget_store::WidgetStore;
 struct Asset;
 
 /// Returns the list of widgets available in the store
-#[get("/store_items")]
-async fn store_items() -> Result<json::Value, Custom<String>> {
+#[get("/get_store_items")]
+async fn get_store_items() -> Result<json::Value, Custom<String>> {
     let mut store = WidgetStore::new();
     let res = store.fetch_from_store().await;
     if let Err(err) = res {
@@ -77,7 +77,7 @@ async fn install_widget(action: json::Json<InstallAction>) -> Result<(), Custom<
     }
 }
 
-/// Install a new widget
+/// Deinstall a widget
 #[get("/deinstall_widget/<widget_name>")]
 async fn deinstall_widget(widget_name: &str) -> Result<(), Custom<String>> {
     let result = WidgetManager::deinstall_widget(widget_name).await;
@@ -115,14 +115,26 @@ fn get_config_schema(widget_name: &str) -> Option<String> {
 }
 
 /// Saves the system configuration
-#[post("/config", format = "json", data = "<config>")]
-async fn save_config(config: json::Json<SystemConfiguration>) {
+#[post("/system_config", format = "json", data = "<config>")]
+async fn save_system_config(config: json::Json<SystemConfiguration>) {
     Persistence::save_system_config(config.into_inner());
 }
 
+/// Saves a widget config
+#[post("/widget_config/<widget_name>", data = "<config>")]
+async fn save_widget_config(widget_name: &str, config: String) {
+    let mut system_config = Persistence::get_system_config().unwrap();
+    system_config.widgets.iter_mut().for_each(|widget| {
+        if widget.name == widget_name {
+            widget.json_config = config.clone();
+        }
+    });
+    Persistence::save_system_config(system_config);
+}
+
 /// Returns the system configuration
-#[get("/config")]
-fn get_config() -> Option<json::Value> {
+#[get("/system_config")]
+fn get_system_config() -> Option<json::Value> {
     Some(json::json!(Persistence::get_system_config()))
 }
 
@@ -131,6 +143,16 @@ fn get_config() -> Option<json::Value> {
 async fn index() -> Option<RawHtml<Cow<'static, [u8]>>> {
     let asset = Asset::get("index.html")?;
     Some(RawHtml(asset.data))
+}
+
+/// Serves a configuration page for a widget
+#[get("/widget_configuration/<widget_name>")]
+async fn widget_configuration(widget_name: &str) -> Option<RawHtml<Cow<'static, [u8]>>> {
+    let asset = Asset::get("assets/html/widget_config.html")?;
+    let html = String::from_utf8(asset.data.to_vec()).unwrap();
+    let html = html.replace("{{WIDGET_NAME}}", widget_name);
+    let data = Cow::from(html.into_bytes());
+    Some(RawHtml(data))
 }
 
 //// Serves the frontend files (WASM, JS, HTML, CSS, etc.)
@@ -159,13 +181,15 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
             "/",
             routes![
                 index,
+                widget_configuration,
                 dist,
-                save_config,
-                get_config,
+                save_system_config,
+                save_widget_config,
+                get_system_config,
                 get_config_schema,
                 install_widget,
                 deinstall_widget,
-                store_items
+                get_store_items
             ],
         )
         .launch()

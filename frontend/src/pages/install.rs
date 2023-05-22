@@ -50,7 +50,7 @@ pub fn install() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
-                    let response = Request::get("/store_items").send().await;
+                    let response = Request::get("/get_store_items").send().await;
                     if let Err(e) = response {
                         error.set(Some(format!("Failed to load widget store items: {}", e)));
                         return;

@@ -25,7 +25,7 @@ pub fn home() -> Html {
         use_effect_with_deps(
             move |_| {
                 wasm_bindgen_futures::spawn_local(async move {
-                    let response = Request::get("/config").send().await;
+                    let response = Request::get("/system_config").send().await;
                     let Ok(response) = response else {
                         error.set(Some("Failed to load system config".to_string()));
                         return;
@@ -103,7 +103,7 @@ pub fn home() -> Html {
                                             <div class="text-slate-300 text-sm">{widget.description.clone()}</div>
                                             <button value={widget.name.clone()} onclick={on_deinstall_widget.clone()} class="text-gray-300 text-sm font-semibold">{"Deinstall"}</button>
                                             <br/>
-                                            <Link<Route> to={Route::ConfigSchema { widget_name: widget.name.clone() }}><div class="text-gray-300 text-sm font-semibold" >{"Copy config schema"}</div></Link<Route>>
+                                            <a href={format!("/widget_configuration/{}", widget.name.clone())} class="text-gray-300 text-sm font-semibold">{{"Configure widget"}}</a>
                                         </ConfigCardComponent>
                                     }
                                 }) }

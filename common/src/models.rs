@@ -42,7 +42,7 @@ pub struct WidgetStoreItem {
 fn persist_system_config(config: SystemConfiguration) {
     log!("Persisting new system config..");
     wasm_bindgen_futures::spawn_local(async move {
-        Request::post("/config")
+        Request::post("/system_config")
             .json(&config)
             .expect("Could not serialize config")
             .send()
