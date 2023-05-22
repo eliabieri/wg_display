@@ -4,9 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <title id="widgetName">{{WIDGET_NAME}}</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.css" />
 </head>
 
-<body>
+<body style="padding: 20px;">
     <h1></h1>
     <form></form>
     <div id="res" class="alert"></div>
@@ -19,7 +20,7 @@
             .then(response => response.json())
             .then(schema => {
                 console.log(schema)
-                $("h1").text(widgetName)
+                $("h1").text(widgetName + " Configuration")
                 $('form').jsonForm({
                     schema: schema,
                     validate: false,
