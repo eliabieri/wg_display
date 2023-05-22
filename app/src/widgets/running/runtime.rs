@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::SystemTime};
 
 use anyhow::Error;
 use wasmtime::{
@@ -48,6 +48,8 @@ impl Runtime {
     /// # Returns
     /// The instantiated widget
     pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
+        // TODO: refactor
+        self.last_run.clear();
         let start = std::time::Instant::now();
         let component = Component::from_binary(&self.engine, binary)?;
         let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
@@ -66,24 +68,45 @@ impl Runtime {
     /// * `config` - The configuration to run the widget with. Must be valid JSON and match the schema returned by `get_config_schema`
     /// # Returns
     /// The result of the widget run
-    pub fn run_widget(&mut self, widget: &Widget, config: &str) -> wasmtime::Result<WidgetResult> {
-        let name = self.get_widget_name(widget)?;
-        let last_invocation = *self.last_run.get(&name).unwrap_or(&Datetime::now());
+    pub fn run_widget(
+        &mut self,
+        widget: &Widget,
+        config: &str,
+    ) -> wasmtime::Result<Option<WidgetResult>> {
+        let name = self.get_widget_name(widget).unwrap();
+        let last_invocation = self.last_run.get(name.as_str());
+
+        let update_cycle_seconds = widget
+            .call_get_run_update_cycle_seconds(&mut self.store)
+            .unwrap();
+        if let Some(last_invocation) = last_invocation {
+            if (last_invocation.seconds + update_cycle_seconds as u64)
+                > SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+            {
+                // Do not updated widget as it is not time yet
+                return Ok(None);
+            }
+        }
+
         let context = WidgetContext {
-            last_invocation,
+            last_invocation: *last_invocation.unwrap_or(&Datetime::now()),
             config,
         };
 
         let start = std::time::Instant::now();
         let res = widget.call_run(&mut self.store, context);
         let duration = start.elapsed();
+        self.last_run.insert(name, Datetime::now());
 
         log::info!(
             "{}: Widget invocation took {} ms",
             LOGGING_PREFIX,
             duration.as_millis()
         );
-        res
+        res.map(Some)
     }
 
     /// Get the name of a widget dynamically

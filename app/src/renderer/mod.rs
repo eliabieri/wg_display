@@ -41,19 +41,18 @@ impl Renderer {
     }
 
     fn initialize_widgets(runtime: &mut Runtime) -> Vec<WasmWidget> {
-        WidgetManager::get_widgets()
-            .iter()
-            .map(|widget_binary| {
-                let widget = runtime
-                    .instantiate_widget(widget_binary)
-                    .expect("Could not instantiate widget");
+        let mut widgets = vec![];
+        for widget in WidgetManager::get_widgets() {
+            let widget = runtime.instantiate_widget(&widget);
+            if let Ok(widget) = widget {
                 let name = runtime
                     .get_widget_name(&widget)
                     .expect("Could not get widget name");
 
-                WasmWidget { name, widget }
-            })
-            .collect()
+                widgets.push(WasmWidget { name, widget });
+            }
+        }
+        widgets
     }
 
     /// Runs the renderer (blocking)
@@ -92,7 +91,6 @@ impl Renderer {
             theme.palette[Background] =
                 Color::parse(config.background_color.as_str()).unwrap_or(Dark(BaseColor::Magenta))
         });
-        // siv.update_theme(|theme| theme.borders = BorderStyle::None);
         siv.add_layer(self.build_layout());
     }
 
@@ -129,12 +127,15 @@ impl Renderer {
 
             let res = self.runtime.run_widget(&widget.widget, &widget_config);
             let res = match res {
-                Ok(res) => res.data,
-                Err(err) => err.to_string(),
+                Ok(res) => res.map(|res| res.data),
+                Err(err) => Some(err.to_string()),
             };
-            siv.call_on_name(widget.name.as_str(), |view: &mut TextView| {
-                view.set_content(res);
-            });
+
+            if let Some(data) = res {
+                siv.call_on_name(widget.name.as_str(), |view: &mut TextView| {
+                    view.set_content(data);
+                });
+            }
         });
     }
 
