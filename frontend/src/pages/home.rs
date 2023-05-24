@@ -4,6 +4,7 @@ use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlButtonElement, MouseEvent};
 use yew::{function_component, html, use_effect_with_deps, use_reducer, use_state, Callback, Html};
+use yew_feather::PlusCircle;
 use yew_router::prelude::Link;
 
 use crate::components::background_color_config::BackgroundColorConfigComponent;
@@ -120,9 +121,9 @@ pub fn home() -> Html {
                                 }
                             </div>
 
-                            <div class="flex flex-col items-center pt-2">
-                                <div type="button" class=" text-zinc-700 border border-zinc-700 hover:bg-zinc-500 hover:text-white active:bg-zinc-500 font-bold text-sm px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
-                                    <Link<Route> to={Route::Install}>{ "Install a widget" }</Link<Route>>
+                            <div class="flex flex-col items-center pt-4">
+                                <div type="button" class=" text-zinc-700 hover:bg-zinc-500 hover:text-white active:bg-zinc-500 font-bold text-sm px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150">
+                                    <Link<Route> to={Route::Install}><PlusCircle></PlusCircle></Link<Route>>
                                 </div>
                             </div>
 

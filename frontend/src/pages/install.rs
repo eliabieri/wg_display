@@ -7,6 +7,7 @@ use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
+use yew_feather::Download;
 
 fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>) {
     wasm_bindgen_futures::spawn_local(async move {
@@ -125,8 +126,8 @@ pub fn install() -> Html {
                             <DividerComponent text="Install from URL"/>
                             <ConfigCardComponent>
                                 <div class="flex flex-row">
-                                    <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 border-slate-300 border-2 bg-transparent text-white mr-4" placeholder="Url"/>
-                                    <button class="pt-2 text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url}> {"Install"} </button>
+                                    <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 bg-transparent text-white mr-4" placeholder="Url"/>
+                                    <button class="text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url}> <Download></Download> </button>
                                 </div>
                             </ConfigCardComponent>
 

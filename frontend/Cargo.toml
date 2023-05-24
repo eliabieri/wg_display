@@ -9,6 +9,7 @@ common = { path = "../common" }
 yew = { version = "0.20.0", features = ["csr"] }
 yew-router = "0.17.0"
 yew-hooks = "0.2.0"
+yew-feather = "1.0.0"
 web-sys = { version = "0.3.60", features = [
     "HtmlSelectElement",
     "HtmlInputElement",
