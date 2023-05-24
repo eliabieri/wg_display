@@ -125,7 +125,7 @@ pub fn install() -> Html {
                         <div>
                             <DividerComponent text="Install from URL"/>
                             <ConfigCardComponent>
-                                <div class="flex flex-row">
+                                <div class="flex flex-row justify-between">
                                     <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 bg-transparent text-white mr-4" placeholder="Url"/>
                                     <button class="text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url}> <Download></Download> </button>
                                 </div>
