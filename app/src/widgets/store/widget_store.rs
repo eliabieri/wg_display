@@ -46,11 +46,8 @@ mod tests {
         let reference_item = store
             .get_items()
             .iter()
-            .find(|item: &&WidgetStoreItem| item.name == "Rust Widget Template")
+            .find(|item: &&WidgetStoreItem| item.name == "Time")
             .unwrap();
-        assert_eq!(
-            reference_item.description,
-            "The template project to create a widget using Rust"
-        );
+        assert_eq!(reference_item.description, "Display the current time");
     }
 }
