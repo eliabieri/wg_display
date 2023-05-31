@@ -18,10 +18,12 @@ impl WidgetManager {
         let bytes = response.bytes().await?.to_vec();
 
         let mut runtime = Runtime::new();
-        let widget = runtime.instantiate_widget(&bytes)?;
+        let compiled_widget = runtime.compile_widget(&bytes)?;
+        let widget = runtime.instantiate_widget(&compiled_widget)?;
         let widget_name = runtime.get_widget_name(&widget)?;
         let version = runtime.get_widget_version(&widget)?;
-        Persistence::save_binary(widget_name.as_str(), &bytes);
+
+        Persistence::save_binary(widget_name.as_str(), &compiled_widget);
 
         if Persistence::get_widget_config(widget_name.as_str()).is_none() {
             Persistence::add_default_installation_data(

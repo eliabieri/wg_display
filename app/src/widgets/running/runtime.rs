@@ -42,16 +42,29 @@ impl Runtime {
         }
     }
 
+    /// Precompile a widget from a binary
+    /// The resulting binary can be persisted and later instantiated using `instantiate_widget`
+    /// # Arguments
+    /// * `bytes` - Binary version of the widget
+    /// # Returns
+    /// The precompiled widget
+    pub fn compile_widget(&self, bytes: &[u8]) -> Result<Vec<u8>, Error> {
+        self.engine.precompile_component(bytes)
+    }
+
     /// Instantiate a widget from a binary that can then be run using `run_widget`
     /// # Arguments
-    /// * `binary` - The binary data of the widget
+    /// * `binary` - Binary version of the precompiled widget. Can be produced by Runtime::compile_widget
     /// # Returns
     /// The instantiated widget
     pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
         // TODO: refactor
         self.last_run.clear();
         let start = std::time::Instant::now();
-        let component = Component::from_binary(&self.engine, binary)?;
+        // Load precompiled component
+        // This is only unsafe if the binary is not trusted to come from Engine::precompile_component
+        // https://docs.rs/wasmtime/9.0.2/wasmtime/component/struct.Component.html#method.deserialize
+        let component = unsafe { Component::deserialize(&self.engine, binary) }?;
         let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
