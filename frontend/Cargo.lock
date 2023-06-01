@@ -36,17 +36,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c6ed94e98ecff0c12dd1b04c15ec0d7d9458ca8fe806cea6f12954efe74c63b"
 
 [[package]]
-name = "captures"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c41457795db2e2c67518b53ee36da2d1ef73c2fd0d3490c3b852d9c514e7dd3"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -102,7 +91,6 @@ dependencies = [
 name = "frontend"
 version = "0.1.0"
 dependencies = [
- "captures",
  "common",
  "gloo-console",
  "gloo-net",

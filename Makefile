@@ -16,6 +16,9 @@ clean:
 	rm -rf app/target
 	rm -rf common/target
 	rm -rf frontend/dist
+	cd app && cargo clean
+	cd common && cargo clean
+	cd frontend && cargo clean
 
 ## Build the application
 dependencies = \
