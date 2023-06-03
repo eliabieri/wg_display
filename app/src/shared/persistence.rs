@@ -4,6 +4,8 @@ use rocket::serde::json::serde_json;
 
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use crate::widgets::running::runtime::CompiledWidget;
+
 static DB_NAME: &str = "wg_display.db";
 lazy_static! {
     static ref DB: sled::Db = sled::open(DB_NAME).expect("Could not open DB");
@@ -115,31 +117,41 @@ impl Persistence {
         }
     }
 
-    /// Save binary data to the database
+    /// Save precompiled widget to the database
     /// # Arguments
     /// * `key` - The key to save the data under
-    /// * `bytes` - The data to save
-    pub fn save_binary(key: &str, bytes: &[u8]) {
-        DB.insert(key, bytes).expect("Could not save binary");
+    /// * `compiled_widget` - The precompiled widget to save
+    pub fn save_compiled_widget(key: &str, compiled_widget: &CompiledWidget) {
+        let bytes =
+            bincode::serialize(compiled_widget).expect("Could not serialize compiled widget");
+        DB.insert(key, bytes)
+            .expect("Could not save compiled widget");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 
-    /// Remove binary data from the database
+    /// Remove compiled widget from the database
     /// # Arguments
     /// * `key` - The key to remove
-    pub fn remove_binary(key: &str) {
-        DB.remove(key).expect("Could not remove binary");
+    pub fn remove_compiled_widget(key: &str) {
+        DB.remove(key).expect("Could not remove compiled_widget");
         CONFIG_UPDATED.store(true, Ordering::Relaxed);
     }
 
-    // Load binary data from the database
+    // Get compiled widget from the database
     // # Arguments
     // * `key` - The key to load
     // # Returns
-    // The binary data
-    pub fn get_binary(key: &str) -> Option<Vec<u8>> {
+    // The compiled widget
+    pub fn get_compiled_widget(key: &str) -> Option<CompiledWidget> {
         let bytes = DB.get(key).expect("Could not read binary");
-        bytes.map(|bytes| bytes.to_vec())
+        match bytes {
+            Some(bytes) => {
+                let compiled_widget =
+                    bincode::deserialize(bytes.as_ref()).expect("Could not deserialize binary");
+                Some(compiled_widget)
+            }
+            _ => None,
+        }
     }
 
     /// Create a default system configuration
@@ -167,9 +179,9 @@ mod tests {
     }
 
     #[test]
-    fn test_get_binary_not_found() {
+    fn test_get_compiled_widget_not_found() {
         let key = "non_existent_key";
-        let result = Persistence::get_binary(key);
+        let result = Persistence::get_compiled_widget(key);
         assert!(result.is_none());
     }
 

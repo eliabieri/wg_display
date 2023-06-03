@@ -1,9 +1,9 @@
-use crate::widgets::running::runtime::Runtime;
+use crate::widgets::running::runtime::{CompiledWidget, Runtime};
 use anyhow::Error;
 
 use super::persistence::Persistence;
 
-pub struct WidgetManager {}
+pub struct WidgetManager;
 
 impl WidgetManager {
     /// Download and persist a widget
@@ -23,7 +23,7 @@ impl WidgetManager {
         let widget_name = runtime.get_widget_name(&widget)?;
         let version = runtime.get_widget_version(&widget)?;
 
-        Persistence::save_binary(widget_name.as_str(), &compiled_widget);
+        Persistence::save_compiled_widget(widget_name.as_str(), &compiled_widget);
 
         if Persistence::get_widget_config(widget_name.as_str()).is_none() {
             Persistence::add_default_installation_data(
@@ -42,7 +42,7 @@ impl WidgetManager {
     /// # Returns
     /// An error if the deinstallation failed
     pub async fn deinstall_widget(widget_name: &str) -> Result<(), Error> {
-        Persistence::remove_binary(widget_name);
+        Persistence::remove_compiled_widget(widget_name);
         Persistence::remove_installation_data(widget_name);
         Ok(())
     }
@@ -51,20 +51,20 @@ impl WidgetManager {
     /// # Arguments
     /// * `widget_name` - The name of the widget to get
     /// # Returns
-    /// The widget as bytes
-    pub fn get_widget(widget_name: &str) -> Result<Vec<u8>, Error> {
-        let bytes =
-            Persistence::get_binary(widget_name).ok_or(anyhow::anyhow!("Could not get widget"))?;
-        Ok(bytes)
+    /// The compiled widget
+    pub fn get_widget(widget_name: &str) -> Result<CompiledWidget, Error> {
+        let widget = Persistence::get_compiled_widget(widget_name)
+            .ok_or(anyhow::anyhow!("Could not get widget"))?;
+        Ok(widget)
     }
 
     /// Get all installed and configured widgets
     /// # Returns
-    /// A vector of widgets as bytes
-    pub fn get_widgets() -> Vec<Vec<u8>> {
+    /// A vector of compiled widgets
+    pub fn get_widgets() -> Vec<CompiledWidget> {
         let mut widgets = Vec::new();
         for widget in Persistence::get_system_config().unwrap().widgets {
-            let bytes = Persistence::get_binary(&widget.name);
+            let bytes = Persistence::get_compiled_widget(&widget.name);
             if let Some(b) = bytes {
                 widgets.push(b);
             };

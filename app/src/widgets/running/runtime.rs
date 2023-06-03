@@ -1,6 +1,11 @@
-use std::{collections::HashMap, time::SystemTime};
+use std::{
+    collections::{hash_map::DefaultHasher, HashMap},
+    hash::{Hash, Hasher},
+    time::SystemTime,
+};
 
-use anyhow::Error;
+use anyhow::{bail, Error};
+use serde::{Deserialize, Serialize};
 use wasmtime::{
     self,
     component::{Component, Linker},
@@ -13,7 +18,13 @@ use self::types::Host;
 
 wasmtime::component::bindgen!({ path: "../wg_display_widget_wit/wit", world: "widget" });
 
-pub struct WidgetState {}
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+pub struct CompiledWidget {
+    pub data: Vec<u8>,
+    compatibility_hash: u64,
+}
+
+pub struct WidgetState;
 impl Host for WidgetState {}
 
 pub struct Runtime {
@@ -48,27 +59,40 @@ impl Runtime {
     /// * `bytes` - Binary version of the widget
     /// # Returns
     /// The precompiled widget
-    pub fn compile_widget(&self, bytes: &[u8]) -> Result<Vec<u8>, Error> {
-        self.engine.precompile_component(bytes)
+    pub fn compile_widget(&self, bytes: &[u8]) -> Result<CompiledWidget, Error> {
+        let mut hasher = DefaultHasher::new();
+        let compatibility_hash = self.engine.precompile_compatibility_hash();
+        compatibility_hash.hash(&mut hasher);
+        let compatibility_hash = hasher.finish();
+
+        let data = self.engine.precompile_component(bytes)?;
+        Ok(CompiledWidget {
+            data,
+            compatibility_hash,
+        })
     }
 
     /// Instantiate a widget from a binary that can then be run using `run_widget`
     /// # Arguments
-    /// * `binary` - Binary version of the precompiled widget. Can be produced by Runtime::compile_widget
+    /// * `widget` - The precompiled widget. Can be produced by `compile_widget`
     /// # Returns
     /// The instantiated widget
-    pub fn instantiate_widget(&mut self, binary: &[u8]) -> Result<Widget, Error> {
+    pub fn instantiate_widget(&mut self, widget: &CompiledWidget) -> Result<Widget, Error> {
         // TODO: refactor
         self.last_run.clear();
-        let start = std::time::Instant::now();
+
+        if self.needs_recompilation(widget) {
+            bail!("Widget needs to be recompiled");
+        }
         // Load precompiled component
         // This is only unsafe if the binary is not trusted to come from Engine::precompile_component
         // https://docs.rs/wasmtime/9.0.2/wasmtime/component/struct.Component.html#method.deserialize
-        let component = unsafe { Component::deserialize(&self.engine, binary) }?;
+        let start = std::time::Instant::now();
+        let component = unsafe { Component::deserialize(&self.engine, &widget.data) }?;
         let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
-            "{}: Loaded, transformed and compiled component in {} ms",
+            "{}: Deserialized and instantiated widget in {} ms",
             LOGGING_PREFIX,
             duration.as_millis()
         );
@@ -147,5 +171,20 @@ impl Runtime {
     /// The version of the widget as string
     pub fn get_widget_version(&mut self, widget: &Widget) -> wasmtime::Result<String> {
         widget.call_get_version(&mut self.store)
+    }
+
+    /// Check if a widget needs to be recompiled
+    /// This can happen if the engine was updated in a non backwards compatible way
+    /// # Arguments
+    /// * `widget` - The widget to check
+    /// # Returns
+    /// True if the widget needs to be recompiled
+    fn needs_recompilation(&self, widget: &CompiledWidget) -> bool {
+        let mut hasher = DefaultHasher::new();
+        self.engine
+            .precompile_compatibility_hash()
+            .hash(&mut hasher);
+        let compatibility_hash = hasher.finish();
+        compatibility_hash != widget.compatibility_hash
     }
 }

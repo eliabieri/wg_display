@@ -94,13 +94,13 @@ async fn deinstall_widget(widget_name: &str) -> Result<(), Custom<String>> {
 #[get("/config_schema/<widget_name>")]
 fn get_config_schema(widget_name: &str) -> Option<String> {
     let mut runtime = Runtime::new();
-    let component_binary = WidgetManager::get_widget(widget_name);
-    let Ok(component_binary) = component_binary else {
-        println!("Could not load WASM component");
+    let compiled_widget = WidgetManager::get_widget(widget_name);
+    let Ok(compiled_widget) = compiled_widget else {
+        println!("Could not load compiled widget");
         return None;
     };
 
-    let widget = runtime.instantiate_widget(component_binary.as_slice());
+    let widget = runtime.instantiate_widget(&compiled_widget);
     let Ok(widget) = widget else {
         println!("Could not instantiate widget");
         return None;
