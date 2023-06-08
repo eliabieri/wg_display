@@ -24,10 +24,6 @@ jobs:
         cargo install --locked trunk
     - name: Install tailwindcss
       run: cd frontend && npm install
-    # - name: Build for Raspberry Pi 2/3/4)
-    #   run: make app_armv7
-    # - name: Build for Raspberry Pi 0/1
-    #   run: make app_arm
-    - name: Build for Raspberry 4, 64 bit
+    - name: Build for Raspberry 3/4/Zero 2
       run: make app_aarch64
 

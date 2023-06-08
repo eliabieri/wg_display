@@ -26,15 +26,12 @@ jobs:
         cargo install --locked trunk
     - name: Install tailwindcss
       run: cd frontend && npm install
-    - name: Build for Raspberry Pi 2/3/4)
-      run: make app_armv7
-    - name: Build for Raspberry Pi 0/1
-      run: make app_arm
+    - name: Build for Raspberry Pi 3/4/Zero 2)
+      run: make app_aarch64
     - name: Rename artifacts
       run: |
-        mv app/target/armv7-unknown-linux-gnueabihf/release/app app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf
-        mv app/target/arm-unknown-linux-gnueabihf/release/app app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf
+        mv app/target/aarch64-unknown-linux-gnueabihf/release/app wg-display-aarch64-unknown-linux-gnueabihf
     - uses: ncipollo/release-action@v1
       with:
-          artifacts: "app/target/armv7-unknown-linux-gnueabihf/release/wg-display-armv7-unknown-linux-gnueabihf, app/target/arm-unknown-linux-gnueabihf/release/wg-display-arm-unknown-linux-gnueabihf"
+          artifacts: "wg-display-aarch64-unknown-linux-gnueabihf"
           artifactErrorsFailBuild: true

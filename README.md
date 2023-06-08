@@ -30,7 +30,7 @@
 - 🦀 Fully built in Rust
 - 🔧 Extensible through WebAssembly. Write your own widget in Rust or any other language that compiles to WebAssembly
 - 🚀 Easy deployment. Compiles to single binary
-- 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
+- 🤑 Only needs a Raspberry Pi (64-bit capable) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
 ## 📚 Table of contents
@@ -61,7 +61,7 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-1. Flash the latest Raspberry Pi OS Lite (32-bit) image to an SD card.  
+1. Flash the latest Raspberry Pi OS Lite (64-bit) image to an SD card.  
    You can use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
    It allows you to configure the Wi-Fi credentials and enable SSH (you'll need it in the next step).
 2. SSH into the Raspberry Pi and run the installation script
@@ -79,7 +79,7 @@ The configuration dashboard should be available at [wgdisplay.local](http://wgdi
 WG Display is best deployed on a Raspberry Pi and a cheap display hat.
 
 ```text
-💡 Even a Raspberry PI Zero is sufficient! 
+💡 Even a Raspberry PI Zero 2 W is sufficient! 
 The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
 
@@ -130,10 +130,8 @@ cargo install cross --git https://github.com/cross-rs/cross
 ```bash
 # Native build
 make
-# Cross compilation (Raspberry PI Zero 1 / Zero W / Zero WH)
-make app_arm
-# Cross compilation (Raspberry PI 2 / 3 / 4 / Zero 2 W)
-make app_armv7
+# Cross compilation (Raspberry Pi 3/4/Zero 2 W with 64-bit OS)
+make app_aarch64
 ```
 
 Then simply copy over the generated binary to the target and run it.

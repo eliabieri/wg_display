@@ -47,20 +47,10 @@ $(build_native_release_debug): $(dependencies) $(frontend_build)
 	cd app && cargo build
 app_debug: $(build_native_release_debug)
 
-# Build complete app for arm (Raspberry 4, 64 bit)
+# Build complete app for ARMv8 (Raspberry Pi 3, 4 and Zero 2 W with 64-bit OS)
 target/aarch64-unknown-linux-gnu/app: $(dependencies) $(frontend_build)
 	cd app && cross build --release --target aarch64-unknown-linux-gnu
 app_aarch64: target/aarch64-unknown-linux-gnu/app
-
-# Build complete app for arm (Raspberry Pi 2/3/4)
-target/armv7-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
-	cd app && cross build --release --target armv7-unknown-linux-gnueabihf
-app_armv7: target/armv7-unknown-linux-gnueabihf/app
-
-# Build complete app for arm (Raspberry Pi 0/1)
-target/arm-unknown-linux-gnueabihf/app: $(dependencies) $(frontend_build)
-	cd app && cross build --release --target arm-unknown-linux-gnueabihf
-app_arm: target/arm-unknown-linux-gnueabihf/app
 
 ## Build frontend using trunk
 dependencies = \
