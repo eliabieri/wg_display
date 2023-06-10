@@ -75,7 +75,7 @@ pub fn home() -> Html {
     };
 
     html! {
-        <div class="bg-zinc-400 h-full">
+        <div class="h-full">
             <meta name="viewport" content="width=device-width initial-scale=1.0"/>
             <div class="flex flex-col items-center justify-center">
                 // Card

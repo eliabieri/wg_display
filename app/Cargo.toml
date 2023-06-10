@@ -26,7 +26,7 @@ bincode = "1.3.3"
 rand = "0.8.5"
 
 # Rendering
-cursive = { version = "0.20.0", features = [
+cursive = { git = "https://github.com/gyscos/cursive", features = [
     "termion-backend",
 ], default-features = false }
 hostname = "0.3.1"
