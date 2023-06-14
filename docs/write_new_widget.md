@@ -1,19 +1,19 @@
-# Writing a new widget
+# 🛠️ Implementing a new widget
 
 ## What is a widget
 
-A widget represents a piece information displayed on the display.  
+A widget represents a piece of information displayed on the display.  
 It has a name and a corresponding value, that is updated dynamically.  
 Additionally, a widget consumes a configuration, that is entered by the user via the dashboard.  
 
 ## WebAssembly
 
-Widgets are basically just [WebAssembly components](https://github.com/WebAssembly/component-model), that implement the interface defined by the `exports` of the [wg_display_widget_wit](https://eliabieri.github.io/wg_display_widget_wit/).  
+Widgets are [WebAssembly components](https://github.com/WebAssembly/component-model), that implement the interface defined by the `exports` of the [wg_display_widget_wit](https://eliabieri.github.io/wg_display_widget_wit/).  
 They are loaded by the WG Display application and run using the [wasmtime](https://wasmtime.dev) WebAssembly runtime.
 
-Using WebAssembly as the basis for the widgets, has the following advantages:
+Using WebAssembly, as the basis for the widgets, has the following advantages:
 
-- Widgets are sandboxed and can't access the host system
+- Widgets are sandboxed and can't directly access the host system
 - Widgets can be written in any language that compiles to WebAssembly
 - Widgets can run on any platform that is supported by `wasmtime`
 
