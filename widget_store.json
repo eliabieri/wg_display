@@ -13,5 +13,10 @@
         "name": "Public Transport",
         "description": "Displays the next departures of a swisspublic transport station",
         "repository": "https://github.com/eliabieri/wg_display_widget_public_transport"
+    },
+    {
+        "name": "Buffet Nord Menu",
+        "description": "Displays menu at the Buffet Nord restaurant",
+        "repository": "https://github.com/alahji7/wg_display_widget_buffet_nord"
     }
 ]
