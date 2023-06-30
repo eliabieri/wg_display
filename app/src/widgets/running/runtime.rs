@@ -12,9 +12,8 @@ use wasmtime::{
     Config, Engine, Store,
 };
 
-use crate::widgets::{running::runtime::clocks::Datetime, utils::logging::LOGGING_PREFIX};
-
-use self::types::Host;
+use crate::widgets::running::runtime::widget::widget::clocks::Datetime;
+use crate::widgets::utils::logging::LOGGING_PREFIX;
 
 wasmtime::component::bindgen!({ path: "../wg_display_widget_wit/wit", world: "widget" });
 
@@ -25,7 +24,6 @@ pub struct CompiledWidget {
 }
 
 pub struct WidgetState;
-impl Host for WidgetState {}
 
 pub struct Runtime {
     engine: Engine,

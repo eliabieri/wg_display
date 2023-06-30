@@ -1,16 +1,19 @@
-use crate::widgets::running::runtime::{
-    logging::{Host, Level},
-    WidgetState,
-};
+use crate::widgets::running::runtime::widget::widget::logging;
+use crate::widgets::running::runtime::WidgetState;
 
-impl Host for WidgetState {
-    fn log(&mut self, level: Level, context: String, message: String) -> wasmtime::Result<()> {
+impl logging::Host for WidgetState {
+    fn log(
+        &mut self,
+        level: logging::Level,
+        context: String,
+        message: String,
+    ) -> wasmtime::Result<()> {
         const PREFIX: &str = "WIDGET";
         match level {
-            Level::Debug => log::debug!("{}: {}: {}", PREFIX, context, message),
-            Level::Info => log::info!("{}: {}: {}", PREFIX, context, message),
-            Level::Warn => log::warn!("{}: {}: {}", PREFIX, context, message),
-            Level::Error => log::error!("{}: {}: {}", PREFIX, context, message),
+            logging::Level::Debug => log::debug!("{}: {}: {}", PREFIX, context, message),
+            logging::Level::Info => log::info!("{}: {}: {}", PREFIX, context, message),
+            logging::Level::Warn => log::warn!("{}: {}: {}", PREFIX, context, message),
+            logging::Level::Error => log::error!("{}: {}: {}", PREFIX, context, message),
         }
         Ok(())
     }
