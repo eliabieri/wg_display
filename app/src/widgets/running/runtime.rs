@@ -128,11 +128,11 @@ impl Runtime {
 
         let context = WidgetContext {
             last_invocation: *last_invocation.unwrap_or(&Datetime::now()),
-            config,
+            config: config.to_owned(),
         };
 
         let start = std::time::Instant::now();
-        let res = widget.call_run(&mut self.store, context);
+        let res = widget.call_run(&mut self.store, &context);
         let duration = start.elapsed();
         self.last_run.insert(name, Datetime::now());
 
