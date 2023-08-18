@@ -16,6 +16,10 @@
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/eliabieri/wg_display?logo=github)
 ![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/eliabieri/wg_display/latest/main?logo=github)
 
+## ⚠️ Major rework in progress
+Check out the [wasm_widget_support](https://github.com/eliabieri/wg_display/tree/feature/wasm_widget_support) branch for details.  
+It currently only supports the Raspberry Pi 4 and Raspberry Pi Zero 2
+
 ## ⭐️ What WG Display can show you
 
 - 🚂 The next public transport connections between two stations
