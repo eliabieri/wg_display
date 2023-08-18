@@ -16,10 +16,6 @@
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/eliabieri/wg_display?logo=github)
 ![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/eliabieri/wg_display/latest/main?logo=github)
 
-## ⚠️ Major rework in progress
-Check out the [wasm_widget_support](https://github.com/eliabieri/wg_display/tree/feature/wasm_widget_support) branch for details.  
-It currently only supports the Raspberry Pi 4 and Raspberry Pi Zero 2
-
 ## ⭐️ What WG Display can show you
 
 - 🚂 The next public transport connections between two stations
@@ -181,6 +177,7 @@ Asynchronous functions can be tested using the [tokio_test::block_on](https://do
 - [X] Add installation script
 - [X] Dynamically load widgets
 - [X] Template repository for widgets written in Rust
+- [ ] Smoothen up web interface (e.g. add loading indicator, allow updating of widgets)
 - [ ] Template repository for widgets written in JS
 - [ ] Allow user to configure Wi-Fi credentials via web interface
 - [ ] Starting the binary through systemd
