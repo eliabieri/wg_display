@@ -11,7 +11,7 @@ WG_DISPLAY_PATH = '/home/pi/wgdisplay'
 def get_release_name() -> str:
     machine = platform.machine()
     if 'armv8' in machine:
-        return "aarch64-unknown-linux-gnueabihf"
+        return "aarch64-unknown-linux-gnu"
     print(f'Unsupported architecture: {machine}. Only 64-bit capable Raspberry Pi\'s are supported for now.')
     sys.exit(1)
 
