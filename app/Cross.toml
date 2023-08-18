@@ -1,2 +1,2 @@
 [build.env]
-volumes = ["DIST=../frontend/dist"]
+volumes = ["DIST=../frontend/dist", "WIT=../wg_display_widget_wit"]

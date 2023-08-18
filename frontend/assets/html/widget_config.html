@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title id="widgetName">{{WIDGET_NAME}}</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.css" />
+</head>
+
+<body style="padding: 20px;">
+    <h1></h1>
+    <form></form>
+    <div id="res" class="alert"></div>
+    <script type="text/javascript" src="/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/underscore.js"></script>
+    <script type="text/javascript" src="/assets/js/jsonform.js"></script>
+    <script type="text/javascript">
+        let widgetName = $('#widgetName').text()
+        let schema = fetch('/config_schema/' + encodeURI(widgetName))
+            .then(response => response.json())
+            .then(schema => {
+                console.log(schema)
+                $("h1").text(widgetName + " Configuration")
+                $('form').jsonForm({
+                    schema: schema,
+                    validate: false,
+                    onSubmit: function (errors, values) {
+                        if (errors) {
+                            $('#res').html('<pre>' + JSON.stringify(errors) + '</pre>')
+                        } else {
+                            fetch('/widget_config/' + encodeURI(widgetName), {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(values)
+                            })
+                            window.location.href = '/'
+                        }
+                    }
+                })
+            })
+            .catch(error => console.error(error))
+    </script>
+</body>
+
+</html>

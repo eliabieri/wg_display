@@ -4,7 +4,7 @@
     <br>
     <br>
     <strong>
-        🦀 Hackable information display fully built in Rust
+        🦀 Hackable information display fully built in Rust and extensible through WebAssembly Components 🦀
     </strong>
     <p>Extensible, open-source and connected to the local community</p>
     <br/>
@@ -15,10 +15,6 @@
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/eliabieri/wg_display?logo=github)
 ![GitHub commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/eliabieri/wg_display/latest/main?logo=github)
-
-## ⚠️ Major rework in progress
-Check out the [wasm_widget_support](https://github.com/eliabieri/wg_display/tree/feature/wasm_widget_support) branch for details.  
-It currently only supports the Raspberry Pi 4 and Raspberry Pi Zero 2
 
 ## ⭐️ What WG Display can show you
 
@@ -32,9 +28,9 @@ It currently only supports the Raspberry Pi 4 and Raspberry Pi Zero 2
 ## ✨ Features
 
 - 🦀 Fully built in Rust
-- 🔧 Easily extensible. Write your own widget with ease!
-- 🚀 Compiles to single binary
-- 🤑 Only needs a Raspberry Pi Zero (or others) and a 15$ display
+- 🔧 Extensible through WebAssembly. Write your own widget in Rust or any other language that compiles to WebAssembly
+- 🚀 Easy deployment. Compiles to single binary
+- 🤑 Only needs a Raspberry Pi (64-bit capable) and a 15$ display
 - ⚙️ Widgets can be configured by the user via a web interface
 
 ## 📚 Table of contents
@@ -65,7 +61,7 @@ The web interface allows the users to configure system aspects like the backgrou
 
 ## 🚀 Getting started
 
-1. Flash the latest Raspberry Pi OS Lite (32-bit) image to an SD card.  
+1. Flash the latest Raspberry Pi OS Lite (64-bit) image to an SD card.  
    You can use the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
    It allows you to configure the Wi-Fi credentials and enable SSH (you'll need it in the next step).
 2. SSH into the Raspberry Pi and run the installation script
@@ -83,7 +79,7 @@ The configuration dashboard should be available at [wgdisplay.local](http://wgdi
 WG Display is best deployed on a Raspberry Pi and a cheap display hat.
 
 ```text
-💡 Even a Raspberry PI Zero is sufficient! 
+💡 Even a Raspberry PI Zero 2 W is sufficient! 
 The application is very ressource efficient and generally only utilizes around 3% CPU on a Raspberry PI 3B.
 ```
 
@@ -134,10 +130,8 @@ cargo install cross --git https://github.com/cross-rs/cross
 ```bash
 # Native build
 make
-# Cross compilation (Raspberry PI Zero 1 / Zero W / Zero WH)
-make app_arm
-# Cross compilation (Raspberry PI 2 / 3 / 4 / Zero 2 W)
-make app_armv7
+# Cross compilation (Raspberry Pi 3/4/Zero 2 W with 64-bit OS)
+make app_aarch64
 ```
 
 Then simply copy over the generated binary to the target and run it.
@@ -180,12 +174,15 @@ Asynchronous functions can be tested using the [tokio_test::block_on](https://do
 
 ## 🔮 What comes next
 
-- [ ] Add installation script
-- [ ] Allow user to configure WiFi credentials via web interface
+- [X] Add installation script
+- [X] Dynamically load widgets
+- [X] Template repository for widgets written in Rust
+- [ ] Smoothen up web interface (e.g. add loading indicator, allow updating of widgets)
+- [ ] Template repository for widgets written in JS
+- [ ] Allow user to configure Wi-Fi credentials via web interface
 - [ ] Starting the binary through systemd
 - [ ] Implement an update mechanism
-- [ ] Implement authencation for the web interface
-- [ ] Dynamically loading widgets (currently, the widgets are part of the app crate)
+- [ ] Implement authentication for the web interface
 
 ## 🔒 Safety
 

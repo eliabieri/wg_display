@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Aareguru",
+        "description": "Displays the current temperature of the Aare river",
+        "repository": "https://github.com/eliabieri/wg_display_widget_aareguru"
+    },
+    {
+        "name": "Time",
+        "description": "Display the current time",
+        "repository": "https://github.com/eliabieri/wg_display_widget_time"
+    },
+    {
+        "name": "Public Transport",
+        "description": "Displays the next departures of a swisspublic transport station",
+        "repository": "https://github.com/eliabieri/wg_display_widget_public_transport"
+    }
+]
