@@ -2,7 +2,7 @@ use anyhow::Result;
 use common::models::WidgetStoreItem;
 
 const WIDGET_LISTING_URL: &str =
-    "https://raw.githubusercontent.com/eliabieri/wg_display/feature/wasm_widget_support/widget_store.json";
+    "https://raw.githubusercontent.com/eliabieri/wg_display/main/widget_store.json";
 
 pub struct WidgetStore {
     store_items: Vec<WidgetStoreItem>,
