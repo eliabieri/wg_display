@@ -31,7 +31,7 @@ async fn get_store_items() -> Result<json::Value, Custom<String>> {
     if let Err(err) = res {
         return Err(Custom(
             rocket::http::Status::InternalServerError,
-            format!("Could not update store: {}", err),
+            format!("Could not fetch store: {}", err),
         ));
     }
     Ok(json::json!(store.get_items()))
