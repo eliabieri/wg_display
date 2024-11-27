@@ -7,7 +7,7 @@ impl logging::Host for WidgetState {
         level: logging::Level,
         context: String,
         message: String,
-    ) -> wasmtime::Result<()> {
+    )  {
         const PREFIX: &str = "WIDGET";
         match level {
             logging::Level::Debug => log::debug!("{}: {}: {}", PREFIX, context, message),
@@ -15,6 +15,5 @@ impl logging::Host for WidgetState {
             logging::Level::Warn => log::warn!("{}: {}: {}", PREFIX, context, message),
             logging::Level::Error => log::error!("{}: {}: {}", PREFIX, context, message),
         }
-        Ok(())
     }
 }

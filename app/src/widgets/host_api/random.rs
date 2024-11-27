@@ -3,9 +3,9 @@ use crate::widgets::running::runtime::WidgetState;
 use rand::prelude::*;
 
 impl random::Host for WidgetState {
-    fn get_random(&mut self) -> wasmtime::Result<u64> {
+    fn get_random(&mut self) -> u64 {
         let mut rng = thread_rng();
-        Ok(rng.next_u64())
+        rng.next_u64()
     }
 }
 
@@ -17,7 +17,7 @@ mod tests {
     #[test]
     fn test_get_random() {
         let mut widget_state = WidgetState {};
-        let result = widget_state.get_random().unwrap();
+        let result = widget_state.get_random();
         assert!(result > 0);
     }
 }

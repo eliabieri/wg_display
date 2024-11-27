@@ -7,7 +7,7 @@ impl http::Host for WidgetState {
         method: http::Method,
         url: String,
         body: Option<Vec<u8>>,
-    ) -> wasmtime::Result<Result<http::Response, ()>> {
+    ) -> Result<http::Response, ()> {
         let client = reqwest::blocking::Client::new();
         let response = match method {
             http::Method::Get => client.get(url).send(),
@@ -23,12 +23,15 @@ impl http::Host for WidgetState {
             http::Method::Delete => client.delete(url).send(),
         };
         match response {
-            Ok(response) => Ok(Ok(http::Response {
+            Ok(response) => Ok(http::Response {
                 content_length: response.content_length(),
                 status: response.status().as_u16(),
-                bytes: response.bytes()?.to_vec(),
-            })),
-            Err(_) => Ok(Err(())),
+                bytes: match response.bytes() {
+                    Ok(bytes) => bytes.to_vec(),
+                    Err(_) => Vec::new(),
+                },
+            }),
+            Err(_) => Err(()),
         }
     }
 }

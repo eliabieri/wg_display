@@ -11,11 +11,12 @@ use wasmtime::{
     component::{Component, Linker},
     Config, Engine, Store,
 };
+use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxBuilder, WasiView};
 
 use crate::widgets::running::runtime::widget::widget::clocks::Datetime;
 use crate::widgets::utils::logging::LOGGING_PREFIX;
 
-wasmtime::component::bindgen!({ path: "../wg_display_widget_wit/wit", world: "widget" });
+wasmtime::component::bindgen!({ path: "../wg_display_widget_wit/wit" });
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct CompiledWidget {
@@ -23,7 +24,15 @@ pub struct CompiledWidget {
     compatibility_hash: u64,
 }
 
-pub struct WidgetState;
+pub struct WidgetState {
+    ctx: WasiCtx,
+    table: ResourceTable,
+}
+
+impl WasiView for WidgetState {
+    fn ctx(&mut self) -> &mut WasiCtx { &mut self.ctx }
+    fn table(&mut self) -> &mut ResourceTable { &mut self.table }
+}
 
 pub struct Runtime {
     engine: Engine,
@@ -38,8 +47,14 @@ impl Runtime {
         Config::wasm_component_model(&mut config, true);
 
         let engine = Engine::new(&config).expect("Could not create engine");
-        let store = Store::new(&engine, WidgetState {});
-        let mut linker = Linker::new(&engine);
+        let mut linker = Linker::<WidgetState>::new(&engine);
+        wasmtime_wasi::add_to_linker_sync(&mut linker).expect("Could not link WASI functions");
+        let mut builder = WasiCtxBuilder::new();
+        let state = WidgetState {
+            ctx: builder.build(),
+            table: ResourceTable::new(),
+        };
+        let store = Store::new(&engine, state);
         Widget::add_to_linker(&mut linker, |state: &mut WidgetState| state)
             .expect("Could not link host API");
 
@@ -87,7 +102,7 @@ impl Runtime {
         // https://docs.rs/wasmtime/9.0.2/wasmtime/component/struct.Component.html#method.deserialize
         let start = std::time::Instant::now();
         let component = unsafe { Component::deserialize(&self.engine, &widget.data) }?;
-        let (widget, _) = Widget::instantiate(&mut self.store, &component, &self.linker)?;
+        let widget = Widget::instantiate(&mut self.store, &component, &self.linker)?;
         let duration = start.elapsed();
         log::info!(
             "{}: Deserialized and instantiated widget in {} ms",
