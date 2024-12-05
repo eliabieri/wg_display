@@ -68,8 +68,7 @@ async fn install_widget(action: json::Json<InstallAction>) -> Result<(), Custom<
         Err(err) => {
             let err = format!(
                 "Could not install widget from URL {}: {}",
-                download_url,
-                err.root_cause()
+                download_url, err
             );
             log::error!("{}", err);
             Err(Custom(rocket::http::Status::InternalServerError, err))
