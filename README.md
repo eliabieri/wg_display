@@ -110,7 +110,7 @@ First, install [rustup](https://rustup.rs) then
 
 ```bash
 # Install WebAssembly target
-rustup target add wasm32-unknown-unknown
+rustup target add wasm32-wasip2
 # Install trunk for building the frontend
 cargo install --locked trunk
 # Install NPM dependencies
