@@ -19,10 +19,13 @@ Using WebAssembly, as the basis for the widgets, has the following advantages:
 
 ## 🚦 How to get started
 
-For implementing a widget in Rust, there is a [template repository](https://github.com/eliabieri/wg_display_widget_rs) that can be used to get started.  
-It contains the instructions on how to build and distribute the widget.
+The starting point for implementing widgets are the template repositories.  
+They contain the instructions on how to build and distribute the widget.
 
-Template repositories for other languages will be added in the near future.
+| Language                                                    | Remarks      |
+| ----------------------------------------------------------- | ------------ |
+| [Rust](https://github.com/eliabieri/wg_display_widget_rs)   | -            |
+| [Python](https://github.com/eliabieri/wg_display_widget_py) | Experimental |
 
 ## 📦 Distribute the widget
 
