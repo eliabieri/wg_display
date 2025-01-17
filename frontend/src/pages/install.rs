@@ -7,40 +7,41 @@ use gloo_net::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
-use yew_feather::Download;
+use yew_feather::{Download, Loader};
 use yew_router::prelude::*;
 
-fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>, navigator: Navigator) {
-    wasm_bindgen_futures::spawn_local(async move {
-        let response = Request::post("/install_widget")
-            .json(&action)
-            .expect("Failed to serialize install action")
-            .send()
-            .await;
-        match response {
-            Err(e) => {
-                error.set(Some(format!("Failed to install widget: {}", e)));
+async fn install_widget(
+    action: InstallAction,
+    error: UseStateHandle<Option<String>>,
+    is_installing: UseStateHandle<bool>,
+    navigator: Navigator,
+) {
+    is_installing.set(true);
+    let response = Request::post("/install_widget")
+        .json(&action)
+        .expect("Failed to serialize install action")
+        .send()
+        .await;
+    is_installing.set(false);
+
+    match response {
+        Err(e) => {
+            error.set(Some(format!("Failed to install widget: {}", e)));
+            log!("Failed to install widget");
+        }
+        Ok(response) => match response.status() {
+            200 => {
+                log!("Successfully installed widget");
+                navigator.push(&crate::Route::Home);
+            }
+            _ => {
+                let response_text = response.text().await;
+                let error_text = response_text.unwrap_or("No error message".to_string());
+                error.set(Some(error_text));
                 log!("Failed to install widget");
             }
-            Ok(response) => {
-                match response.status() {
-                    200 => {
-                        log!(
-                            "Successfully installed widget: {}",
-                            response.text().await.unwrap()
-                        );
-                        navigator.push(&crate::Route::Home);
-                    }
-                    _ => {
-                        let response_text = response.text().await;
-                        let error_text = response_text.unwrap_or("No error message".to_string());
-                        error.set(Some(error_text));
-                        log!("Failed to install widget");
-                    }
-                };
-            }
-        }
-    })
+        },
+    }
 }
 
 #[function_component(Install)]
@@ -48,6 +49,7 @@ pub fn install() -> Html {
     let installation_data: UseStateHandle<Option<InstallAction>> = use_state(|| None);
     let widget_store_items = use_state(Vec::<WidgetStoreItem>::default);
     let error = use_state(|| None as Option<String>);
+    let is_installing = use_state(|| false);
     let navigator = use_navigator().unwrap();
 
     {
@@ -95,25 +97,44 @@ pub fn install() -> Html {
 
     let on_install_widget_from_url = {
         let error = error.clone();
+        let is_installing = is_installing.clone();
         let navigator = navigator.clone();
         Callback::from(move |_| {
-            let error = error.clone();
-            if installation_data.is_some() {
-                install_widget(installation_data.as_ref().unwrap().clone(), error, navigator.clone());
+            if let Some(action) = &*installation_data {
+                let error = error.clone();
+                let is_installing = is_installing.clone();
+                let navigator = navigator.clone();
+                let action = action.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    install_widget(action, error, is_installing, navigator).await;
+                });
             }
         })
     };
 
     let on_install_widget = {
         let error = error.clone();
+        let is_installing = is_installing.clone();
         let navigator = navigator.clone();
         Callback::from(move |event: MouseEvent| {
             let value = event
                 .target()
-                .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
+                .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok())
+                .map(|btn| btn.value());
+
             if let Some(value) = value {
-                let value = value.value();
-                install_widget(InstallAction::FromStoreItemName(value), error.clone(), navigator.clone());
+                let error = error.clone();
+                let is_installing = is_installing.clone();
+                let navigator = navigator.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    install_widget(
+                        InstallAction::FromStoreItemName(value),
+                        error,
+                        is_installing,
+                        navigator,
+                    )
+                    .await;
+                });
             }
         })
     };
@@ -128,13 +149,21 @@ pub fn install() -> Html {
                     <div class="flex flex-col w-full">
                         // Image
                         <img src="assets/logo.png" alt="" class="h-24 object-contain py-4"/>
+                        if *is_installing {
+                            <div class="flex justify-center items-center pb-4">
+                                <Loader class="animate-spin mr-2"/>
+                                <span class="text-black text-sm">{"Installing widget..."}</span>
+                            </div>
+                        }
                         // Content
                         <div>
                             <DividerComponent text="Install from URL"/>
                             <ConfigCardComponent>
                                 <div class="flex flex-row justify-between">
                                     <input name="url" type="text" onchange={on_changed_url} class="rounded-sm pl-2 bg-transparent text-white mr-4" placeholder="Url"/>
-                                    <button class="text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url}> <Download></Download> </button>
+                                    <button class="text-gray-300 text-sm font-semibold" onclick={on_install_widget_from_url} disabled={*is_installing}>
+                                        <Download/>
+                                    </button>
                                 </div>
                             </ConfigCardComponent>
 
@@ -153,14 +182,14 @@ pub fn install() -> Html {
                                                         <span class="text-slate-300 text-sm font-semibold"> {&item.name} </span>
                                                         <span class="text-slate-300 text-xs"> {&item.description} </span>
                                                     </div>
-                                                    <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget.clone()}> {"Install"} </button>
+                                                    <button class="pt-2 text-gray-300 text-sm font-semibold" value={item.name.clone()} onclick={on_install_widget.clone()} disabled={*is_installing}>
+                                                        {"Install"}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </ConfigCardComponent>
                                     }
                                 })}
-
-
                         </div>
                     </div>
                 </div>
