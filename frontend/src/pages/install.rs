@@ -8,8 +8,9 @@ use wasm_bindgen::JsCast;
 use web_sys::{Event, HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_feather::Download;
+use yew_router::prelude::*;
 
-fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>) {
+fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>, navigator: Navigator) {
     wasm_bindgen_futures::spawn_local(async move {
         let response = Request::post("/install_widget")
             .json(&action)
@@ -23,10 +24,13 @@ fn install_widget(action: InstallAction, error: UseStateHandle<Option<String>>) 
             }
             Ok(response) => {
                 match response.status() {
-                    200 => log!(
-                        "Successfully installed widget: {}",
-                        response.text().await.unwrap()
-                    ),
+                    200 => {
+                        log!(
+                            "Successfully installed widget: {}",
+                            response.text().await.unwrap()
+                        );
+                        navigator.push(&crate::Route::Home);
+                    }
                     _ => {
                         let response_text = response.text().await;
                         let error_text = response_text.unwrap_or("No error message".to_string());
@@ -44,6 +48,7 @@ pub fn install() -> Html {
     let installation_data: UseStateHandle<Option<InstallAction>> = use_state(|| None);
     let widget_store_items = use_state(Vec::<WidgetStoreItem>::default);
     let error = use_state(|| None as Option<String>);
+    let navigator = use_navigator().unwrap();
 
     {
         let widget_store_items = widget_store_items.clone();
@@ -90,23 +95,25 @@ pub fn install() -> Html {
 
     let on_install_widget_from_url = {
         let error = error.clone();
+        let navigator = navigator.clone();
         Callback::from(move |_| {
             let error = error.clone();
             if installation_data.is_some() {
-                install_widget(installation_data.as_ref().unwrap().clone(), error);
+                install_widget(installation_data.as_ref().unwrap().clone(), error, navigator.clone());
             }
         })
     };
 
     let on_install_widget = {
         let error = error.clone();
+        let navigator = navigator.clone();
         Callback::from(move |event: MouseEvent| {
             let value = event
                 .target()
                 .and_then(|t| t.dyn_into::<HtmlButtonElement>().ok());
             if let Some(value) = value {
                 let value = value.value();
-                install_widget(InstallAction::FromStoreItemName(value), error.clone());
+                install_widget(InstallAction::FromStoreItemName(value), error.clone(), navigator.clone());
             }
         })
     };
