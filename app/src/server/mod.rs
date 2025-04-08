@@ -5,6 +5,7 @@ use rocket::response::content::RawHtml;
 use rocket::response::status::Custom;
 use rocket::serde::json;
 use rust_embed::RustEmbed;
+use tokio::sync::broadcast;
 
 use std::borrow::Cow;
 use std::ffi::OsStr;
@@ -170,12 +171,12 @@ fn dist(file: PathBuf) -> Option<(ContentType, Cow<'static, [u8]>)> {
 }
 
 /// Starts the server to serve the frontend and the API to fetch and modify the configuration.
-pub async fn serve_dashboard() -> Result<(), rocket::Error> {
+pub async fn serve_dashboard(mut shutdown_rx: broadcast::Receiver<()>) -> Result<(), rocket::Error> {
     // Make dashboard accessible from outside
     let config = Config::figment()
         .merge(("address", "0.0.0.0"))
         .merge(("log_level", "off"));
-    let _rocket = rocket::custom(config)
+    let rocket = rocket::custom(config)
         .mount(
             "/",
             routes![
@@ -191,7 +192,16 @@ pub async fn serve_dashboard() -> Result<(), rocket::Error> {
                 get_store_items
             ],
         )
-        .launch()
+        .ignite()
         .await?;
+
+    let shutdown = rocket.shutdown();
+    tokio::spawn(async move {
+        let _ = shutdown_rx.recv().await;
+        println!("Server received shutdown signal");
+        shutdown.notify();
+    });
+
+    rocket.launch().await?;
     Ok(())
 }

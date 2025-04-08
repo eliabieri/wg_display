@@ -1,6 +1,7 @@
 //! Widgets to display rendering implementation using [Cursive](https://crates.io/crates/cursive)
 use std::thread;
 use std::time::Duration;
+use tokio::sync::broadcast;
 
 use common::models::SystemConfiguration;
 use cursive::theme::BaseColor;
@@ -56,12 +57,17 @@ impl Renderer {
     }
 
     /// Runs the renderer (blocking)
-    pub fn run(&mut self) {
+    pub fn run(&mut self, mut shutdown_rx: broadcast::Receiver<()>) {
         let mut siv = cursive::default().into_runner();
         let mut config = Persistence::get_system_config().expect("Could not load config");
         self.initialize_layout(&config, &mut siv);
 
         loop {
+            if let Ok(_) = shutdown_rx.try_recv() {
+                println!("Renderer received shutdown signal");
+                break;
+            }
+
             if let Some(new_config) = Persistence::get_system_config_change() {
                 config = new_config;
                 self.widgets = Renderer::initialize_widgets(&mut self.runtime);
