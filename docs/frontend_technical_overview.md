@@ -2,7 +2,7 @@
 
 This document provides a technical overview of the WG Display frontend, covering its architecture, core concepts, build process, and key components. The frontend is a single-page application (SPA) responsible for user interaction with the WG Display system, including widget installation from a store or URL, de-installation, configuration of individual widgets, and modification of system-wide settings like the display background color.
 
-## 1. Core Technologies
+## 🛠️ 1. Core Technologies
 
 The frontend is built using a modern Rust and WebAssembly stack:
 
@@ -15,7 +15,7 @@ The frontend is built using a modern Rust and WebAssembly stack:
 *   **`serde` (via `common` crate):** For serialization and deserialization of data structures (like `SystemConfiguration`, `WidgetStoreItem`) exchanged with the backend.
 *   **(Assumed) `jsonform.js`:** The presence of `assets/js/jsonform.js` and the dynamic nature of widget configuration strongly suggest its use within `assets/html/widget_config.html` to render forms from JSON schemas provided by widgets.
 
-## 2. Project Structure (`frontend/` directory)
+## 📁 2. Project Structure (`frontend/` directory)
 
 The `frontend/` directory contains all the source code and assets for the Yew-based single-page application:
 
@@ -37,7 +37,7 @@ The `frontend/` directory contains all the source code and assets for the Yew-ba
     *   `assets/logo.png`: The application logo.
 *   `dist/` (generated): The output directory where Trunk places the compiled application (Wasm, JS, CSS, copied assets). This directory is typically served by the backend in production or by `trunk serve` during development.
 
-## 3. Build Process
+## ⚙️ 3. Build Process
 
 The frontend build process combines Rust/Wasm compilation via Yew and Trunk, with CSS generation via TailwindCSS.
 
@@ -62,7 +62,7 @@ The frontend build process combines Rust/Wasm compilation via Yew and Trunk, wit
     *   For local development, `npm run serve` (defined in `package.json`) uses `concurrently` to run `trunk serve` and the TailwindCSS watch process simultaneously.
     *   For production builds, the root `Makefile` likely calls `npm run tailwind-build` and then `trunk build --release` to generate optimized, distributable frontend assets in the `frontend/dist/` directory. These assets are then embedded into the main WG Display application binary by the backend server.
 
-## 4. Architecture and Core Concepts
+## 🏗️ 4. Architecture and Core Concepts
 
 This section details the internal architecture of the Yew application.
 
@@ -148,7 +148,7 @@ Widget configuration is highly dynamic:
         *   On submission, POST the new JSON configuration to `/widget_config/<widget_name>`.
 *   **Yew's Role:** Yew navigates to this static page and provides the backend APIs. The Yew component `pages/config_schema.rs` is a utility for copying schemas, not for user form display.
 
-## 5. Key Pages and Components
+## 🧩 5. Key Pages and Components
 
 This section highlights some of the main Yew pages and reusable components.
 
